@@ -17,8 +17,7 @@ l=[]
 o={}
 
 
-target_url = "https://www.indeed.com/jobs?q=python&l=New+York%2C+NY&vjk=6bb0cc001500688e"
-target_url = 'https://fr.indeed.com/jobs?q=Data'
+target_url = "https://fr.indeed.com/jobs?q=Data&l=&from=searchOnHP"
 
 hdr= {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
     "Accept-Encoding": "gzip, deflate, br",
@@ -27,7 +26,8 @@ hdr= {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.3
 }
 
 hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
-hdr = {'User-Agent': 'Mozilla/5.0'}
+
+hdr_indeed = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0'}
 
 #defining header
 # hdr= {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) ' 
@@ -41,7 +41,7 @@ hdr = {'User-Agent': 'Mozilla/5.0'}
 
 #### ####
 
-resp = requests.get(target_url, headers=hdr)
+resp = requests.get(target_url, headers=hdr_indeed)
 print("STATUS : ",resp.status_code,"\n")
 
 if resp.status_code == 200:
