@@ -32,7 +32,10 @@ def create_driver():
     driver = webdriver.Chrome(options=chrome_options)
     return(driver)
 
-def web_scrap(driver,url,n_pages=1):
+def web_scrap(driver,url,n_pages=1,n_current_page=0):
+    if(n_current_page==n_pages):
+        return
+    
     driver.get(url)
     if "indeed" in url:
         source = "indeed"
@@ -46,7 +49,7 @@ def web_scrap(driver,url,n_pages=1):
         source = "unknown"
 
 
-    # Attendre que la page soit complètement chargée (ajuster le temps d'attente selon votre cas)
+    # Attendre que la page soit complètement chargée
     driver.implicitly_wait(5)
 
     # Récupérer la page source (HTML) actuelle
@@ -56,49 +59,30 @@ def web_scrap(driver,url,n_pages=1):
 
     # page suivante
     if source == "apec":
-        # Attendre que le bouton Suivant avec la classe "page-link" soit cliquable
-        # suivant_button = WebDriverWait(driver, 10).until(
-        #     EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.page-link'))
-        # )
-        # # Attendre la disparition de l'élément "onetrust-policy"
-        # WebDriverWait(driver, 10).until_not(
-        #     EC.presence_of_element_located((By.ID, 'onetrust-policy'))
-        # )
 
-        # Cliquez sur le bouton Suivant avec la classe "page-link"
-        suivant_button = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.page-link'))
-        )
-        #suivant_button = driver.find_element(By.CSS_SELECTOR, 'a.page-link')
-        suivant_button.click()
+        preprocess_indeed_page(html_source)
+
+        suivant_button = driver.find_element(By.CSS_SELECTOR, 'a.page-link')
+        driver.execute_script("arguments[0].click();", suivant_button)
         url = driver.current_url
         print("URL actuelle:", url)
-        web_scrap(driver,url)
-        
+        web_scrap(driver,url,n_pages,n_current_page+1)
+
+        web_scrap(driver,url,n_pages,n_current_page+1)
+
     elif source == "indeed":
-        # Attendre que le bouton Suivant soit cliquable
-        #wait = WebDriverWait(driver, 10)
-        #element = wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '')))
-        #element_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a')))
-        #element_button.click()
-        
-        #preprocess_indeed_page(source)
 
-        suivant_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a'))
-        )
-        
-        actions = ActionChains(driver)
-        actions.move_to_element(suivant_button).click().perform()
-        # Cliquez sur le bouton Suivant
-        #suivant_button.click()
+        preprocess_indeed_page(html_source)
+
+        suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a')
+        driver.execute_script("arguments[0].click();", suivant_button)
         url = driver.current_url
         print("URL actuelle:", url)
-        web_scrap(driver,url)
+        web_scrap(driver,url,n_pages,n_current_page+1)
 
 
     # Fermer le navigateur (peut etre pas, pour changer de page etc....)
     driver.quit()
 
 driver = create_driver()
-web_scrap(driver,urls[0],n_pages=1)
+web_scrap(driver,urls[1],n_pages=2)
