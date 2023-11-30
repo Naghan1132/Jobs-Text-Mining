@@ -1,3 +1,4 @@
+import time
 from preprocess import *
 
 from selenium import webdriver
@@ -20,13 +21,13 @@ urls = ["https://fr.indeed.com/jobs?q=data&l=&from=searchOnHP&vjk=a6feb24775e416
 
 # LinkedIn KO (compliqué à revoir)
 # Emploi Public KO (pas de mots clé dans l'url)
-# Emploi Territoriak OK (mais pas de pagination 'suivant'=> trouver un moyen => compter les offres depuis le début)
+# Emploi Territoriak (moteur de recherche très mauvais)
 # Glassdoor OK (mais pas de pagination 'suivant' => trouver un moyen => compter les offres depuis le début)
 
 def create_driver():
     # Configurer les options du navigateur en mode headless
     chrome_options = Options()
-    chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
+    #chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
@@ -106,7 +107,7 @@ def web_scrap(driver,url,n_pages = 1,n_current_pages = 0,n_posts = 5,n_current_p
         web_scrap(driver,url,n_pages,n_current_pages+1)
 
 
-    elif source == "emploi-territorial":
+    elif source == "emploi-public":
 
         preprocess_indeed_page(html_source)
 
@@ -119,13 +120,36 @@ def web_scrap(driver,url,n_pages = 1,n_current_pages = 0,n_posts = 5,n_current_p
 
     elif source == "glassdoor":
 
-        preprocess_indeed_page(html_source)
+        # cliquez sur une offre => cliquez sur "Voir plus" => scrapping => cliquez sur l'offre suivante etc....
+        # eviter la pop up ?
 
-        suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a')
-        driver.execute_script("arguments[0].click();", suivant_button)
-        url = driver.current_url
+        click_on_job = driver.find_element(By.CSS_SELECTOR, 'li[class="JobsList_jobListItem__JBBUV"]')
+        
+        print(click_on_job)
 
-        web_scrap(driver,url,n_pages,n_current_pages+1)
+        # Itérer sur chaque élément et cliquer dessus   
+        for index, job in enumerate(click_on_job):
+
+            driver.execute_script("arguments[0].click();", job) # works
+
+            show_details = driver.find_element(By.CSS_SELECTOR, 'button[class="JobDetails_showMore__j5Z_h"]')
+            driver.execute_script("arguments[0].click();", show_details) # works
+
+            html_source = driver.page_source
+            preprocess_glassdoor_page(html_source)
+
+        #time.sleep(10)
+        
+
+        # appyuer 'n' sur le bouton suivant "Plusd'offres d'emploi"
+        #suivant_button = driver.find_element(By.CSS_SELECTOR, 'button[class="button_Button__meEg5 button-base_Button__9SPjH"]')
+           
+        #driver.execute_script("arguments[0].click();", suivant_button)
+
+    else:
+        print("Source inconnue")
+        driver.quit()
+        exit()
 
 
     # Fermer le navigateur (peut etre pas, pour changer de page etc....)
@@ -135,4 +159,4 @@ def web_scrap(driver,url,n_pages = 1,n_current_pages = 0,n_posts = 5,n_current_p
 
 
 driver = create_driver()
-web_scrap(driver,urls[0],n_pages=2,n_posts=5)
+web_scrap(driver,urls[4],n_pages=2,n_posts=5)

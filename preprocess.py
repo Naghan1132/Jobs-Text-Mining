@@ -65,3 +65,33 @@ def preprocess_indeed_page(html_source):
     print("\n ================== \n")
 
     
+def get_glassdoor_job_links(html_source):
+     # Utiliser BeautifulSoup pour traiter les données
+    soup = BeautifulSoup(html_source, 'html.parser')
+
+    container_result = soup.find_all('button', class_='JobCard_trackingLink__zUSOo')
+
+    list_link = []
+    for c in container_result:
+        list_link.append(c['href'])
+
+    return(list_link)
+
+def preprocess_glassdoor_page(html_source):
+
+     # Utiliser BeautifulSoup pour traiter les données
+    soup = BeautifulSoup(html_source, 'html.parser')
+    #print(soup)
+    
+    title = soup.find('div', {'class': 'JobDetails_jobTitle__Rw_gn'}).text
+    print(title)
+    #div = soup.find_all('div', class_='JobDetails_jobDetailsHeader__qKuvs')
+    #print(div)
+    #location = div.find('div', class_='JobDetails_location__MbnUM').text
+    #print(location)
+  
+ 
+    #type_job = soup.find('div', {'class':['css-tvvxwd', 'ecydgvn1']})
+    
+
+    print("\n ================== \n")
