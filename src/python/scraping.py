@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-
+import time
 
 def get_linkedin_job_links(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
@@ -61,13 +61,15 @@ def scrap_apec_job(html_source):
         print(location)
         print(type_job)
 
+        print("=============")
+
     # Récupérer toutes les divs avec la classe "card-body"
     #job_detail = soup.find('div', class_='card-body')
     #print(job_detail)
     #detail = job_detail.find('div', class_='details-post')
     #print(detail)
-    
-    print("=============")
+
+    return [compagny, location, type_job, source]
     
 
 
@@ -90,26 +92,33 @@ def scrap_indeed_job(html_source):
 
 
     if title:
-        title_text = title.text.strip()
-        print(f"title : {title_text}")
+        title = title.text.strip()
+        print(f"title : {title}")
     else:
+        title = ""
         print("Aucun emplacement trouvé.")
 
     if location:
-        location_text = location.text.strip()
-        print(f"location : {location_text}")
+        location = location.text.strip()
+        print(f"location : {location}")
     else:
+        location = ""
         print("Aucun emplacement trouvé.")
     
     if type_job:
-        type_job_text = type_job.text.strip()
-        print(f"type_job : {type_job_text}")
+        type_job = type_job.text.strip()
+        print(f"type_job : {type_job}")
     else:
+        type_job = ""
         print("Aucun emplacement trouvé.")
 
 
 
     print("\n ================== \n")
+
+    liste = [title, type_job, location, source]
+
+    return liste
 
     
 def scrap_glassdoor_job(html_source):
