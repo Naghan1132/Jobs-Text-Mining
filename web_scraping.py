@@ -198,11 +198,23 @@ def web_scrap(driver,url,n_current_pages = 0,n_posts_max = 5,n_current_posts = 0
         exit()
 
 
-    # Fermer le navigateur (peut etre pas, pour changer de page etc....)
     driver.quit()
 
 
 
-
 driver = create_driver()
-web_scrap(driver,urls[4],n_posts_max=50)
+web_scrap(driver,urls[0],n_posts_max=50)
+
+
+# urls_OK = ["https://fr.indeed.com/jobs?q=data&l=&from=searchOnHP&vjk=a6feb24775e416a2",
+#         "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=Data&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention=143687&page=0",
+#         "https://www.glassdoor.fr/Emploi/france-data-emplois-SRCH_IL.0,6_IN86_KO7,11.htm"]
+
+
+# def main_web_scraping(urls,n_posts_max = 50):
+#     for url in urls:
+#         driver = create_driver()
+#         web_scrap(driver,url,n_posts_max=n_posts_max)
+
+# main_web_scraping(urls_OK,10)
+
