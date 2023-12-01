@@ -16,3 +16,16 @@ df = pd.read_sql(query, conn)
 st.dataframe(df)
 
 
+
+# # Connexion à la base de données SQLite
+# conn = sqlite3.connect('chemin/vers/votre/base_de_donnees.db')
+
+# # Exécutez vos requêtes SQL ici
+# cursor = conn.cursor()
+# cursor.execute("SELECT * FROM votre_table;")
+# resultats = cursor.fetchall()
+
+# # Fermez la connexion
+# conn.close()
+
+

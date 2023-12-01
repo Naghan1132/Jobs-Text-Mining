@@ -2,6 +2,7 @@ import time
 from scraping import *
 from build_data import *
 
+import re
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By  # N'oubliez pas cette ligne
@@ -25,10 +26,41 @@ def build_url_job_research(job_name):
         "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention=143687",
         "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm"]
 
+    cpt = 0
     modified_urls = []
     for url in urls:
-        modified_url = url.replace("JobToInput", job_name)
+        if cpt == 0:
+            job_name_modified = job_name.replace(" ", "+")
+            modified_url = url.replace("JobToInput",job_name_modified)
+        elif cpt == 1:
+            job_name_modified = job_name.replace(" ", " ") # do nothing
+            modified_url = url.replace("JobToInput",job_name_modified)
+
+        elif cpt == 2:
+            job_name = job_name.lower()
+            job_name_modified = job_name.replace(" ", "-")
+            modified_url = url.replace("JobToInput",job_name_modified)
+
+            # Le nombre de caractere dans le job et dans la ville change un parametre dans la requete donc ajouter le parametre
+            debut_sous_chaine = "https://www.glassdoor.fr/Emploi/"
+            fin_sous_chaine = "-emplois"
+
+            index_debut = modified_url.find(debut_sous_chaine) + len(debut_sous_chaine)
+            index_fin = modified_url.find(fin_sous_chaine)
+        
+            # Extraire la sous-chaîne entre les indices
+            sous_chaine_interieure = modified_url[index_debut:index_fin]
+            nombre_caracteres = len(sous_chaine_interieure)
+
+            
+            match = re.search(r',(\d+)\.htm', modified_url)
+            if match:
+                # Remplacer la valeur par la nouvelle valeur
+                modified_url = re.sub(r',\d+\.htm', f',{nombre_caracteres}.htm', modified_url)
+
+        
         modified_urls.append(modified_url)
+        cpt = cpt + 1
 
     return modified_urls
 
@@ -78,7 +110,9 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             base_url = driver.current_url
             html_source = driver.page_source
             links = get_apec_job_links(html_source)        
-
+            if links is None:
+                driver.quit()
+                return df
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
             
@@ -108,6 +142,9 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             
 
             links = get_linkedin_job_links(html_source)
+            if links is None:
+                driver.quit()
+                return df
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
         
@@ -143,6 +180,10 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
             time.sleep(2)
 
+            if jobs is None:
+                driver.quit()
+                return df
+
             print(len(jobs))
 
             if len(jobs) >= n_posts_max:
@@ -172,7 +213,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         # scrapper toutes les offres récupérées
         for job in jobs:
             driver.execute_script("arguments[0].click();", job) # works
-            time.sleep(2)
+            time.sleep(10)
             html_source = driver.page_source
             df = add_row(df,scrap_glassdoor_job(html_source))
           
@@ -197,7 +238,7 @@ def main_web_scraping(job_name,n_posts_max = 50):
 
 #main_web_scraping(job_name,45)
 
-job_name = "Web"
+job_name = "Data Scientist"
 urls = build_url_job_research(job_name)
 
 driver = create_driver()
@@ -209,4 +250,5 @@ save_df(df,df['source'][0])
 # to do -> rajouter la date de publication de l'offre ??? ou date de l'alimentaion dans la base de données
 # tester si il n'y a pas ou plus de jobs à scrapper !!
 
-# sur glassdoor moyen de recup le salaire et le type d'emploi avec une recherche dans la description
+# réger type_job et salaire Glassdoor !!!
+# ajouter type_job et salaire pour Indeed !!!

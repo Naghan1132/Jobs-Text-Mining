@@ -6,6 +6,7 @@ def create_df():
 
     df['title'] = None
     df['type_job'] = None
+    df['salary'] = None
     df['compagny'] = None
     df['location'] = None
     df['description'] = None

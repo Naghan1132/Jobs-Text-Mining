@@ -1,237 +1,119 @@
-title,type_job,compagny,location,description,source
-Développeur logiciel H/F,Permanent,ASTREE SOFTWARE,Saint-Jean-Bonnefonds (42),"« Nous découvrons la meilleure façon de développer en le faisant et en aidant les autres à le faire » (Agile Manifesto)
-SOLID, design pattern, Software Craftmanship, Clean code, Agilité…
-Si ces notions te parlent, viens nous aider à les porter plus haut ! Si tu ne les maitrises pas nous t’accompagnerons car chez Astrée Software, un logiciel bien conçu est l’affaire de tous.
-Tes compétences :
+title,type_job,salary,compagny,location,description,source
+Directeur/Directrice Technique web Adjoint,,,IDEM for Jalis,Marseille (13),"Jalis, start-up marseillaise créée en 2002 est aujourd'hui un groupe qui compte plus de 180 salariés. Nous développons une solution exclusive : le Commercial Digital. L'agence est aujourd'hui incarnée par des valeurs fortes que sont la créativité, l'exigence, la confiance et le partage.
+Dans le cadre de notre développement, nous cherchons à renforcer l'équipe avec un expert expérimenté en communication digitale, capable de manager les équipes techniques d'une agence web avec 80 collaborateurs spécialistes dans différents domaines du web (webdesign, gestion de projet, référencement SEO SEA SMO, système d'information, développement web et application mobile, support client.)
+En tant que Directeur/Directrice Technique web, vous (co)managez les différents services avec les responsables et experts en poste. Force de proposition, vous accompagnez dans leur développement les 6 managers ainsi que la cellule R&D forte de ses 4 brevets déposés à l'INPI.
+Principales missions
 
-POO
-Framework web
-Dev ou devOps
-Backend, Frontend ou Fullstack
+Vous gérez la production avec différents responsables d'équipe spécialisée dans le web. Vous aurez en charge de recruter, de former et de manager pour faire évoluer les différents services techniques au siège à Marseille.
+Vous définissez, en coordination avec le Directeur technique et la direction générale la stratégie du développement technique de l'agence web.
 
-Nos technos :
+· Vous travaillez en étroite collaboration avec le Directeur R&D.
 
-Java 17,
-Angular 14,
-Kafka,
-Docker,
-Git
-Gitlab, Gitlab CI
-Cloud (AWS et Azure)
-Jira, Confluence
-…
+Vous êtes en charge de l’organisation et du pilotage des projets en assurant leurs coordinations au niveau des différents intervenants internes et externes.
 
-Chez nous tu trouveras :
+Compétences et expériences souhaitées
 
-Une bonne ambiance (pas de Nerfs mais de l’entraide)
-Des motards (trop ?)
-Des musiciens (pas tant)
-Une équipe de foot (ils ont gagné lundi !)
-Des gamers (sur pc, console ou plateau)
-Des soirées
-Time off annuel
-Des locaux au top en pleine nature ! (salle de sport, salle de sieste…)
-Un coach sportif
-Possibilité de télétravail partiel
-Bonne mutuelle (prise en charge à 100% !)
+Vous faites preuve d’esprit entrepreneurial, de leadership, avec une forte culture du résultat et disposez d'un excellent relationnel. Véritable pédagogue, vous savez fédérer vos équipes et les accompagner au quotidien dans l'openspace.
+Vous avez obligatoirement occupé la fonction de directeur ou responsable technique dans la communication digitale, dans une agence web ou équivalent.
+Vous êtes passionné(e) de nouvelles technologies et disposez de solides compétences en référencement SEO/SEA et en développement Web.
 
-Tu es issu(e) d’une formation de niveau bac+3 à bac+5 :
+Une expérience significative chez Google ou Facebook serait fortement appréciée.
 
-Formation clairement orientée logiciel ou informatique
-Formations autres (généraliste, maths, télécom…) mais tu as réalisé de nombreux projets de développement et ce sujet te passionne
+Vous appréciez le contact client et êtes à l’aise dans la tenue et l’animation de réunions.
+Vous faîtes preuve de rigueur et de créativité. Vous faites preuve aussi d'adaptabilité et d'humilité avec un grand sens d'écoute.
+Vous maîtrisez une langue étrangère (anglais en priorité).
 
-Ton expérience :
+Contrat CDI - Statut CadreSalaire (fixe + variable) à partir de 100 K€ bruts annuels et plus : à négocier selon votre expérience.
+Disponibilité : immédiate.
+Contrat : CDILocalisation : Marseille - 13
+Avantages :
 
-3 ans d’expériences minimum dans le domaine du logiciel
+Épargne salariale participation
+carte ticket restaurant,
+mutuelle, prévoyance.
+Participation aux bénéfices
 
-Ce qui t’attend :
-
-Un parcours d’intégration
-Du travail en équipe
-Des formations
-Des perspectives d’évolution à la hauteur de tes ambitions
-
-Astrée Software connait depuis sa création une hypercroissance qui la positionne désormais en leader de son marché. L’entreprise est reconnue pour son dynamisme, son innovation et la qualité de ses prestations. Son équipe a le sens du service, le goût du travail bien fait et une farouche envie d’innover en toute simplicité.
-Nos valeurs :
-
-Entraide : Portée et reconnue par les équipes
-Engagement : Equipe impliquée dans la réussite des projets
-Simplicité : « Une innovation est belle lorsqu’elle est simple »
-Innovation : 35% du CA investit en R&D
-Qualité : 94% de taux de recommandation clients
-Accompagnement de l’évolution interne : Un tiers de la direction a démarré par un stage
-
-Ses logiciels MES (Aquiweb et Astn’go) sont au cœur de l‘industrie du futur. Ils démocratisent la digitalisation des opérations de production pour une usine plus performante, plus agile et moins consommatrice en ressources naturelles (270 sites déployés dans le monde, 15000 utilisateurs).
-Type d'emploi : CDI, Temps pleinStatut : Cadre
-Salaire : 30 000,00€ à 50 000,00€ par an
+Type d'emploi : Temps pleinStatut : Cadre
+Salaire : 70 000,00€ à 90 000,00€ par an
 Avantages :
 
-RTT
+Épargne salariale
 
-Programmation :
-
-Travail en journée
-
-Types de primes et de gratifications :
-
-Prime annuelle
-
-Lieu du poste : Télétravail hybride (St Jean Bonnefonds)",indeed
-Développeur PHP à Poligny(39) H/F,Permanent,API & YOU,"27 Grande Rue, 39800 Poligny","Vous souhaitez évoluer au sein d’une agence ambitieuse et d’une équipe dynamique, rejoignez-nous !
-Dans le cadre de notre croissance, nous recherchons un UN·E DEVELOPPEUR·SE PHP CONFIRME·E, en CDI
-Description du poste DEVELOPPEUR·SE PHP :
-Rattaché(e) à notre Service Technologies, sous la responsabilité du Directeur Technologies, vous avez en charge la programmation et le développement de solutions web client et interne.
-Autonome et passionné(e), vous êtes toujours à l’affut des dernières évolutions et nouveautés technologiques.
-Missions :
-
-Analyse et développement d’applications internes et externes PHP
-Participation aux phases de chiffrage et d’analyse des développements
-Garantir la sécurité et la maintenance des solutions
-
-Compétences requises :
-
-Maîtrise de la programmation objet en PHP et application des bonnes pratiques PHP
-Connaissance des Framework Thelia, Symfony
-Connaissance JavaScript et de jQuery
-Excellentes compétences dans le domaine de l’Internet (HTML, CSS, SASS)
-Notions du langage SQL et connaissances des SGBD MySQL
-
-Aptitudes professionnelles :
-
-Esprit d’équipe, qualités relationnelles
-Rigueur, réactivité, curiosité
-
-Profil recherché :
-De formation minimum bac +2 à bac +4, vous justifiez d’au moins 5 ans d’expériences réussies en tant que développeur·se PHP.
-Lieu de travail : Poligny (39) – en présentiel ou Mix présentiel / travail à distance
-Poligny est situé à 1h40 de Lyon / 40 minutes de Dijon / Sortie Autoroute A39 / Train et TGV 2h30 de Paris et 2h de LausanneVille de 5 000 habitants dont 1 000 étudiants entre Ecoles Nationale Laitière et Hôtelière, http://www.ville-poligny.fr/Sport : basket pro, complexe athlétisme, handball, à 60 minutes de la station de ski des Rousses, VTT, escalade, etc..
-Culture : Cinéma numérique 3D, salle de concert Le Moulin de Brainans, Théâtre, centre culturel Séquanaise.
-Date de disponibilité : Immédiate
-Type de contrat : CDI | 39h
-Postes à pourvoir : 2
-Rémunération : selon expérience
-À propos d’API & YOU :
-API & YOU est une agence de Conseil & Communication, spécialisée sur 5 secteurs d’activités : l’hôtellerie, la restauration, les métiers de bouche, l’agroalimentaire et les vins & spiritueux. Notre mission est de révéler, sublimer, déployer et médiatiser la marque de nos clients. Pour ce faire, nous proposons des prestations de : Conseil | Design | Digital | e-Commerce | Animation | Promotion | Social Media | Campagne Media.
-Sur les secteurs de l’hôtellerie restauration, 95% de nos clients sont référencées dans les guides de voyages et gastronomiques comme le Michelin ou le Gault&Millau.
-Type d'emploi : CDI, Temps plein
-Salaire : 25 000,00€ à 42 000,00€ par an
 Programmation :
 
 Du lundi au vendredi
-Horaires aménageables
-Périodes de travail de 8 heures
-Repos le week-end
 
 Types de primes et de gratifications :
 
-Heures supplémentaires majorées
-Prime annuelle
 Primes
 
-Capacité à faire le trajet ou à déménager:
-
-Poligny (39): Faire le trajet sans problème ou prévoir un déménagement avant de prendre son poste (Optionnel)
-
-Expérience:
-
-PHP: 1 an (Optionnel)
-
-Lieu du poste : Télétravail hybride (39800 Poligny)",indeed
-Engagement Manager E-Commerce H/F Paris,Permanent,Capgemini,Paris (75),"Qui sommes-nous ?
-Capgemini est le leader du marché du Commerce en France (100M€ de chiffre d'affaires sur le Commerce). Cela signifie que vous travaillerez sur les projets les plus innovants, avec des technologies de pointe, et des personnes formidables. Vous progresserez quotidiennement :
-
-Pilotez votre carrière au sein d’une entreprise renommée et en constante croissance avec les meilleurs experts de l'industrie
-Travail flexible à domicile (20 à 70 % - hors conditions sanitaires)
-Possibilité de mettre en œuvre des projets uniques pour les plus grands clients du marché
-Environnement international et accès au dernier savoir-faire en matière de eCommerce
-De nombreuses opportunités d’évolution de carrière en interne
-Connexions constantes avec les équipes européennes et internationales.
-
-Vos responsabilités :
-Rattaché(e) à la People Unit Front et eCommerce qui est en charge de la livraison de la plupart des projets eCommerce et d'expérience, votre rôle sera de :
-
-Définir et exécuter la méthodologie des projets e-commerce
-Piloter et gérer des équipes projets
-Définir et suivre les KPI sur vos projets
-Animer et maintenir la relation avec votre client
-Garantir la qualité, le délai et le coût de vos livrables
-Organiser et animer des rituels projet pour suivre l'avancement des chantiers
-Gérer la relation contractuelle avec votre client
-Identifier les opportunités d'affaires et promouvoir l'expertise de Capgemini
-
-Profil recherché :
-
-Vous avez plus de 10 ans d'expérience en gestion de projets
-La conduite et gestion d’équipe de projet n’ont pas de secret pour vous
-Vous êtes expérimenté dans le pilotage de projets complexes (plus d'un million de budget annuel) avec des compétences en matière de reporting (gestion des KPI)
-Vous avez une forte expertise en eCommerce : Performance commerciale, solution eCommerce
-Vous avez une solide connaissance de la gestion des missions : temps et matériel par rapport aux budgets au forfait
-Solides connaissances en méthodologie de gestion de projet : agilité, Safe, Cycle en V.
-Maîtrise de l'anglais parlé et écrit
-Vous êtes expérimenté dans la gestion de projets offshore
-Vous êtes l'aise dans la relation d'affaires
-Vous êtes reconnu pour votre leadership, vos compétences en négociation, vos compétences en relations d'affaires et votre gestion des risques
-
-Type d'emploi : CDI",indeed
-Assistant chargé de communication et de cabinet H/F,,Marine Nationale,Brest (29),"Au profit de la base navale de Brest et au plus près de son commandement, vous participez au rayonnement de ses activités. Ainsi, vous serez responsable de la mise à jour des sites intranet et internet, de la rédaction d'articles, de la création graphique ainsi que de la coordination d'événements. Un première expérience polyvalente au cœur de la communication de la Marine nationale à Brest. #LI-JB1
+Lieu du poste : En présentiel",indeed
+Community manager H/F,,,Marine Nationale,Brest (29),"Le contrat de volontaire officier aspirant permet aux jeunes diplômés ou aux étudiants à la recherche d'une année de césure ou d'une première expérience professionnelle, de s'engager au sein de la Marine nationale pendant douze mois et d'y découvrir un environnement hors du commun. Les domaines de compétences recherchées sont très larges : ressources humaines, communication, contrôle de gestion… #LI-JB1
 
 
 
-Descriptif de l'institution
+» DESCRIPTIF DE L'INSTITUTION
 
 
-Sur tous les océans et toutes les mers du monde, 365 jours par an et 24 heures sur 24, les marins assurent la sécurité et la protection de l’espace maritime français. En mer, sur terre et dans les airs, 40 000 marins se mobilisent pour accomplir des missions de renseignement, de prévention, d’intervention, de protection et de dissuasion.
+La Marine nationale est une des composantes des forces armées et dépend du ministère des armées. Elle est engagée en permanence sur toutes les mers par la présence de bâtiments de surface, de sous-marins, d’aéronefs ou de commandos, qui constituent l'outil maritime de la défense militaire de notre pays. Choisir la Marine, c'est décider de servir en mer ou sur terre dans un environnement opérationnel ou dans le soutien des unités pour l’acquisition d’une expérience humaine et professionnelle hors du commun.
 
 
 
 
-Environnement du poste
+» ENVIRONNEMENT DU POSTE
 
 
-La base navale de Brest assure le soutien spécifique des forces navales. Elle est chargée d’accueillir et de ravitailler les navires de la Marine ou tiers, dans des conditions de sécurité et de sûreté optimales. La base navale est composée du service des moyens portuaires, de la compagnie des marins pompiers, du centre de formation pratique et d’entraînement à la sécurité, du laboratoire d’analyses de surveillance et d’expertise de la Marine.
-
-
-
-
-Missions
-
-
-Rattaché à l’échelon de commandement de la base navale, le volontaire officier aspirant (VOA) assistant chargé de communication et cabinet travaille sous l’autorité du chef de groupement affaires générales, et en étroite liaison avec le commandant, le commandant en second et la secrétaire de direction. Dans une fonction transverse par essence, il a aussi vocation à interagir avec l’ensemble des groupements et services de la base navale. La dimension interne à la base navale pourra s’étendre à la communication externe en relais et interface avec les équipes de l’officier communication régionale.
- En tant qu’assistant de communication, l’officier sera plus particulièrement chargé de :
-
- Mise à jour des sites intranet et internet RH : rédaction de brèves et mise en ligne d’articles, animation du réseau des responsables de publication ;
- Rédaction d’articles RH pour les magazines et sites Web institutionnels de la Marine nationale, et pour tout autre document interne ;
- Création graphique et mise en page sur tout type de document et support de communication ;
- Pilotage et suivi des commandes de créations graphiques et de goodies, responsable des relations avec les différents prestataires ;
- Participation à des comités éditoriaux, réunions et groupes de travail sur différents sujets liés à la communication ;
-
- En tant qu’assistant de cabinet, il sera plus particulièrement chargé :
-
- Du suivi des correspondances particulières ;
- De l’organisation d’évènements courants ;
- De suppléances ponctuelles (suivi de l’agenda du commandant, suivi de dossiers).
+Les forces sous-marines (FSM) / force océanique stratégique (FOST) constituent l’une des quatre forces organiques de la Marine nationale, composante des forces armées relevant du ministère des Armées.
+Elles assurent la permanence à la mer de la dissuasion nucléaire française, exercent des missions de soutien à la dissuasion, d’intérêt stratégique, de protection d’unités précieuses, d’intervention avec un potentiel de frappe contre terre. Elles constituent l'outil maritime de la défense militaire de notre pays, l’assurance vie de la nation.
+Choisir la Marine et les forces sous-marines, c'est décider de servir dans un environnement opérationnel unique pour l’acquisition d’une expérience humaine et professionnelle hors du commun.
+Intégré au bureau communication de l’état-major de l’amiral commandant les forces sous-marines, le community manager évolue sous l’autorité de l’officier communication de la force au sein du cabinet, au contact des hautes autorités de la force.
 
 
 
 
-
-Lieu du poste
-
-
-Poste basé à Brest (29). Formation Initiale d'Officiers de 4 semaines à l'Ecole navale – Lanvéoc (29).
+» MISSIONS
 
 
+Le titulaire prépare et assure la diffusion des contenus vers les moyens de communication de la Marine nationale, (sites internet, réseaux sociaux, newsletter hebdomadaire, magazine institutionnel du SIRPA, de ses autorités territoriales et du service de recrutement de la Marine (SRM)), voire parfois sur ceux de l’état-major des armées.
+Il élabore, sous l’autorité de l’officier communication de la force, la stratégie de développement des FSM/FOST sur les réseaux sociaux, tant d'un point de vue quantitatif que qualitatif. Une fois approuvée par le commandement, il met ensuite en œuvre cette stratégie.
+A ce titre, comme membre du bureau de communication, il :
+
+Participe à l’élaboration de stratégies de communication numérique de la FOST ainsi que le plan de production images des réseaux sociaux. Il rédige les publications associées pour ces différents supports de communication en lien avec l’officier communication de la forces (OCF - échelon de validation) ;
+Participe aux différents projets évènementiels de la force ;
+Arme au besoin en renfort la fonction « réseaux sociaux » en cellule de crise ;
+Effectue une veille permanente des communautés en lien avec le SIRPA ;
+Recense les communautés sur le Web pouvant influer sur le positionnement de l’institution et sur la thématique de la dissuasion en particulier ;
+Planifie et suit les actions de recrutement de membres en ligne (partenariats, parrainage, campagne d'e-mailing...) en lien avec le bureau marketing du SRM ;
+Anime la communauté et renforce sa cohésion ;
+Recherche de nouveaux médias sociaux permettant d'étendre l'influence de la force ;
+Assure la fidélisation des internautes via des évènements on-line (newsletter, jeux concours...) ;
+Est chargé de la mise en œuvre des opérations événementielles pour les actions digitales ;
+Analyse l’impact « marketing » et suit l'image de la force sur les différents supports on-line (analyse d'images, de contenu...) en lien avec le SIRPA Marine et le SRM ;
+Suit l'audience des différents supports des publications effectuées en lien avec le SIRPA Marine et le SRM ;
+Effectue le suivi et l’archivage des actions de communication effectuées.
+
+ Son action contribue à préserver la crédibilité de la force océanique stratégique, il cherche à accroitre le rayonnement de la force, à faciliter la compréhension de ses missions auprès du grand public et vise directement à soutenir le recrutement des forces sous-marines.
 
 
-Rémunération
+
+
+» LIEU DU POSTE
+
+
+Poste basé sur la base navale de Brest (29). Formation Initiale d'Officiers de 4 semaines à l'Ecole navale – Lanvéoc (29).
 
 
 
-La solde proposée est d’environ 910€ nets par mois (le montant de la solde est soumis à variations suivant la situation de logement : sur base ou privé) ;
- Le/la volontaire est logé(e) et nourri(e) gratuitement ;
- Le/la volontaire pourra également prétendre à la prime d’activité délivrée par la CAF en fonction de ses ressources ;
- Avantages carte SNCF : tarif à -75% pour déplacements personnels ;
- 25 jours de permissions par an.
+
+» RÉMUNÉRATION
+
+
+
+La solde proposée est d’environ 860€ nets par mois (le montant de la solde est soumis à variations suivant la situation de logement : sur base ou privé) ;
+Le/la volontaire est logé(e) et nourri(e) gratuitement ;
+Le/la volontaire pourra également prétendre à la prime d’activité délivrée par la CAF en fonction de ses ressources ;
+Avantages carte SNCF : tarif à -75% pour déplacements personnels ;
+25 jours de permissions par an.
 
 
 
@@ -257,107 +139,139 @@ Conditions pour postuler
 
 
 
-Etudiants ou jeunes diplômés, vous souhaitez obtenir, dans le cadre d’une année de césure, une première expérience de leadership. Pour cela, vous devez :
 
- Être titulaire d’un Bac+3 à Bac+5 (diplôme dans le domaine de la communication, universitaire, école de commerce, IEP) ;
- Qualités rédactionnelles indispensables (synthèse et expression écrite) ;
- Qualité relationnelle, capacité d’adaptation, prise d’initiative, dynamisme, rigueur et polyvalence, aptitude à travailler en équipe ;
- Maîtrise des logiciels bureautiques indispensable, et d’infographie souhaitable.
 
- Pré-requis :
+De Bac +3 à Bac +5 dans le domaine de la communication et/ou du community management ;
+Esprit de synthèse et qualités rédactionnelles ;
+Bonne maîtrise de la langue française et de la rédaction d’accroche ;
+Bonne culture générale ;
+Connaissance des réseaux sociaux et des stratégies de contenus numériques ;
+Disponibilité et adaptabilité ;
+Dynamisme et réactivité ;
+Connaissance et utilisation des outils de veille et de reporting.
+
+ Ce spécialiste de la communication numérique est à l'aise avec les réseaux sociaux. Il doit en maîtriser les codes et les techniques de production de contenu. A cette fin, il a d’excellentes connaissances en infographie, en particulier dans le domaine de la réalité augmentée.
+Il maîtrise les logiciels de création graphique, photographique et vidéo. En lien avec l’OCF, il scénarise et crée des infographies et/ou vidéos à destination des réseaux sociaux qu’il anime.
 
 
 
 Savoir nager
 Être de nationalité française
-Avoir accompli sa Journée Défense et Citoyenneté (JDC - ex JAPD)
 Être physiquement et médicalement apte
-Être âgé de moins de 26 ans à la date de dépôt du dossier de candidature",indeed
-ASSISTANT(E) DE GESTION E-COMMERCE SPORT (H/F),Permanent,RayonRando.com,"8 Rue Des Clairières, 44840 Les Sorinières","RayonRando.com est une boutique E-commerce spécialisée dans la vente de matériel de randonnée. Nous sommes une petite structure de 4 personnes, qui se démarque par sa qualité de service : conseils d’expert, fiabilité et réactivité en particulier. A l’activité principale du site e-commerce, créé en 2007, s’ajoute l’activité additionnelle du showroom situé aux Sorinières (Nantes), qui permet d’apporter un conseil personnalisé.
-En 2024, la refonte du site sera un projet important auquel vous participerez.
-Pour renforcer notre équipe nous recrutons notre futur randonneur ou randonneuse : assistant.e de gestion e-commerce !
-Votre mission :
-Le poste est polyvalent et touche-à-tout :
-En commerce : vous contribuez activement au développement du chiffre d’affaires :
-- Accueil et conseils clients par téléphone, courriel et sur le showroom.
-- Contribution à enrichir les contenus rédactionnels et graphiques du site : création/amélioration de fiches produits, prise de photos produits, montage simple de vidéos, créations simples de visuels, etc…
-- Actions diverses telles que : mise en place d’actions commerciales sur le site et via emailing et réseaux, veille concurrentielle et prix, suivi et reporting, etc…
-- Bonne tenue du showroom.
-- Et, selon vos compétences, rédaction d’articles de conseils, suivi de certains rayons.
-En logistique : Vous intervenez de façon autonome sur l’ensemble des fonctions de la chaine logistique :
-- Achats : commandes de réassort auprès de certains fournisseurs ; suivi et relations fournisseurs (livraisons, reliquats, contrôle des factures).
-- Réception des marchandises et bonne tenue de l’entrepôt.
-- Préparation des commandes clients
-- Suivi après-vente et traitement des retours (remboursements, échanges).
-En 2024, vous participerez également à un projet important : la refonte complète du site e-commerce.
-Travail du lundi au vendredi – horaires de bureau
-Votre profil :
-- Votre tempérament « commerçant »est un atout pour la vente de nos produits via le site, par téléphone ou sur le showroom. Une expérience du commerce en magasin spécialisé est un plus.
-- Rigoureux.se, ordonné.e, à l’aise avec les outils informatiques (Excel particulièrement) et le web en général vous savez également bien rédiger (fiches produits, emails…). Une connaissance du e-commerce est un plus.
-- Praticien.ne de randonnée ou d’activités outdoor, vous saurez acquérir la technicité des produits pour conseiller nos clients.
-- Vous avez un bon relationnel, vous permettant de vous intégrer dans une petite équipe, mais aussi d’être l’interlocuteur direct de fournisseurs et clients.
-Une expérience en e-commerce ou magasin de sport est appréciée. Mais débutant accepté si alternance ou stage probant en rapport avec nos besoins.
-Envoyer lettre de motivation et CV.
-Type d'emploi : Temps plein, CDI
-Salaire : 22 500,00€ à 26 000,00€ par an
+Être âgé de plus de 18 ans et de moins de 26 ans à la date de dépôt du dossier de candidature",indeed
+Auteur Freelance - C# .Net F/H,,,Studi,34000 Montpellier,"Filiale Edtech de Galileo Global Education - N°1 groupe mondial de l’enseignement supérieur privé - Studi propose plus de 160 formations reconnues par l’État du niveau CAP au BAC+5 et forme plus de 70 000 apprenants chaque jour.
+ Pour y parvenir, Studi accélère son développement en France et à l’international , et souhaite renforcer ses effectifs.
+ Rejoignez nous !
+ Vos missions:
+ Rattaché(e) à nos services Learning Experience, vos missions seront les suivantes:
+
+Rédiger et produire nos cours, appelés unités pédagogiques. Les UP font entre 6000 et 8000 mots, comprennent de la théorie, des exercices et des textes prompteurs pour 2 à 3 vidéos de 3 à 5 minutes chacune (le tournage des vidéos est inclus dans vos missions mais peut être tourné par des interprètes selon le format et votre proximité par rapport à nos locaux).
+Rédiger et produire nos cas pratiques, appelés applications. Les applications comprennent un énoncé et un corrigé, avec des questions ouvertes et des questions fermées de type quiz.
+Rédiger et produire les évaluations d’entraînement et les examens certifiants. Ils comprennent un énoncé, un corrigé, ainsi qu’une copie à rendre et des annexes lorsque c’est nécessaire.
+
+
+ Votre profil:
+
+Vous êtes un(e) formateur/trice Freelance, expert(e) dans ce domaine .
+Votre sérieux, votre dynamisme et vos qualités pédagogiques ne sont plus à démontrer.
+Vous êtes à l’aise à l’oral pour transmettre en vidéos vos connaissances ainsi qu’avec l’outil informatique.
+
+
+Notre processus de recrutement :
+ 1. Envoi d’un échantillon d’écriture d’environ 500 mots.
+ 2. Premier court entretien téléphonique avec notre Talent Acquisition Manager.
+ 3. Entretien en visio avec notre Talent Acquisition Manager (comprenant 1 minute de mise en situation pédagogique - cet exercice sera enregistré pour être joint à votre dossier. Si vous ne souhaitez pas être enregistré(e), merci de prévenir le Talent Acquisition Manager).
+ 4. Envoi du dossier au Responsable pédagogique pour validation.
+ 
+Type de contrat : Freelance.
+ Cette opportunité est ouverte aux personnes en situation de handicap.
+ Nous recrutons aussi des formateurs, des experts et des ingénieurs pédagogiques, n’hésitez pas à consulter nos autres annonces.",indeed
+Developpeur informatique f/h (H/F),,,Nexecur,72190 Coulaines,"Filiale Protection et Sécurité du Groupe Crédit Agricole, Crédit Agricole Protection et Sécurité intervient en qualité de support pour ses filiales opérationnelles (NEXECUR Protection, NEXECUR Téléassistance) spécialisées dans le domaine de la protection et de la sécurité de biens et des personnes. Le Groupe apporte des solutions dans l’assistance à la personne et la protection des biens sur tous les marchés : sécurité bancaire, grandes entreprises, professionnels et particuliers.
+ Dans un marché en forte croissance, notre Groupe connaît un développement important, et dispose d’une base de plus de 167 000 clients. Tourné vers l'innovation et l’Excellence du service client, le Groupe NEXECUR fédère aujourd’hui plus de 750 collaborateurs au niveau national dans différents domaines (administratif, commercial, marketing, technique, informatique…).
+ Nous recherchons des collaborateurs dynamiques et impliqués qui souhaitent s’investir au sein d’une entreprise en pleine expansion.
+
+ Rattaché(e) au Responsable études & développement, vous êtes chargé(e) d'analyser, de paramétrer et de coder les composants logiciels applicatifs dans le respect des évolutions souhaitées, des normes et des procédures, sur la base des spécifications fonctionnelles émises par la maîtrise d'ouvrage.
+
+ Vos missions principales :
+
+
+
+ Contribuer à la définition des spécifications générales,
+ Réaliser l'analyse technique et l'étude détaillée,
+ Rédiger les documentations (spécifications techniques, nomenclature, etc.),
+ Développer,
+ Élaborer les jeux d'essais pour les tests unitaires (TU),
+ Effectuer les TU,
+ Assurer les maintenances corrective et évolutive,
+ Assurer la hotline technico-fonctionnelle de niveau II.
+
+
+ Attractivité du poste :
+
+
+
+ Un poste à la frontière du chef de projet et du développement.
+ Une forte diversité des métiers côtoyés et des besoins
+ Une mission à responsabilité
+ Au sein d'une entreprise en développement constant sur un
+ Un marché en pleine expansion.
+ Présentant des opportunités de carrières multiples et diversifiées
+
+ De formation BAC+3/5 en Informatique, vous bénéficiez de 3 ans d'expérience dans le développement d’applications (PHP, HTML, CSS, Javascript,etc.).
+
+ La rigueur avec laquelle vous abordez les projets et le développement sont des atouts majeurs à la réussite de vos objectifs. Votre sens de l'écoute, vos capacités d'analyse et de synthèse, votre expérience de la conception seront des savoir-faire essentiels au poste et à la mission. Vous êtes doté d'une aisance orale et rédactionnelle, vous appréciez le travail en équipe. Vous êtes curieux et dynamique.
+
+ Vous avez acquis une expérience significative du développement sur les outils et environnements suivants :
+
+ Langages .Net (C#, VB), PHP
+ Web services SOAP
+ Web (ASP.Net, Symfony)
+
+ Les compétences suivantes sont un plus :
+
+ 1ère expérience réussie sur Azure DevOps
+ Connaissance des outils Powerplatform
+ Maîtrise du langage X++",indeed
+Chargé de Référencement SEO & Social Media,,,ASCOMEDIA,"7bis Rue Des Aulnes, 69410 Champagne-au-Mont-d'Or","About us
+Nous sommes une agence de communication digitale spécialisée dans le secteur de la santé pour optimiser des dispositifs de communication et développer des applications en hébergement de santé.
+Nous avons une offre de services complète qui permet à nos clients de disposer d'un suel partenaire web.
+Nous évoluons dans un secteur en plein développement la e-santé et avons besoin de tempéraments curieux et enthousiastes.
+Pour piloter les services webmarketing proposés à nos clients soit : référencement naturel, rédaction et gestion réseaux sociaux, nous recherchons un Chargé de référencement SEO & Social Media.
+Vous souhaitez travailler dans un environnement dynamique et stimulant, dans une entreprise à taille humaine ? Rejoignez-nous !
+Le poste :
+En contact direct avec les clients, vos missions seront les suivantes :
+● Réalisation d'audits techniques
+● Définition et mise en place de stratégies de référencement naturel
+● Rédaction de contenus optimisés SEO
+● Gestion du netlinking, acquisition de backlinks
+● Optimisation technique des sites
+● Suivi des statistiques et du positionnement des sites
+● Community Management : Facebook, Instagram, YouTube…
+● Gestion de fiches et avis Google My Business
+● Création de campagnes Adwords
+Profil recherché
+Vous êtes issus d’une formation bac+4/5. Passionné de digital et des réseaux sociaux, vous avez une première expérience réussie sur un poste similaire.
+Vous avez une forte culture web, vous maîtrisez les outils Google (Analytics, Search Console, Google My Business...) et les réseaux sociaux n’ont aucun secret pour vous.
+Vous aimez écrire et avez une aisance rédactionnelle. Autonome, rigoureux, vous avez le goût de l’analyse et de la recherche constante de solutions.
+Des connaissances des CMS Drupal et Wordpress seront appréciées.
+Attiré par le contact client, vous contribuez au développement de la société.
+Poste basé à Lyon. Contrat CDI.
+Poste à pourvoir immédiatement.
+Type d'emploi : CDI
+Salaire : 25 000,00€ à 32 000,00€ par an
+Avantages :
+
+Horaires flexibles
+Prise en charge du transport quotidien
+Travail à domicile occasionnel
+
 Programmation :
 
 Du lundi au vendredi
-Travail en journée
+Horaires flexibles
 
-Expérience:
-
-magasin de sport: 1 an (Optionnel)
-e-commerce: 1 an (Optionnel)
-
-Lieu du poste : En présentiel",indeed
-"Stage - Assistant(e) Communication, Spécialité Web / Audiovisuel (H/F)",Full-time,OLVEA,Le Tholonet (13),"Chez OLVEA, notre leitmotiv est simple : innovation, confiance et esprit d’équipe !
-Rejoindre l’aventure chez nous, c’est choisir de travailler dans une structure familiale qui a pour ambition de « S’engager pour l’Homme et la Nature ».
-Leader mondial dans la production d'huiles végétales et de poisson destinées à la nutrition et à la cosmétique ; ce sont près de 300 collaborateurs répartis dans 12 filiales à travers le monde, qui participent quotidiennement à la performance de l’entreprise.
-Avec une production annuelle de plus de 65 000 tonnes d'huiles et un chiffre d'affaires de plus de 200 millions d'euros, nous avons connu une croissance importante au cours des 10 dernières années. Afin de soutenir celle-ci, nous sommes constamment à l’affût de nouveaux talents !
-Choisir OLVEA c’est rejoindre des équipes passionnées et engagées mais aussi :
-
-une entreprise à dimension humaine et attachée à ses valeurs
-
-
-un groupe engagé pour un monde durable et socialement juste
-
-
-un environnement dynamique où les nouvelles idées et initiatives sont les bienvenues !
-
-
-une entreprise soucieuse du bien-être de ses collaborateurs,
-
-
-des avantages : prime de performance, 13ème mois, prévoyance, chèques déjeuner, mutuelle, salle de sport, mise à disposition de cours de tennis, voilier d’entreprise, etc.
-
-Le challenge à relever :
-Rejoignez-nous en tant qu’Assistant Communication pour participer au développement de notre stratégie de communication, au travers de missions plus passionnantes les unes que les autres !
-Avec OLVEA, vous aurez la possibilité de devenir un réel ambassadeur de l’entreprise ! Ce poste est une excellente opportunité pour développer vos compétences en communication, production audiovisuelle et sur les enjeux du marketing digital, tout en contribuant activement à la promotion d'une entreprise dynamique et engagée !
-Nous recherchons un stagiaire. Ce stage est basé à Le Tholonet (13), près d’Aix-en-Provence.
-Votre quotidien :
-Notre vision du poste d’Assistant Communication est loin d’être limitée à de simples missions exécutives, nous souhaitons donner à notre stagiaire une véritable autonomie et une capacité à proposer des idées novatrices pour améliorer notre stratégie de communication !
-En tant qu’Assistant Communication, vous aurez l’opportunité de travailler sur :Communication audiovisuelle
-
-Créer et produire des contenus vidéos pour nos sites web et réseaux sociaux (présentation de l’entreprise, de nos filiales et de nos produits) : de la conception du storyboard jusqu’au montage vidéo et à la diffusion des contenus,
-
-Communication digitale
-
-Contribuer à la mise en place de la stratégie de communication digitale,
-
-
-Assurer la gestion des contenus du site web et des réseaux sociaux dans une optique d’optimisation du référencement naturel (Search Engine Optimization) : analyse des mots-clefs, création de contenus, création de back links …
-
-Communication évènementielle
-
-Participer à l’organisation d’évènements internes et externes.
-
-Au sein de l’équipe, vous serez rattaché à la Chargée de Communication, elle-même sous la responsabilité de la Directrice Générale des Business Services.Vos missions vous amèneront à travailler en collaboration avec des équipes pluridisciplinaires et aux côtés de formidables professionnels !
-Parlons de vous !
-Nous cherchons un candidat passionné par la Communication, motivé et impliqué, capable de travailler de manière autonome tout en faisant preuve d’une grande capacité d’adaptation.Autonome dans l’organisation de votre travail, vous êtes habitué à collaborer avec des équipes transverses et êtes reconnu pour votre aisance relationnelle et votre adaptabilité. Vous abordez chaque projet dans une approche proactive et innovante pour répondre aux défis du numérique.Ce poste est ouvert aux candidats disposant d'une formation supérieure en communication, spécialisée en audiovisuel et/ou en digital, souhaitant préparer ou valider une formation de niveau BAC+4/5, par le biais d’un stage.Vous maitrisez les logiciels de montage vidéo et de création de contenus graphiques (Adobe Creative Suite) et avez des connaissances dans les réseaux sociaux et les techniques de Community Management. Vos connaissances du CMS WordPress et des bonnes pratiques de référencement naturel (SEO) sont également un atout pour le poste.A l’aise en anglais à l’écrit comme à l’oral, vous faite preuve de* curiosité* et êtes force de proposition.
-2+ years
-Type d'emploi : Temps plein",indeed
-Intégrateur web HTML/CSS/JS-Wordpress Prestashop H/F,Permanent,Groupe NOIISE,"22 Rue Laure Diébold, 69009 Lyon 9e","Rejoignez l'Aventure Noiise à Lyon - Nous recrutons un Intégrateur Web Wordpress et Prestashop !
+Lieu du poste : Télétravail hybride (Champagne-au-Mont-d'Or (69))",indeed
+Intégrateur web HTML/CSS/JS-Wordpress Prestashop H/F,,,Groupe NOIISE,"22 Rue Laure Diébold, 69009 Lyon 9e","Rejoignez l'Aventure Noiise à Lyon - Nous recrutons un Intégrateur Web Wordpress et Prestashop !
 Bonjour à tous les passionnés du web !
 Chez Noiise, nous sommes à la recherche d'une personne talentueuse pour rejoindre notre équipe en tant qu'Intégrateur Web spécialisé dans Wordpress et Prestashop. Si vous cherchez à donner un nouvel élan à votre carrière dans un environnement dynamique, jeune et challengeant, c'est l'occasion rêvée !
 Ce que nous offrons :
@@ -387,7 +301,57 @@ Du lundi au vendredi
 Travail en journée
 
 Lieu du poste : En présentiel",indeed
-Intégrateur Web HTML CSS JS - Wordpress / Prestashop,Permanent,Noiise,Lyon (69),"Référence de l’offre : INTE/CDI/LYON
+Webmaster H/F,,,Groupe EUROFEU,28250 Senonches,"Présentation de l'entreprise :
+  EUROFEU : une grande aventure depuis plus de 50 ans.
+ Fier d’être un fabricant français, EUROFEU est un leader sur le marché de la protection incendie. Son réseau, composé de plus de 1800 collaborateurs engagés au quotidien, lui permet de couvrir le territoire national en s’appuyant sur son solide maillage d’établissements implantés localement. Description du poste :
+  Engagé dans une stratégie d'entreprise ambitieuse, EUROFEU est un groupe dynamique en pleine expansion. Afin d'accompagner notre évolution, nous recherchons notre futur(e) Webmaster au sein de l'équipe Marketing & Communication Groupe.
+ Sous la responsabilité d'Aurélie et en étroite collaboration avec les différents services support du Groupe, vous serez partie prenante du développement et l'animation de nos différents sites.
+ Après une période d'accompagnement et de formation à notre environnement et à nos outils, votre talent sera attendu sur les principales missions suivantes :
+
+ Administrer les différents sites (web / e-commerce / intranet …) du groupe et les maintenir en condition opérationnelle
+ Développer du contenu visuel et éditorial captivant pour renforcer notre identité de marque en ligne
+ Optimiser les performances des sites web en termes de référencement SEA et d'expériences utilisateurs
+ Assurer la qualité des contenus en travaillant avec les équipes marketing et commerciales (données à jour, précision, pertinence…)
+ Gérer les différents prestataires/partenaires digitaux, travailler en synergie les équipes internes support (Marketing/Communication, DSI, RH…) pour créer des campagnes numériques alignées sur nos valeurs et objectifs
+ Analyser le référencement et le trafic avec Google Analytics
+ Définir/suivre les indicateurs clés de performance (KPIs) et analyser le retour sur investissement (ROI) permettant de mesurer l'efficacité des actions et proposer les actions correctives nécessaires
+ Assurer la recette technique et fonctionnelle sur de nouvelles fonctionnalités
+ Mettre en place des procédures et des protocoles pour que les tâches soient organisées et réalisées de manière fluide
+ Assurer une veille numérique sur les dernières tendances du web et proposer des améliorations constantes pour rester en avance
+ Profil du candidat recherché :
+  Issu(e) d'une formation supérieure en Informatique ou Marketing (webmarketing, digital), vous disposez d'une expérience significative sur un poste similaire.
+ Vous possédez de solides connaissances en technologies liées au développement de pages & de sites web :
+
+ Utilisation de différents langages de développement tels que JavaScript, .NET etc…
+ Utilisation de différents langages éditoriaux web tels que HTML, CSS, PHP, etc...
+ Wordpress ou autre CMS (pour la publication et gestion des contenus web)
+ La suite Adobe (pour le design graphique)
+
+ Vous avez des notions en trafic management (Social Ads et SEA), en référencement web (SEO) et êtes alerte sur les nouvelles pratiques dans votre domaine d'activité.
+ Votre forte capacité d'analyse, votre sens de l'organisation ainsi que votre esprit de collaboration seront également des atouts nécessaires pour réussir à bien votre mission.
+ CE QUE NOUS VOUS PROPOSONS :
+
+ Contrat : CDI à temps plein
+ Lieu de travail : Senonches (28)
+ Date de prise de poste : Dès que possible
+ Statut : Technicien
+ Régime horaire : 36h/semaine – du lundi au vendredi
+ Rémunération : 30 à 35K€ brut annuel, selon le profil et l'expérience candidat(e)
+ Autres conditions de travail : Mutuelle/Prévoyance, carte ticket restaurant, PC portable, possibilité d'une journée de télétravail/semaine.
+
+ EUROFEU, c'est également :
+
+ Intégrer une entreprise dynamique qui place l'innovation et la durabilité au cœur de sa stratégie
+ Relever des challenges, faire preuve d'initiative et participer à des animations tout au long de l'année
+ Construire sa carrière et développer ses compétences
+
+ Parce que vous estimez que vous avez un rôle à jouer dans notre grande aventure,
+ REJOIGNEZ-NOUS ! Et pour en savoir plus, visitez notre site : https://www.eurofeu.fr/
+ Engagé en faveur de l'égalité des chances, EUROFEU étudie avec la plus grande attention les candidatures de personnes en situation de handicap et leurs éventuels besoins spécifiques. Eléments à préciser lors de votre candidature :
+
+ Bac+3,Bac+4,Bac+5 et plus 
+ 1",indeed
+Intégrateur Web HTML CSS JS - Wordpress / Prestashop,,,Groupe NOIISE,Lyon (69),"Référence de l’offre : INTE/CDI/LYON
 
 
 
@@ -549,46 +513,72 @@ Intégrateur Web HTML CSS JS - Wordpress / Prestashop,Permanent,Noiise,Lyon (69)
  L’agence compte à ce jour 75 collaborateurs répartis dans nos 6 antennes régionales de Lille, Nantes, Paris, Marseille, Aix-les-Bains et Lyon.
  Nous intervenons principalement pour PME, ETI et des grands groupes, sur des secteurs concurrentiels tels que : Retail, Décoration et mobilier, Mutuelle et santé, e-Tourisme… Soit plus de 500 projets menés depuis 2007.
  NOIISE est aussi Google Partner Premier, ce qui signifie que nous faisons partie des meilleures agences agréées Google AdWords.",indeed
-Chargé de Référencement SEO & Social Media,Permanent,Ascomedia,"7bis Rue Des Aulnes, 69410 Champagne-au-Mont-d'Or","About us
-Nous sommes une agence de communication digitale spécialisée dans le secteur de la santé pour optimiser des dispositifs de communication et développer des applications en hébergement de santé.
-Nous avons une offre de services complète qui permet à nos clients de disposer d'un suel partenaire web.
-Nous évoluons dans un secteur en plein développement la e-santé et avons besoin de tempéraments curieux et enthousiastes.
-Pour piloter les services webmarketing proposés à nos clients soit : référencement naturel, rédaction et gestion réseaux sociaux, nous recherchons un Chargé de référencement SEO & Social Media.
-Vous souhaitez travailler dans un environnement dynamique et stimulant, dans une entreprise à taille humaine ? Rejoignez-nous !
-Le poste :
-En contact direct avec les clients, vos missions seront les suivantes :
-● Réalisation d'audits techniques
-● Définition et mise en place de stratégies de référencement naturel
-● Rédaction de contenus optimisés SEO
-● Gestion du netlinking, acquisition de backlinks
-● Optimisation technique des sites
-● Suivi des statistiques et du positionnement des sites
-● Community Management : Facebook, Instagram, YouTube…
-● Gestion de fiches et avis Google My Business
-● Création de campagnes Adwords
-Profil recherché
-Vous êtes issus d’une formation bac+4/5. Passionné de digital et des réseaux sociaux, vous avez une première expérience réussie sur un poste similaire.
-Vous avez une forte culture web, vous maîtrisez les outils Google (Analytics, Search Console, Google My Business...) et les réseaux sociaux n’ont aucun secret pour vous.
-Vous aimez écrire et avez une aisance rédactionnelle. Autonome, rigoureux, vous avez le goût de l’analyse et de la recherche constante de solutions.
-Des connaissances des CMS Drupal et Wordpress seront appréciées.
-Attiré par le contact client, vous contribuez au développement de la société.
-Poste basé à Lyon. Contrat CDI.
-Poste à pourvoir immédiatement.
-Type d'emploi : CDI
-Salaire : 25 000,00€ à 32 000,00€ par an
+Développeur PHP junior – Lyon - CDI,,,AXOPEN,"235 Cours Lafayette, 69006 Lyon","Hello ! Tu recherches un job de développement PHP ? L'informatique te passionne ? Tu as envie de travailler dans un environnement composé exclusivement de développeurs et développeuses, et de ne pas être en mission régie chez les clients ? Tu es au bon endroit : bienvenue chez AXOPEN !
+Axo Quoi ?
+AXOPEN, c'est une boite d’informatique à taille humaine située à Lyon !
+Notre job, c’est de réaliser des projets informatiques pour nos clients, essentiellement des développements d’applications web et mobiles sur-mesure. D’ailleurs, tu connais sûrement certains d’entre eux : EDF, Sport dans la Ville, ekWateur, Handicap.fr, etc.
+Aujourd’hui, l’équipe est composée d’une 50aine de techs passionnés, qui adorent se challenger, et partager leurs bonnes pratiques et leurs expérimentations techniques ! Pour compléter cette team, on recherche justement quelqu’un de passionné, qui adore coder, et qui a envie de travailler avec nous sur des projets innovants :)
+Tes missions
+Concrètement, c'est de développer des applications web avec PHP et le framework Symfony, et en front, des technologies JavaScript comme Angular, VueJS et React !
+Au sein d’une équipe composée d’un lead tech et de 2 à 5 développeurs, tu participeras au développement de projets en PHP/Symfony, et réaliseras des développements d’écrans, de fonctionnalités et de webservices dans des contextes variés et super intéressants !
+Selon tes compétences et tes envies, tu pourras également développer des applis avec d'autres technos comme Java, Spring Boot, .NET, etc.
+Ton profil
+
+Tu as un BAC +2/BAC+3 en informatique (DUT/BTS/licence)
+Tu es autonome, touche-à-tout et curieux
+Les langages évoluent et toi aussi !
+Tu es toujours à l’affût des news du secteur !
+Le développement pour toi, c’est bien plus qu’un métier, c’est une véritable passion !
+
+Précision d’importance : tu n'as pas besoin d'être un expert PHP pour postuler ! Si tu l'es, c'est bien, mais si tu es débutant et passionné, ça marche aussi !
+L'essentiel pour nous, c'est que tu aies envie d'apprendre et de coder
+Dans le cadre de notre politique RSE, AXOPEN étudie et s'engage à valoriser la diversité des profils de ses collaborateurs à compétences égales.
+Ton environnement
+
+Tu ne seras pas envoyé(e) en mission chez un client ! Tu passeras la quasi-totalité de ton temps chez AXOPEN, en mode projet AGILE
+Tu seras intégré(e) au sein d’une team de développeurs & experts techs, pratique pour l’entraide !
+En intégrant AXOPEN, tu bénéficieras d'un véritable accompagnement tout au long de ta carrière, de formations internes et certifications et d'un système de parrainage technique
+Ta vie privée sera respectée : parce que c’est essentiel pour nous de différencier vie pro et vie perso, on a mis en place une charte de déconnexion pour ne pas être sollicité en dehors des horaires de travail
+Bien plus qu’un boulot, c’est un quotidien : des activités sportives, des afterworks, des jeux, des projets internes : celui du moment est la construction d’une borne d’arcade… Bref, un environnement décontracté où on continue à apprendre tous les jours !
+
+Package & autres infos
+
+Salaire en fonction du parcours
+Carte Swile Tickets Restaurant
+Télétravail partiel possible jusqu’à 2 jours par semaine
+Prime d'intéressement (en fonction des résultats annuels)
+Bonne mutuelle !
+Prise en charge à 100% de l'abonnement TCL (transports communs lyonnais) et Vélo'v
+Localisation : chez AXOPEN, dans un cadre agréable (tu travailles pour nos clients, PAS chez nos clients). Nos locaux sont situés dans le quartier de Part-Dieu, idéal pour l’accessibilité !
+Prise en charge de la totalité des évènements par l’entreprise (séminaires, sorties de sport mensuelles, afterworks, etc.)
+
+Pour candidater
+Si tu te reconnais dans l’offre, on sera ravis de découvrir ton profil ! Pour postuler, partage-nous ton CV, tes motivations, ton Git et quelques projets personnels si tu en as :) Par mail sur recrutement[a]axopen.com ou via notre site https://www.axopen.com/jobs/ !
+Pour que tu saches dans quoi tu t’embarques en postulant, voilà notre  processus de recrutement :
+
+1er entretien : Une visio pour découvrir ton parcours, échanger sur tes motivations et répondre à tes questions sur AXOPEN
+2ème entretien : Une rencontre avec un expert technique chez AXOPEN pour parler tech, coder quelques lignes et découvrir nos locaux !
+
+À bientôt !
+Type d'emploi : CDI, Temps plein
+Salaire : 27 000,00€ à 34 000,00€ par an
 Avantages :
 
-Horaires flexibles
+Épargne salariale
 Prise en charge du transport quotidien
-Travail à domicile occasionnel
+Titre-restaurant
 
 Programmation :
 
 Du lundi au vendredi
-Horaires flexibles
+Travail en journée
 
-Lieu du poste : Télétravail hybride (Champagne-au-Mont-d'Or (69))",indeed
-Développeur Front-End H/F,Apprenticeship,Net Square Digital,Télétravail,"Nous recherchons un développeur Front-End (H/F) talentueux pour rejoindre notre équipe. En tant que développeur Front-End, vous serez responsable de la création d'interfaces utilisateur attrayantes et fonctionnelles pour nos applications web. Vous travaillerez en étroite collaboration avec notre équipe de développement pour concevoir et mettre en œuvre des solutions innovantes.
+Types de primes et de gratifications :
+
+Primes
+
+Lieu du poste : Télétravail hybride (69006 Lyon)",indeed
+Développeur Front-End H/F,,,NET SQUARE DIGITAL,Télétravail,"Nous recherchons un développeur Front-End (H/F) talentueux pour rejoindre notre équipe. En tant que développeur Front-End, vous serez responsable de la création d'interfaces utilisateur attrayantes et fonctionnelles pour nos applications web. Vous travaillerez en étroite collaboration avec notre équipe de développement pour concevoir et mettre en œuvre des solutions innovantes.
 Responsabilités :- Développer des interfaces utilisateur interactives en utilisant les dernières technologies web- Collaborer avec l'équipe de conception pour créer des expériences utilisateur intuitives- Optimiser les performances et la vitesse des applications web- Assurer la compatibilité multi-navigateurs et multi-appareils- Participer à la planification et à l'estimation des projets
 Expérience requise :- Book avec projets visibles.
 Nous offrons un environnement de travail dynamique et stimulant, où vous aurez l'opportunité de travailler sur des projets passionnants. Nous encourageons également le développement professionnel continu et offrons des opportunités d'avancement.
@@ -601,19 +591,7 @@ Programmation :
 Travail en journée
 
 Lieu du poste : Télétravail",indeed
-Développeur site vitrine Wordpress (IT) / Freelance,Freelance,COEXYA,Lyon (69),"Construction du site web vitrine 
-Concevoir, développer, tester et documenter les fonctionnalités de la plateforme sur Wordpress
-Rendre le site web esthétiquement attrayant, mais aussi hautement fonctionnel, flexible et prêt à prendre en charge des liens de redirection à l?avenir pour la gestion de compte ainsi que la consommation et la visualisation de nos produits
-La mission du développeur consistera à faire partie de l?équipe technique en charge du développement de cette plateforme
-
- Profil candidat:
- 
-
-Bac +3/5 en informatique/ingénieur 
-Expérience de développement Wordpress vérifiables sur plusieurs réalisations différentes (au moins 2) dans un contexte professionnel
-Expérience développement de site multilingue WordPress et plug in associé (Polylang, WPML..)
-Bonne connaissance du CMS WordPress et langages de programmation correspondants (HTML, CSS, PHP et JavaScript) et utilisation de la dernière version stable WP.",indeed
-Chargé.e web et réseaux sociaux,Permanent,SOITEC,38190 Bernin,"Introduce Soitec and context of the position: 
+Chargé.e web et réseaux sociaux,,,Soitec,38190 Bernin,"Introduce Soitec and context of the position: 
  
    Soitec est une société cotée dans l’indice SBF 120 qui intervient en amont de la chaîne de valeur de la microélectronique. Nos matériaux semi-conducteurs innovants sont indispensables au fonctionnement des smartphones et au déploiement de la 5G. Ils offrent également de nombreuses opportunités pour l’automobile connectée, les véhicules électriques et autonomes et l’intelligence embarquée dans les objets connectés.
  
@@ -695,55 +673,123 @@ Chargé.e web et réseaux sociaux,Permanent,SOITEC,38190 Bernin,"Introduce Soite
 
 
  Une excellente compétence en communication écrite et orale en français et en anglais",indeed
-Rédacteur web SEO - Secteur décoration/ameublement haut de gamme (IT) / Freelance,Freelance,Freelance.com,Paris (75),"Notre client dans le secteur de l?aménagement et la décoration haut de gamme, recherche un rédacteur SEO pour une dizaine d?articles pour leur blog, afin de positionner leur site au mieux. 
+Rédacteur web SEO - Secteur décoration/ameublement haut de gamme (IT) / Freelance,,,FREELANCE.COM,Paris (75),"Notre client dans le secteur de l?aménagement et la décoration haut de gamme, recherche un rédacteur SEO pour une dizaine d?articles pour leur blog, afin de positionner leur site au mieux. 
 Thèmes de l?agencement d?intérieur et de la décoration. Quelqu?un avec un style plutôt haut de gamme et des connaissance du secteur déco/aménagement/architecture ou des expériences passées. 
 
  Full remote 
 Démarrage ASAP",indeed
-Développeur/se web Apprenti 100% télétravail,Full-time,3WRH,Télétravail,"L'entreprise :
-La société est spécialisée dans le secteur d'activité de la programmation informatique.
-Nous cherchons un/e WEB DEVELOPER pour un poste d'alternant/e 100% en télétravail.
+Développeur site vitrine Wordpress (IT) / Freelance,,,Coexya,Lyon (69),"Construction du site web vitrine 
+Concevoir, développer, tester et documenter les fonctionnalités de la plateforme sur Wordpress
+Rendre le site web esthétiquement attrayant, mais aussi hautement fonctionnel, flexible et prêt à prendre en charge des liens de redirection à l?avenir pour la gestion de compte ainsi que la consommation et la visualisation de nos produits
+La mission du développeur consistera à faire partie de l?équipe technique en charge du développement de cette plateforme
+
+ Profil candidat:
+ 
+
+Bac +3/5 en informatique/ingénieur 
+Expérience de développement Wordpress vérifiables sur plusieurs réalisations différentes (au moins 2) dans un contexte professionnel
+Expérience développement de site multilingue WordPress et plug in associé (Polylang, WPML..)
+Bonne connaissance du CMS WordPress et langages de programmation correspondants (HTML, CSS, PHP et JavaScript) et utilisation de la dernière version stable WP.",indeed
+RESPONSABLE ADJOINT SERVICE WEB F/H,,,Groupe Cargo,"8 Avenue Saint Granier, 31300 Toulouse","Holding d’un groupe toulousain d’une trentaine de sociétés (+ de 500M€ de CA, 2.800 personnes), leader sur son marché, spécialisé dans l’import, le négoce et la distribution de produits non alimentaires auprès des différents réseaux de distribution.
+Pour accompagner notre croissance, nous vous proposons d’intégrer une structure dynamique dans un cadre de travail agréable en qualité de :
+RESPONSABLE ADJOINT SERVICE WEB F/H
+Missions :
+Sous la responsabilité du Responsable e-commerce, rattaché(e) au service de la DSI du groupe Cargo, vous aurez une vision macro du portefeuille de projets. Supervisant l'équipe de chefs de projet, vous assurez le suivi des projets du groupe : sites e-commerce, sites institutionnels, applications internes, vous aurez un éventail large à gérer.
 Vos missions seront les suivantes :
+La responsabilité et la gestion des plannings de l'équipe et de la roadmap globale :
 
-Participer au développement de la plateforme de l’entreprise
-Mettre en place des tests end-to-end
-Recueillir et analyser les expressions du besoin des utilisateurs
-Rédiger et mettre à jour les spécifications fonctionnelles
-Rédiger et maintenir la documentation technique
-Être force de propositions pour les fonctionnalités
+Construction, suivi, ajustement de la roadmap projets
 
-Compétences recherchées :
 
-Maîtrise de l’intégration web avec HTML, CSS, MySQL, PHP
-Langages de programmation : Laravel, JavaScript, React
-Outil : Git
+Gestion des charges, des priorités de l'équipe.
 
-Profil requis :
 
-État d’esprit positif, orienté recherche de solutions
-Enthousiaste et impliqué/e
-Autonome, force de propositions & proactif/ve
-Humour & goût pour le développement professionnel et personnel
+Gestion des risques projets (retard, charges…)
 
-Type d'emploi : Temps plein, Alternance
+Le suivi et le management d'équipe :
+
+Management de l'équipe projet : gestion des ressources, recrutement, entretien…
+
+
+Suivi planning de l'équipe développement avec l’aide de l'équipe projet
+
+
+Suivi performances et besoins de l'équipe avec le responsable de service
+
+La gestion et le suivi des projets :
+
+Spécifications, tests, validation des projets du service avec l’aide de l'équipe projet
+
+
+Gestion des besoins et des projets filiales (15 filiales) et internes
+
+
+Suivi des indicateurs business, reporting et communication avec les filiales
+
+
+Gestion et participation à des projets multi-services / multi-filiales / inter-service et groupe
+
+
+Mise en place avec l'équipe de process, méthode de travail, documentations, cadre projet (…)
+
+
+Suivi, mise en place des outils de gestion des plannings et de gestion des projets
+
+
+Création, validation et application des process projets interne et inter-services DSI.
+
+Profil :
+
+5-10 ans minimum dans la gestion de projet (gestion de projet web serait un atout)
+
+
+Expérience significative dans le management et la gestion de projet
+
+
+Expérience dans le “multi-projets” - gestion de plusieurs projets en mm temps
+
+
+Connaissances techniques web
+
+
+Connaissances des outils du service (CMS Magento, CMS Drupal, outils de gestion de planning, Gantt…)
+
+Personnalité :
+
+Affirmé(e), capable de prendre le lead sur des sujets face à plusieurs responsables de service, capable de prendre les sujets en main et qui n’a pas peur d’exprimer sa vision
+
+
+Personne qui sait gérer le stress et la charge de travail
+
+
+Personne empathique, à l'écoute des équipes et des besoins
+
+
+Personne qui est force de proposition dans la mise en place d’organisation et process
+
+
+Personne capable de se projeter et qui va pleinement s’impliquer dans la “directive” groupe pour créer de l’unité au sein du service.
+
+
+Personne à l’aise à l’oral pour driver des réunions
+
+Type d'emploi : CDIStatut : Cadre
+Avantages :
+
+Aide au déménagement
+Crèche d'entreprise
+RTT
+
 Programmation :
 
-Du lundi au vendredi
-Repos le week-end
 Travail en journée
 
-Expérience:
+Types de primes et de gratifications :
 
-Technologies de l'information: 1 an (Optionnel)
-Développement web: 1 an (Optionnel)
-HTML5: 1 an (Optionnel)
+Primes
 
-Langue:
-
-Anglais (Optionnel)
-
-Lieu du poste : Télétravail",indeed
-Attaché(e) commercial(e) e-commerce,Full-time,123bain,"2 Chemin Du Génie, 69200 Vénissieux","NESSBY est une petite entreprise située à 69200 Vénissieux. Notre société est spécialisé dans la fourniture d'équipements de salle de bain aux style tendances et design essentiellement via le E-commerce
+Lieu du poste : En présentiel",indeed
+Attaché(e) commercial(e) e-commerce,,,123bain,"2 Chemin Du Génie, 69200 Vénissieux","NESSBY est une petite entreprise située à 69200 Vénissieux. Notre société est spécialisé dans la fourniture d'équipements de salle de bain aux style tendances et design essentiellement via le E-commerce
 Nous portons haut et fort nos valeurs, le conseil, la qualité au juste prix, le design et le service, auxquelles nous attachons tant d’importance.
 Nous recherchons des personnes qui ont démontré des résultats tangibles et qui ont un bon sens de l'organisation. Ce candidat doit posséder une connaissance approfondie de l'ensemble de la chaîne de valeur, des technologies informatiques, de ventes par Internet, du marketing multicanal et e-commerce international.
 Responsabilités :

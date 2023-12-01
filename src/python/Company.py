@@ -1,4 +1,3 @@
 class Company:
-    def __init__(self, name,description):
+    def __init__(self, name):
         self.name = name
-        self.description = description
