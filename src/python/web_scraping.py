@@ -197,9 +197,9 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
 
 
-#driver = create_driver()
-#df = create_df()
-#df = web_scrap(driver,df,urls[1],n_posts_max=45)
+driver = create_driver()
+df = create_df()
+df = web_scrap(driver,df,urls[1],n_posts_max=45)
 #save_df(df,df['source'][0])
 
 
@@ -215,5 +215,8 @@ def main_web_scraping(urls,n_posts_max = 50):
         df = web_scrap(driver,df,url,n_posts_max=n_posts_max)
         save_df(df,df['source'][0])
 
-main_web_scraping(urls_OK,45)
+#main_web_scraping(urls_OK,45)
+
+
+# to do -> rajouter la date de publication de l'offre ??? ou date de l'alimentaion dans la base de données
 
