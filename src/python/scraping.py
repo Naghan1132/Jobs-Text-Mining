@@ -32,26 +32,6 @@ def get_apec_job_links(html_source):
     return(list_link)
 
 
-# def get_hello_work_job_links(html_source):
-#     soup = BeautifulSoup(html_source, 'html.parser')
-
-#     li_result = soup.find_all('li', class_='!tw-mb-6 ')
-
-#     jobs_id = []
-#     list_link_modified = []
-
-#     for li in li_result:
-#         first_div = li.find('div', recursive=False)
-#         if first_div:
-#             id = first_div.get('id').text
-#             jobs_id.append(id)
-
-#     for id in jobs_id:
-#         link = "https://www.hellowork.com/fr-fr/emplois/"+str(id)+".html"
-#         list_link_modified.append(link)
-
-#     return(list_link_modified)
-
 
 def scrap_apec_job(html_source):
    
@@ -81,6 +61,7 @@ def scrap_apec_job(html_source):
     title = ""
     salary = ""
     expericence = ""
+    description = ""
    
     outer_div = soup.find('div', class_='col-lg-4')
     if outer_div is not None:
@@ -99,7 +80,7 @@ def scrap_apec_job(html_source):
         print(expericence)
 
     body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
-    description = ""
+    
     if body_div is not None:    
         details = body_div.find_all('p')
         for d in details:
@@ -108,7 +89,10 @@ def scrap_apec_job(html_source):
 
     print("=============")
 
-    return [title, type_job, location,source,description]
+    liste = [title, type_job,compagny, location,description,source]
+    
+    return liste
+
     
 
 
@@ -126,9 +110,11 @@ def scrap_indeed_job(html_source):
         return 
     
     title = div_title.find('span')
-    location = soup.find('div', class_='css-6z8o9s eu4oa1w0')
+    location = soup.find('div', {'data-testid':['inlineHeader-companyLocation']})
     type_job = soup.find('div', {'class':['css-tvvxwd', 'ecydgvn1']})
-
+    description = soup.find('div', {'id':['jobDescriptionText']})
+    compagny_div = soup.find('div', {'data-testid':['inlineHeader-companyName']})
+    compagny = compagny_div.find('a', {'class':['css-1f8zkg3','e19afand0']})
 
     if title:
         title = title.text.strip()
@@ -151,11 +137,25 @@ def scrap_indeed_job(html_source):
         type_job = ""
         print("Aucun emplacement trouvé.")
 
+    if compagny:
+        compagny = compagny.text.strip()
+        print(f"compagny : {compagny}")
+    else:
+        compagny = ""
+        print("Aucun emplacement trouvé.")
+
+    if description:
+        description = description.text.strip()
+        print(f"description : {description}")
+    else:
+        description = ""
+        print("Aucun emplacement trouvé.")
+
 
 
     print("\n ================== \n")
 
-    liste = [title, type_job, location, source,"description"]
+    liste = [title, type_job,compagny, location,description,source]
 
     return liste
 
@@ -163,19 +163,15 @@ def scrap_indeed_job(html_source):
 def scrap_glassdoor_job(html_source):
     
     soup = BeautifulSoup(html_source, 'html.parser')
-
+    job_header = soup.find('header', {'class':['JobDetails_jobDetailsHeaderWrapper__iHvDC JobDetails_sticky__fQ4Aq']})
+     
     source = "glassdoor"
-    compagny = soup.find('div', {'class': 'EmployerProfile_employerInfo__GaPbq'})
-    title = soup.find('div', {'class': 'JobDetails_jobTitle__Rw_gn'})
-    details = soup.find('div', {'class':['JobDetails_jobDescription__6VeBn', 'JobDetails_blurDescription__fRQYh']})
-    location = soup.find('div', {'class': 'JobDetails_location__MbnUM'})
 
-    #JobDetails_jobDescription__6VeBn JobDetails_blurDescription__fRQYh
-    if compagny:
-        compagny_text = compagny.text.strip()
-        print(f"compagny : {compagny_text}")
-    else:
-        print("Aucun emplacement trouvé.")
+    compagny = job_header.find('span', {'class': ['EmployerProfile_employerName__Xemli']})
+    title = soup.find('div', {'class': ['JobDetails_jobTitle__Rw_gn']})
+    description = soup.find('div', {'class':['JobDetails_jobDescription__6VeBn','JobDetails_blurDescription__fRQYh']})
+    location = job_header.find('div', {'class': ['JobDetails_location__MbnUM']})
+    type_job = ""
 
     if title:
         title = title.text.strip()
@@ -184,11 +180,16 @@ def scrap_glassdoor_job(html_source):
         title = ""
         print("Aucun emplacement trouvé.")
 
-    if details:
-        details = details.text.strip()
-        print(f"details : {details}")
+    if compagny:    
+        compagny = compagny.text.strip()
+        print(f"compagny : {compagny}")
     else:
-        details = ""
+        print("Aucun emplacement trouvé.")
+    if description:
+        description = description.text.strip()
+        print(f"description : {description}")
+    else:
+        description = ""
         print("Aucun emplacement trouvé.")
     if location:
         location = location.text.strip()
@@ -200,5 +201,5 @@ def scrap_glassdoor_job(html_source):
 
     print("\n ================== \n")
 
-    liste = [title, "type_job", location, source,details]
+    liste = [title,type_job,compagny,location,description,source]
     return liste
