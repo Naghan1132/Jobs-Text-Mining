@@ -114,7 +114,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
                     driver.get("https://www.indeed.com"+link)
                     html_source = driver.page_source
                     df = add_row(df,scrap_indeed_job(html_source))
-                time.sleep(2) # ajouter du temps sinon l'anti-bot detecte
+                time.sleep(3) # ajouter du temps sinon l'anti-bot detecte
             
             if n_current_posts >= n_posts_max:
                 return df
@@ -124,7 +124,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
                 suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a') 
                 # appyuer sur le bouton suivant "Plus d'offres d'emploi"
                 driver.execute_script("arguments[0].click();", suivant_button)
-                time.sleep(2) # attendre que les offres chargent
+                time.sleep(3) # attendre que les offres chargent
 
 
     elif source == "glassdoor":
@@ -198,6 +198,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
 
 #driver = create_driver()
+#df = create_df()
 #df = web_scrap(driver,df,urls[1],n_posts_max=45)
 #save_df(df,df['source'][0])
 

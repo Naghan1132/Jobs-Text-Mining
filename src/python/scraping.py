@@ -15,11 +15,8 @@ def get_linkedin_job_links(html_source):
 
 
 def get_apec_job_links(html_source):
-    # Utiliser BeautifulSoup pour traiter les données
+   
     soup = BeautifulSoup(html_source, 'html.parser')
-
-    # Vous pouvez maintenant utiliser BeautifulSoup pour extraire et manipuler les données de la page
-    # Récupérer toutes les divs avec la classe "container-result"
     container_result = soup.find_all('div', class_='container-result')
 
     divs_emplois = []
@@ -61,15 +58,37 @@ def scrap_apec_job(html_source):
         print(location)
         print(type_job)
 
-        print("=============")
+    title = ""
+    salary = ""
+    expericence = ""
+   
+    outer_div = soup.find('div', class_='col-lg-4')
+    if outer_div is not None:
+        salary_div = outer_div.find_all('div')[0]
+        experience_div = outer_div.find_all('div')[2]
+        title_div = outer_div.find_all('div')[3]
 
-    # Récupérer toutes les divs avec la classe "card-body"
-    #job_detail = soup.find('div', class_='card-body')
-    #print(job_detail)
-    #detail = job_detail.find('div', class_='details-post')
-    #print(detail)
+        # Accéder au span avec la classe txt à l'intérieur de la quatrième div
+        title = title_div.find('span').text
+        salary = salary_div.find('span').text
+        expericence = experience_div.find('span').text
 
-    return [compagny, location, type_job, source]
+        
+        print(title)
+        print(salary)
+        print(expericence)
+
+    body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
+    description = ""
+    if body_div is not None:    
+        details = body_div.find_all('p')
+        for d in details:
+            print(d.text)
+            description += d.text + " "
+
+    print("=============")
+
+    return [title, type_job, location,source,description]
     
 
 
@@ -116,7 +135,7 @@ def scrap_indeed_job(html_source):
 
     print("\n ================== \n")
 
-    liste = [title, type_job, location, source]
+    liste = [title, type_job, location, source,"description"]
 
     return liste
 

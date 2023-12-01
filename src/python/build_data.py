@@ -8,6 +8,7 @@ def create_df():
     df['type_job'] = None
     df['location'] = None
     df['source'] = None
+    df['description'] = None
 
     return df
 
