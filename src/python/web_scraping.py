@@ -12,21 +12,22 @@ from selenium.common.exceptions import NoSuchElementException
 
 
 
-urls = ["https://fr.indeed.com/jobs?q=data&l=&from=searchOnHP&vjk=a6feb24775e416a2",
-        "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=Data&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention=143687",
+
+urls = ["https://fr.indeed.com/jobs?q=Web&l=&from=searchOnHP&vjk=a6feb24775e416a2",
+        "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=Web&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention",
         "https://www.emploipublic.fr/offre-emploi/resultats-offre",
-        "https://www.emploi-territorial.fr/emploi-mobilite/?adv-search=Data",
-        "https://www.glassdoor.fr/Emploi/france-data-emplois-SRCH_IL.0,6_IN86_KO7,11.htm"]
+        "https://www.hellowork.com/fr-fr/emploi/recherche.html?k=Data&k_autocomplete=&l=&l_autocomplete=",
+        "https://www.glassdoor.fr/Emploi/france-Web-emplois-SRCH_IL.0,6_IN86_KO7,11.htm"]
 
 
-# Indeed OK (pagination OK)
-# APEC OK (pagination OK)
-# Glassdoor OK (pagination OK)
+# Indeed OK (pagination + scrapping OK)
+# APEC OK (pagination + scrapping OK)
+# Glassdoor OK (pagination + scrapping OK)
+# hello work en test
 
-
-# LinkedIn KO (compliqué à revoir)
+# LinkedIn KO (compliqué à revoir, faut se connecter etc...)
 # Emploi Public KO (pas de mots clé dans l'url)
-# Emploi Territorial (moteur de recherche très mauvais => à abandonner surement)
+# Emploi Territorial (moteur de recherche très mauvais => à abandonner)
 
 
 def create_driver():
@@ -52,10 +53,8 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         source = "indeed"
     elif "apec" in url:
         source = "apec" 
-    elif "emploi-public" in url:
-        source = "emploi-public"
-    elif "emploi-territorial" in url:
-        source = "emploi-territorial"
+    elif "hellowork" in url:
+        source = "hellowork"
     elif "glassdoor" in url:
         source = "glassdoor"
     else:
@@ -64,6 +63,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
     print("URL actuelle:", url)
 
     driver.get(url)
+
     # Attendre que la page soit complètement chargée
     driver.implicitly_wait(5)
     # Récupérer la page source (HTML) actuelle
@@ -71,7 +71,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
 
     if source == "apec":
-        # APEC scrap + pagination OK 
+
         cpt = 1
         while True:
             base_url = driver.current_url
@@ -89,9 +89,10 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
                 time.sleep(1) # ajouter du temps sinon l'anti-bot détecte
             
             if n_current_posts >= n_posts_max:
+                driver.quit()
                 return df
             else:
-                url = "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=Data&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention=143687&page="+str(cpt)
+                url = base_url+"&page="+str(cpt)
                 driver.get(url)
                 cpt += 1
                 time.sleep(2) # attendre que les offres chargent
@@ -117,6 +118,36 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
                 time.sleep(3) # ajouter du temps sinon l'anti-bot detecte
             
             if n_current_posts >= n_posts_max:
+                driver.quit()
+                return df
+            else:
+                driver.get(base_url)
+                # clicker sur la page d'après
+                suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a') 
+                # appyuer sur le bouton suivant "Plus d'offres d'emploi"
+                driver.execute_script("arguments[0].click();", suivant_button)
+                time.sleep(3) # attendre que les offres chargent
+
+    elif source == "hellowork":
+        while(True):
+            base_url = driver.current_url
+            html_source = driver.page_source
+            
+
+            links = get_linkedin_job_links(html_source)
+            n_current_posts = n_current_posts + len(links) 
+            print("nombre jobs : ",n_current_posts)
+        
+            
+            for link in links:    
+                if link is not None:
+                    driver.get("https://www.indeed.com"+link)
+                    html_source = driver.page_source
+                    df = add_row(df,scrap_indeed_job(html_source))
+                time.sleep(3) # ajouter du temps sinon l'anti-bot detecte
+            
+            if n_current_posts >= n_posts_max:
+                driver.quit()
                 return df
             else:
                 driver.get(base_url)
@@ -130,8 +161,6 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
     elif source == "glassdoor":
 
         # cliquez sur une offre => cliquez sur "Voir plus" => scrapping => cliquez sur l'offre suivante etc....
-
-        jobs = []
         
         while(True):
 
@@ -139,12 +168,12 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'li[class="JobsList_jobListItem__JBBUV"]'))
             )
 
-            time.sleep(10)
+            time.sleep(2)
 
             print(len(jobs))
 
             if len(jobs) >= n_posts_max:
-                jobs = jobs[:n_posts_max] # prends les n posts demandés
+                #jobs = jobs[:n_posts_max] # prends les n posts demandés
                 break  # Sortir de la boucle si le nombre d'offres souhaité est atteint
 
 
@@ -152,38 +181,34 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             suivant_button = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'button[data-test="load-more"]'))
             )
-            #suivant_button.click()
-            print("Suivant button clicked")
+    
             driver.execute_script("arguments[0].click();", suivant_button)
             
             # attendre que les nouvelles offres soient chargées
-            time.sleep(10)
+            time.sleep(2)
 
            
             closeButton = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="CloseButton"]'))
                 )
-            try:
-                # Trouver le bouton de la popup 
-                closeButton = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="CloseButton"]'))
-                )
-
-                # Cliquer sur le bouton de la popup
+           
+            # Trouver le bouton de la popup 
+            closeButton = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="CloseButton"]'))
+            )
+            if closeButton is not None:
+                # Cliquer sur le bouton de la popup si elle existe
                 driver.execute_script("arguments[0].click();", closeButton)
-                print("Close button clicked")
-                time.sleep(10)
-              
+                time.sleep(2)
 
-            except NoSuchElementException:
-                print("Pas de popup")
-    
-
+        # scrapper toutes les offres récupérées
         for job in jobs:
             driver.execute_script("arguments[0].click();", job) # works
             html_source = driver.page_source
             df = add_row(df,scrap_glassdoor_job(html_source))
-            #scrap_glassdoor_job(html_source)
+
+        driver.quit()
+        return df
 
     else:
         print("Source inconnue")
@@ -191,32 +216,43 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         exit()
 
 
-    driver.quit()
-    return df
 
 
 
 
-driver = create_driver()
-df = create_df()
-df = web_scrap(driver,df,urls[1],n_posts_max=45)
-#save_df(df,df['source'][0])
+
+def build_url_job_research(job_name):
+    urls = ["https://fr.indeed.com/jobs?q=JobToInput&l=&from=searchOnHP&vjk=a6feb24775e416a2",
+        "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention",
+        "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm"]
+
+    modified_urls = []
+    for url in urls:
+        modified_url = url.replace("JobToInput", job_name)
+        modified_urls.append(modified_url)
+
+    return modified_urls
 
 
-urls_OK = ["https://fr.indeed.com/jobs?q=data&l=&from=searchOnHP&vjk=a6feb24775e416a2",
-        "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=Data&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention=143687",
-       ]
-
-
-def main_web_scraping(urls,n_posts_max = 50):
+def main_web_scraping(job_name,n_posts_max = 50):
+    urls = build_url_job_research(job_name)
     for url in urls:
         df = create_df()
         driver = create_driver()
         df = web_scrap(driver,df,url,n_posts_max=n_posts_max)
         save_df(df,df['source'][0])
 
-#main_web_scraping(urls_OK,45)
+#main_web_scraping(job_name,45)
+
+job_name = "Web"
+urls = build_url_job_research(job_name)
+
+driver = create_driver()
+df = create_df()
+df = web_scrap(driver,df,urls[1],n_posts_max=45)
+save_df(df,df['source'][0])
 
 
 # to do -> rajouter la date de publication de l'offre ??? ou date de l'alimentaion dans la base de données
+# tester si il n'y a pas ou plus de job !
 

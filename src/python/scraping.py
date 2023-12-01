@@ -32,6 +32,26 @@ def get_apec_job_links(html_source):
     return(list_link)
 
 
+# def get_hello_work_job_links(html_source):
+#     soup = BeautifulSoup(html_source, 'html.parser')
+
+#     li_result = soup.find_all('li', class_='!tw-mb-6 ')
+
+#     jobs_id = []
+#     list_link_modified = []
+
+#     for li in li_result:
+#         first_div = li.find('div', recursive=False)
+#         if first_div:
+#             id = first_div.get('id').text
+#             jobs_id.append(id)
+
+#     for id in jobs_id:
+#         link = "https://www.hellowork.com/fr-fr/emplois/"+str(id)+".html"
+#         list_link_modified.append(link)
+
+#     return(list_link_modified)
+
 
 def scrap_apec_job(html_source):
    
@@ -158,23 +178,27 @@ def scrap_glassdoor_job(html_source):
         print("Aucun emplacement trouvé.")
 
     if title:
-        title_text = title.text.strip()
-        print(f"title : {title_text}")
+        title = title.text.strip()
+        print(f"title : {title}")
     else:
+        title = ""
         print("Aucun emplacement trouvé.")
 
     if details:
-        details_text = details.text.strip()
-        print(f"details : {details_text}")
+        details = details.text.strip()
+        print(f"details : {details}")
     else:
+        details = ""
         print("Aucun emplacement trouvé.")
-
     if location:
-        location_text = location.text.strip()
-        print(f"location : {location_text}")
+        location = location.text.strip()
+        print(f"location : {location}")
     else:
+        location = ""
         print("Aucun emplacement trouvé.")
-    
     
 
     print("\n ================== \n")
+
+    liste = [title, "type_job", location, source,details]
+    return liste
