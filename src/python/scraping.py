@@ -1,30 +1,22 @@
 from bs4 import BeautifulSoup
+from scrap_description import *
 import time
 
 def get_linkedin_job_links(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
-    
-    # Trouver toutes les balises <h2> avec les classes spécifiées
-    h2_tags = soup.find_all('h2', class_=['jobTitle', 'jobTitle-newJob', 'css-mr1oe7', 'eu4oa1w0'])
-
-    # Extraire les liens des balises <a> à partir des balises <h2>
-    list_links = [h.find('a')['href'] if h.find('a') else None for h in h2_tags]
-
-    return list_links
+    h2_tags = soup.find_all('h2', class_=['jobTitle', 'css-mr1oe7', 'eu4oa1w0'])
+    list_id = [h.find('a')['data-jk'] if h.find('a') else None for h in h2_tags]
+    return list_id
 
 
 
 def get_apec_job_links(html_source):
-   
     soup = BeautifulSoup(html_source, 'html.parser')
     container_result = soup.find_all('div', class_='container-result')
-
     divs_emplois = []
-
     for div_container in container_result:
         divs = div_container.find_all('div', recursive=False)[:-1] # sauf le dernier toujours un None
         divs_emplois.extend(divs)
-
     list_link = []
     for emploi in divs_emplois:
          lien = emploi.find('a')['href'] if emploi.find('a') else None
@@ -87,6 +79,9 @@ def scrap_apec_job(html_source):
             #print(d.text)
             description += d.text + " "
 
+    if description != "":
+        scrap_description_apec(description,["salary","type_job"])
+
     print("=============")
 
     liste = [title, type_job,salary,compagny, location,description,source]
@@ -115,14 +110,23 @@ def scrap_indeed_job(html_source):
     infos_widget = soup.find_all('div', {'class':['css-tvvxwd', 'ecydgvn1']})
     print(infos_widget)
     description = soup.find('div', {'id':['jobDescriptionText']})
+    details_post = soup.find('div',{'id': ['jobDetailsSection']})
     compagny_div = soup.find('div', {'data-testid':['inlineHeader-companyName']})
     compagny = compagny_div.find('a', {'class':['css-1f8zkg3','e19afand0']})
     salary_div = soup.find('div', {'id':['salaryInfoAndJobType']})
     salary = ""
     type_job = ""
-
+    skills = ""
+    skills_ul = soup.find('ul',{'class':['js-match-insights-provider-bcv69m','eu4oa1w0']})
+    print(skills_ul)
+    if skills_ul is not None:
+        skills = skills_ul.find('li')
+        print(skills)
+    
+    #print(skills_ul.find_all('li'))
     print(salary)
     print(type_job)
+    print(skills)
     if title:
         title = title.text.strip()
         print(f"title : {title}")
@@ -153,7 +157,15 @@ def scrap_indeed_job(html_source):
 
     if description:
         description = description.text.strip()
-        #print(f"description : {description}")
+        fields_to_find = []
+        if not salary:
+            fields_to_find.append("salary")
+        if not type_job:
+            fields_to_find.append("type_job")
+        if not skills_ul:
+            fields_to_find.append("skills")
+            
+        scrap_description_indeed(description,["salary","type_job"])
     else:
         description = ""
         print("Aucun emplacement trouvé.")
@@ -181,6 +193,8 @@ def scrap_glassdoor_job(html_source):
     # Recherchez le paragraphe contenant "Type d'emploi"
     type_job = soup.find('p', text=lambda t: t and "Type d'emploi" in t)
     salaire = soup.find('p', text=lambda t: t and "Salaire" in t)
+    skills = soup.find('p', text=lambda t: t and "Compétences" in t)
+
 
     if type_job:
         type_job = type_job.text.strip()
@@ -206,9 +220,23 @@ def scrap_glassdoor_job(html_source):
         print(f"compagny : {compagny}")
     else:
         print("Aucun emplacement trouvé.")
+    if skills:    
+        skills = skills.text.strip()
+        print(f"skills : {skills}")
+    else:
+        print("Aucun emplacement trouvé.")
+
     if description:
         description = description.text.strip()
-        #print(f"description : {description}")
+        fields_to_find = []
+        if not salaire:
+            fields_to_find.append("salary")
+        if not type_job:
+            fields_to_find.append("type_job")
+        if not skills:
+            fields_to_find.append("type_job")
+            
+        scrap = scrap_description_glassdoor(description,fields_to_find)
     else:
         description = ""
         print("Aucun emplacement trouvé.")
