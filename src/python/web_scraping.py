@@ -164,28 +164,30 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
             driver.execute_script("arguments[0].click();", cookies)
 
-            # appuyer sur 
             base_url = driver.current_url
             html_source = driver.page_source
             
-
             links = get_pole_job_links(html_source)
             if links is None:
                 driver.quit()
                 return df
-            
+            print(links)
+            n_current_posts = n_current_posts + len(links) 
+
+            if n_current_posts >= n_posts_max:
+                driver.quit()
+                return df
+     
             for link in links:    
                     if link is not None:
                         u = "https://candidat.pole-emploi.fr/offres/recherche/detail/"+link
                         driver.get(u)
-                        time.sleep(2)
+                        time.sleep(1)
                         html_source = driver.page_source
-                        df = add_row(df,scrap_pole_job(html_source))
-                    time.sleep(1) # ajouter du temps sinon l'anti-bot détecte
+                        #df = add_row(df,scrap_pole_job(html_source))
 
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
-
 
 
     elif source == "indeed":

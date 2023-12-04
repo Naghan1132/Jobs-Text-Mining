@@ -25,18 +25,15 @@ def get_apec_job_links(html_source):
 
 def get_pole_job_links(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
-    
     li = soup.find_all('li', {'data-id-offre': True})
-    
     data_id_offre_list = [item['data-id-offre'] for item in li]
-    
-    print(data_id_offre_list)
     return data_id_offre_list
 
 def scrap_pole_job(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
-    print(soup)
-    
+    title = soup.find('span', {'itemprop':['title']}) 
+    print(title.text)
+
 def scrap_apec_job(html_source):
    
     soup = BeautifulSoup(html_source, 'html.parser')
