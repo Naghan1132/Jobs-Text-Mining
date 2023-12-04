@@ -25,7 +25,8 @@ def build_url_job_research(job_name):
     urls = ["https://fr.indeed.com/jobs?q=JobToInput&l=France",
         "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention=143687",
         "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm",
-        "https://www.hellowork.com/fr-fr/emploi/recherche.html?k=JobToInput"]
+        "https://www.hellowork.com/fr-fr/emploi/recherche.html?k=JobToInput",
+        "https://candidat.pole-emploi.fr/offres/recherche?motsCles=JobToInput&offresPartenaires=true&rayon=10&tri=0"]
 
     cpt = 0
     modified_urls = []
@@ -58,7 +59,9 @@ def build_url_job_research(job_name):
             if match:
                 # Remplacer la valeur par la nouvelle valeur
                 modified_url = re.sub(r',\d+\.htm', f',{nombre_caracteres}.htm', modified_url)
-
+        elif cpt==4:
+            job_name_modified = job_name.replace(" ", "-")
+            modified_url = url.replace("JobToInput",job_name_modified)
 
         
         modified_urls.append(modified_url)
@@ -94,6 +97,8 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         source = "glassdoor"
     elif "hellowork" in url:
         source = "hellowork"
+    elif "pole-emploi" in url:
+        source = "pole_emploi"
     else:
         source = "unknown"
 
@@ -147,6 +152,37 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             if links is None:
                 driver.quit()
                 return df
+            n_current_posts = n_current_posts + len(links) 
+            print("nombre jobs : ",n_current_posts)
+
+    elif source == "pole_emploi":
+        while True:
+
+            cookies = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="footer_tc_privacy_button_2"]'))
+            )
+
+            driver.execute_script("arguments[0].click();", cookies)
+
+            # appuyer sur 
+            base_url = driver.current_url
+            html_source = driver.page_source
+            
+
+            links = get_pole_job_links(html_source)
+            if links is None:
+                driver.quit()
+                return df
+            
+            for link in links:    
+                    if link is not None:
+                        u = "https://candidat.pole-emploi.fr/offres/recherche/detail/"+link
+                        driver.get(u)
+                        time.sleep(2)
+                        html_source = driver.page_source
+                        df = add_row(df,scrap_pole_job(html_source))
+                    time.sleep(1) # ajouter du temps sinon l'anti-bot détecte
+
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
 
@@ -256,13 +292,15 @@ def main_web_scraping(job_name,n_posts_max = 50):
 
 #main_web_scraping(job_name,45)
 
-job_name = "Data Scientist"
+job_name = "Data"
 urls = build_url_job_research(job_name)
 
 driver = create_driver()
 df = create_df()
-df = web_scrap(driver,df,urls[0],n_posts_max=2)
+df = web_scrap(driver,df,urls[4],n_posts_max=2)
 save_df(df,df['source'][0])
+
+
 
 
 # to do -> rajouter la date de publication de l'offre ??? ou date de l'alimentaion dans la base de données
@@ -272,3 +310,9 @@ save_df(df,df['source'][0])
 # ajouter type_job et salaire pour Indeed !!!
 # extraire les compétences avec une recherche dans la description comme pour le salaire indeed etc...
 # probleme de concatenation de texte dans glassdoor (quelques fois) => Type post : CadreSalaire : 30k    
+
+
+
+
+# web scrap pole emploi
+# https://candidat.pole-emploi.fr/offres/recherche?motsCles=Data&offresPartenaires=true&rayon=10&tri=0
