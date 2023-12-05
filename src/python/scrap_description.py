@@ -34,6 +34,13 @@ def scrap_description_glassdoor(texte,fields_to_find):
     print(extract_salary_re(texte,language))
     print(get_tokens(texte,language))
 
+def scrap_description_pole_emploi(texte,fields_to_find):
+    #print(f"description : {texte}")
+    language = detect_language(texte)
+    #print(extract_salary_re(texte,language))
+
+    return get_tokens(texte,language)
+
 
 def extract_salary_re(text,language):
     # Utilisez une expression régulière pour extraire le salaire

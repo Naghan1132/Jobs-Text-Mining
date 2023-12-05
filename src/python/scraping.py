@@ -36,23 +36,18 @@ def scrap_pole_job(html_source):
 
     title = soup.find('span', {'itemprop':['title']}) 
     title = title.text if title else ""
-    print(title)
 
     compagny = soup.find('h3',{'class':['t4','title']})
     compagny = compagny.text if compagny else ""
 
     postal_code = soup.find('span',{'itemprop':['postalCode']})
     postal_code = postal_code.get('content', '')
-    #print(postal_code)
     locality = soup.find('span',{'itemprop':['addressLocality']})
     locality = locality.get('content', '')
-    #print(locality)
     region = soup.find('span',{'itemprop':['addressRegion']})
     region = region.get('content', '')
-    #print(region)
     country = soup.find('span',{'itemprop':['addressCountry']})
     country = country.get('content', '')
-    #print(country)
 
     location = soup.find('span',{'itemprop':['name']})
     
@@ -65,6 +60,8 @@ def scrap_pole_job(html_source):
     description_div = soup.find('div',{'itemprop':['description']})
     description = description_div.find('p').text if description_div else ""
 
+    description = scrap_description_pole_emploi(description,["salary","type_job"])
+
     dd_element = soup.select_one('dl.icon-group dd') 
         # Vérifie si la balise <dd> a été trouvée
     if dd_element:
@@ -72,8 +69,6 @@ def scrap_pole_job(html_source):
         type_job = dd_element.get_text(separator='\n', strip=True).split('\n', 1)[0]
     else:
         type_job = ""
-
-    print(type_job)
 
     salary_container = soup.find('ul', {'style': 'list-style-type: none; margin:0; padding: 0'})
 
@@ -85,13 +80,16 @@ def scrap_pole_job(html_source):
     else:
         salary = ""
 
-    skills = skills = soup.find('span', {'itemprop':['skills']})
-    skills = skills.text if skills else ""
-    print(skills)
-    print(salary)
+
+    skills_elements = soup.find_all('span', {'itemprop': 'skills'})
+    skills = [skills.text.strip() for skills in skills_elements]
+    
     global_location = postal_code + " " + locality + " " + region + " " + country
+
+    print(title)
+    print(type_job)
+    print(skills)
     print(global_location)
-    print(compagny)
     print("======")
 
     return [title,type_job,salary,compagny,global_location,description,"pole_emploi"]

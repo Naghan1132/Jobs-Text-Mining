@@ -17,6 +17,7 @@ from selenium.common.exceptions import NoSuchElementException
 # APEC OK (pagination + scrapping OK)
 # Glassdoor OK (pagination + scrapping OK)
 # hello work en test
+# Pole Emploi OK (pagination + scrapping OK)
 
 # LinkedIn KO (compliqué à revoir, faut se connecter etc...)
 # Emploi Public KO (pas de mots clé dans l'url)
