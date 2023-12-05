@@ -142,6 +142,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
                 return df
             else:
                 #url = base_url+"&page="+str(cpt)
+                #test
                 #typesConvention=143687&typesConvention=143706&selectedIndex=13&page=0
                 # pb de ça !! c'est le numéro des emplois, alors il faut ajouter 19 à chaue fois surement
 
