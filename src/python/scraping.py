@@ -80,10 +80,12 @@ def scrap_pole_job(html_source):
     
     global_location = postal_code + " " + locality + " " + region + " " + country
 
+    date = soup.find_all('span', {'itemprop': 'datePosted'})
     print(title)
     print(type_job)
     print(skills)
     print(global_location)
+    print("date : ",date)
     print("======")
 
     return [title,type_job,salary,compagny,global_location,description,"pole_emploi"]
@@ -187,6 +189,8 @@ def scrap_indeed_job(html_source):
     if type_job != "" and type_job is not None:
         type_job = type_job.text
 
+    date = soup.find('span', {'class': ['date']})
+    print("date : ",date)
 
     # régler les skills !
     skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
@@ -291,7 +295,7 @@ def scrap_glassdoor_job(html_source):
         if not skills:
             fields_to_find.append("type_job")
             
-        scrap = scrap_description_glassdoor(description,fields_to_find)
+        #scrap = scrap_description_glassdoor(description,fields_to_find)
     else:
         description = ""
         print("Aucun emplacement trouvé.")
@@ -302,6 +306,8 @@ def scrap_glassdoor_job(html_source):
         location = ""
         print("Aucun emplacement trouvé.")
     
+    date = soup.find('div', {'data-test': ['job-age']})
+    print("date : ",date)
 
     print("\n ================== \n")
 

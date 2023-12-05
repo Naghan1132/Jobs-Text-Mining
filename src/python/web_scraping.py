@@ -286,7 +286,7 @@ urls = build_url_job_research(job_name)
 
 driver = create_driver()
 df = create_df()
-df = web_scrap(driver,df,urls[1],n_posts_max=45)
+df = web_scrap(driver,df,urls[3],n_posts_max=45)
 save_df(df,df['source'][0])
 
 
