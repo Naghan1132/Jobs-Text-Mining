@@ -86,11 +86,7 @@ def create_driver():
 
 
 
-def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
-
-    if(n_current_posts == n_posts_max):
-        return
-    
+def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):    
     if "indeed" in url:
         source = "indeed"
     elif "apec" in url:
@@ -144,7 +140,6 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         cookies = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="footer_tc_privacy_button_2"]'))
             )
-
         if cookies is not None:
             driver.execute_script("arguments[0].click();", cookies)
             time.sleep(2)

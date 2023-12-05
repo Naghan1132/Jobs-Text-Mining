@@ -116,9 +116,14 @@ def scrap_apec_job(html_source):
 
     title = ""
     salary = ""
-    experience = ""
     description = ""
-   
+    skills = ""
+    experience = ""
+    date = "" # OK
+    
+    date = soup.find('div',{'class':['date-offre']}).text
+    print("date : ",date)
+
     outer_div = soup.find('div', class_='col-lg-4')
     if outer_div is not None:
         salary_div = outer_div.find_all('div')[0]
@@ -129,8 +134,10 @@ def scrap_apec_job(html_source):
         salary = salary_div.find('span').text # OK
         experience = experience_div.find('span').text
 
+    
 
-    body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
+
+    body_div = soup.find('div',{'class':['col-lg-8', 'border-L']})
     if body_div is not None:
         skills = soup.find_all('div', {'class':['added-skills-manager__knowledge','mb-0']}) 
         #print(skills)
