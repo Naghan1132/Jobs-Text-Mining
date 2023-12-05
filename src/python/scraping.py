@@ -29,10 +29,72 @@ def get_pole_job_links(html_source):
     data_id_offre_list = [item['data-id-offre'] for item in li]
     return data_id_offre_list
 
+
+
 def scrap_pole_job(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
+
     title = soup.find('span', {'itemprop':['title']}) 
-    print(title.text)
+    title = title.text if title else ""
+    print(title)
+
+    compagny = soup.find('h3',{'class':['t4','title']})
+    compagny = compagny.text if compagny else ""
+
+    postal_code = soup.find('span',{'itemprop':['postalCode']})
+    postal_code = postal_code.get('content', '')
+    #print(postal_code)
+    locality = soup.find('span',{'itemprop':['addressLocality']})
+    locality = locality.get('content', '')
+    #print(locality)
+    region = soup.find('span',{'itemprop':['addressRegion']})
+    region = region.get('content', '')
+    #print(region)
+    country = soup.find('span',{'itemprop':['addressCountry']})
+    country = country.get('content', '')
+    #print(country)
+
+    location = soup.find('span',{'itemprop':['name']})
+    
+    
+    postal_code = postal_code if postal_code else ""
+    locality = locality if locality else ""
+    region = region if region else ""
+    country = country if country else ""
+
+    description_div = soup.find('div',{'itemprop':['description']})
+    description = description_div.find('p').text if description_div else ""
+
+    dd_element = soup.select_one('dl.icon-group dd') 
+        # Vérifie si la balise <dd> a été trouvée
+    if dd_element:
+        # Récupère le texte de la balise <dd> jusqu'à la balise <br/>
+        type_job = dd_element.get_text(separator='\n', strip=True).split('\n', 1)[0]
+    else:
+        type_job = ""
+
+    print(type_job)
+
+    salary_container = soup.find('ul', {'style': 'list-style-type: none; margin:0; padding: 0'})
+
+    # Vérifie si la balise <ul> a été trouvée
+    if salary_container:
+        # Récupère toutes les valeurs des éléments <li> sous la balise <ul>
+        salary = [li.text.strip() for li in salary_container.find_all('li')]
+        salary = ', '.join(salary)
+    else:
+        salary = ""
+
+    skills = skills = soup.find('span', {'itemprop':['skills']})
+    skills = skills.text if skills else ""
+    print(skills)
+    print(salary)
+    global_location = postal_code + " " + locality + " " + region + " " + country
+    print(global_location)
+    print(compagny)
+    print("======")
+
+    return [title,type_job,salary,compagny,global_location,description,"pole_emploi"]
 
 def scrap_apec_job(html_source):
    

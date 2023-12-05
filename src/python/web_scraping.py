@@ -12,6 +12,7 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
 
+
 # Indeed OK (pagination + scrapping OK)
 # APEC OK (pagination + scrapping OK)
 # Glassdoor OK (pagination + scrapping OK)
@@ -59,6 +60,7 @@ def build_url_job_research(job_name):
             if match:
                 # Remplacer la valeur par la nouvelle valeur
                 modified_url = re.sub(r',\d+\.htm', f',{nombre_caracteres}.htm', modified_url)
+                
         elif cpt==4:
             job_name_modified = job_name.replace(" ", "-")
             modified_url = url.replace("JobToInput",job_name_modified)
@@ -155,39 +157,50 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
 
-    elif source == "pole_emploi":
-        while True:
 
-            cookies = WebDriverWait(driver, 10).until(
+    elif source == "pole_emploi":
+        cookies = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="footer_tc_privacy_button_2"]'))
             )
 
+        if cookies is not None:
             driver.execute_script("arguments[0].click();", cookies)
-
+            time.sleep(2)
+        while True:
+        
             base_url = driver.current_url
             html_source = driver.page_source
             
             links = get_pole_job_links(html_source)
+        
             if links is None:
                 driver.quit()
                 return df
+            
             print(links)
-            n_current_posts = n_current_posts + len(links) 
-
-            if n_current_posts >= n_posts_max:
-                driver.quit()
-                return df
-     
+        
             for link in links:    
                     if link is not None:
                         u = "https://candidat.pole-emploi.fr/offres/recherche/detail/"+link
                         driver.get(u)
                         time.sleep(1)
                         html_source = driver.page_source
-                        #df = add_row(df,scrap_pole_job(html_source))
-
+                        df = add_row(df,scrap_pole_job(html_source))
+                      
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
+
+            if n_current_posts >= n_posts_max:
+                driver.quit()
+                return df
+            else:
+                #bouton suivant
+                # Trouve le bouton par son attribut name
+                #suivant_button = driver.find_element(By.CSS_SELECTOR,"button[class='btn btn-primary']")
+                suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+                driver.execute_script("arguments[0].click();", suivant_button)
+                time.sleep(3) # attendre que les offres chargent
+
 
 
     elif source == "indeed":
@@ -299,7 +312,7 @@ urls = build_url_job_research(job_name)
 
 driver = create_driver()
 df = create_df()
-df = web_scrap(driver,df,urls[4],n_posts_max=2)
+df = web_scrap(driver,df,urls[4],n_posts_max=45)
 save_df(df,df['source'][0])
 
 
