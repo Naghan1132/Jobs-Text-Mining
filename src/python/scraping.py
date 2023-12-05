@@ -115,9 +115,9 @@ def scrap_apec_job(html_source):
         if len(li_elements) >= 3:
             location = li_elements[2].text
 
-        print(compagny)
-        print(location)
-        print(type_job)
+        #print(compagny)
+        #print(location)
+        ##print(type_job)##
 
     title = ""
     salary = ""
@@ -136,20 +136,24 @@ def scrap_apec_job(html_source):
         expericence = experience_div.find('span').text
 
         
-        print(title)
-        print(salary)
-        print(expericence)
+        #print(title)
+        #print(salary)
+        #print(expericence)
+
+    
 
     body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
-    
-    if body_div is not None:    
+    if body_div is not None:
+        skills = soup.find_all('div', {'class':['added-skills-manager__knowledge','mb-0']}) 
+        #print(skills)
+
         details = body_div.find_all('p')
         for d in details:
-            #print(d.text)
             description += d.text + " "
 
     if description != "":
-        scrap_description_apec(description,["salary","type_job"])
+        #scrap_description_apec(description,["salary","type_job"])
+        pass
 
     print("=============")
 
@@ -171,7 +175,7 @@ def scrap_indeed_job(html_source):
 
     location = soup.find('div', {'data-testid':['inlineHeader-companyLocation']}) 
     description = soup.find('div', {'id':['jobDescriptionText']})
-    
+
     compagny_div = soup.find('div', {'data-testid':['inlineHeader-companyName']})
     compagny = compagny_div.find('a', {'class':['css-1f8zkg3','e19afand0']})
     salary = ""
@@ -189,6 +193,7 @@ def scrap_indeed_job(html_source):
         type_job = type_job.text
 
 
+    # régler les skills !
     skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
 
     print("salaire : ",salary)

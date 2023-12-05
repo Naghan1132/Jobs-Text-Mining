@@ -17,10 +17,10 @@ from langdetect import detect
 
 def scrap_description_apec(texte,fields_to_find):
     # déterminer la langue du post !!!      
-    print(f"description : {texte}")
+    #print(f"description : {texte}")
     language = detect_language(texte)
-    print(extract_salary_re(texte,language))
-    print(get_tokens(texte,language))
+    #print(extract_salary_re(texte,language))
+    #print(get_tokens(texte,language))
 
 def scrap_description_indeed(texte,fields_to_find):
     print(f"description : {texte}")

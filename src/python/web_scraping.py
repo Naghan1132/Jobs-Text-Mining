@@ -25,7 +25,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 def build_url_job_research(job_name):
     urls = ["https://fr.indeed.com/jobs?q=JobToInput&l=France",
-        "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention=143687",
+        "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput",
         "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm",
         "https://candidat.pole-emploi.fr/offres/recherche?motsCles=JobToInput&offresPartenaires=true&rayon=10&tri=0"]
 
@@ -108,26 +108,30 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
     # Attendre que la page soit complètement chargée
     driver.implicitly_wait(5)
+    time.sleep(3)
     # Récupérer la page source (HTML) actuelle
     html_source = driver.page_source
 
 
     if source == "apec":
-
         cpt = 1
         while True:
             base_url = driver.current_url
             html_source = driver.page_source
-            links = get_apec_job_links(html_source)        
+            links = get_apec_job_links(html_source)     
+
             if links is None:
                 driver.quit()
                 return df
+            print(links)
+            
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
             
             for link in links:    
                 if link is not None:
                     driver.get("https://www.apec.fr"+link)
+                    print(link)
                     time.sleep(2)
                     html_source = driver.page_source
                     df = add_row(df,scrap_apec_job(html_source))
@@ -137,10 +141,25 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
                 driver.quit()
                 return df
             else:
-                url = base_url+"&page="+str(cpt)
-                driver.get(url)
-                cpt += 1
-                time.sleep(2) # attendre que les offres chargent
+                #url = base_url+"&page="+str(cpt)
+                #typesConvention=143687&typesConvention=143706&selectedIndex=13&page=0
+                # pb de ça !! c'est le numéro des emplois, alors il faut ajouter 19 à chaue fois surement
+
+                # OU ALORS JSUTE CLIUER SUR 'OFFRE SUIVANTE' VIA LE POST CA MARCHE
+
+                # ou alors juste appuyer sur page-link  
+                #suivant_button = driver.find_element(By.CSS_SELECTOR, "a.page-link")
+                driver.get(base_url)
+                suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[class="page-   link"]') 
+                driver.execute_script("arguments[0].click();", suivant_button)
+                time.sleep(3) # attendre que les offres chargent
+                #print(url)
+                #driver.get(url)
+                #cpt += 1
+                #time.sleep(2) # attendre que les offres chargent
+
+            # régler le scrapping de type_job et location,ça s'inverse 
+            # et aussi régler probleme pagination, enfin page suivante quoi
 
     elif source == "pole_emploi":
         cookies = WebDriverWait(driver, 10).until(
@@ -293,7 +312,7 @@ urls = build_url_job_research(job_name)
 
 driver = create_driver()
 df = create_df()
-df = web_scrap(driver,df,urls[0],n_posts_max=45)
+df = web_scrap(driver,df,urls[1],n_posts_max=45)
 save_df(df,df['source'][0])
 
 
