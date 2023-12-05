@@ -114,53 +114,31 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
 
     if source == "apec":
-        cpt = 1
-        while True:
-            base_url = driver.current_url
+
+        base_url = driver.current_url
+        html_source = driver.page_source
+        link = get_first_apec_job_link(html_source)     
+
+        if link is None:
+            driver.quit()
+            return df
+        else:
+            driver.get("https://www.apec.fr"+link)
+            time.sleep(2)
             html_source = driver.page_source
-            links = get_apec_job_links(html_source)     
+            df = add_row(df,scrap_apec_job(html_source))
+                
 
-            if links is None:
-                driver.quit()
-                return df
-            print(links)
+        while n_current_posts < n_posts_max:
+            suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[class="nextpage"]') 
+            driver.execute_script("arguments[0].click();", suivant_button)
+            time.sleep(2) # attendre que les offres chargent
+            html_source = driver.page_source
+            df = add_row(df,scrap_apec_job(html_source))
+            n_current_posts += 1
             
-            n_current_posts = n_current_posts + len(links) 
-            print("nombre jobs : ",n_current_posts)
-            
-            for link in links:    
-                if link is not None:
-                    driver.get("https://www.apec.fr"+link)
-                    print(link)
-                    time.sleep(2)
-                    html_source = driver.page_source
-                    df = add_row(df,scrap_apec_job(html_source))
-                time.sleep(1) # ajouter du temps sinon l'anti-bot détecte
-            
-            if n_current_posts >= n_posts_max:
-                driver.quit()
-                return df
-            else:
-                #url = base_url+"&page="+str(cpt)
-                #test
-                #typesConvention=143687&typesConvention=143706&selectedIndex=13&page=0
-                # pb de ça !! c'est le numéro des emplois, alors il faut ajouter 19 à chaue fois surement
-
-                # OU ALORS JSUTE CLIUER SUR 'OFFRE SUIVANTE' VIA LE POST CA MARCHE
-
-                # ou alors juste appuyer sur page-link  
-                #suivant_button = driver.find_element(By.CSS_SELECTOR, "a.page-link")
-                driver.get(base_url)
-                suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[class="page-   link"]') 
-                driver.execute_script("arguments[0].click();", suivant_button)
-                time.sleep(3) # attendre que les offres chargent
-                #print(url)
-                #driver.get(url)
-                #cpt += 1
-                #time.sleep(2) # attendre que les offres chargent
-
-            # régler le scrapping de type_job et location,ça s'inverse 
-            # et aussi régler probleme pagination, enfin page suivante quoi
+        driver.quit()
+        return df
 
     elif source == "pole_emploi":
         cookies = WebDriverWait(driver, 10).until(
@@ -308,7 +286,7 @@ def main_web_scraping(job_name,n_posts_max = 50):
 
 #main_web_scraping(job_name,45)
 
-job_name = "Data Scientist"
+job_name = "Data"
 urls = build_url_job_research(job_name)
 
 driver = create_driver()

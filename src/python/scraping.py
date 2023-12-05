@@ -10,18 +10,12 @@ def get_linkedin_job_links(html_source):
 
 
 
-def get_apec_job_links(html_source):
+def get_first_apec_job_link(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
-    container_result = soup.find_all('div', class_='container-result')
-    divs_emplois = []
-    for div_container in container_result:
-        divs = div_container.find_all('div', recursive=False)[:-1] # sauf le dernier toujours un None
-        divs_emplois.extend(divs)
-    list_link = []
-    for emploi in divs_emplois:
-         lien = emploi.find('a')['href'] if emploi.find('a') else None
-         list_link.append(lien)
-    return(list_link)
+    container_result = soup.find('div', class_='container-result')
+    div = container_result.find('div') # sauf le dernier toujours un None
+    lien = div.find('a')['href'] if div.find('a') else None
+    return(lien)
 
 def get_pole_job_links(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
@@ -107,21 +101,22 @@ def scrap_apec_job(html_source):
     if head_div is not None:
         liste = head_div.find('ul')
         li_elements = liste.find_all('li') 
-  
-        if len(li_elements) >= 1:
+    
+        if len(li_elements) == 2:
+            type_job = li_elements[0].text
+            location = li_elements[1].text
+        if len(li_elements) == 3:
             compagny = li_elements[0].text
-        if len(li_elements) >= 2:
             type_job = li_elements[1].text
-        if len(li_elements) >= 3:
             location = li_elements[2].text
 
-        #print(compagny)
-        #print(location)
-        ##print(type_job)##
+        print("compagny : ",compagny) # OK
+        print("location : ",location) # OK
+        print("type job : ",type_job) # OK
 
     title = ""
     salary = ""
-    expericence = ""
+    experience = ""
     description = ""
    
     outer_div = soup.find('div', class_='col-lg-4')
@@ -130,17 +125,10 @@ def scrap_apec_job(html_source):
         experience_div = outer_div.find_all('div')[2]
         title_div = outer_div.find_all('div')[3]
 
-        # Accéder au span avec la classe txt à l'intérieur de la quatrième div
-        title = title_div.find('span').text
-        salary = salary_div.find('span').text
-        expericence = experience_div.find('span').text
+        title = title_div.find('span').text # OK
+        salary = salary_div.find('span').text # OK
+        experience = experience_div.find('span').text
 
-        
-        #print(title)
-        #print(salary)
-        #print(expericence)
-
-    
 
     body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
     if body_div is not None:
