@@ -166,80 +166,66 @@ def scrap_indeed_job(html_source):
 
     source = "indeed"
 
-    div_title = soup.find('h1', class_='jobsearch-JobInfoHeader-title')
-    
-    if  div_title is None:
-        print("NULL")
-        print("\n ================== \n")
-        return 
-    
+    div_title = soup.find('h1', class_='jobsearch-JobInfoHeader-title')   
     title = div_title.find('span')
-    location = soup.find('div', {'data-testid':['inlineHeader-companyLocation']})
 
-    infos_widget = soup.find_all('div', {'class':['css-tvvxwd', 'ecydgvn1']})
-    print(infos_widget)
+    location = soup.find('div', {'data-testid':['inlineHeader-companyLocation']}) 
     description = soup.find('div', {'id':['jobDescriptionText']})
-    details_post = soup.find('div',{'id': ['jobDetailsSection']})
+    
     compagny_div = soup.find('div', {'data-testid':['inlineHeader-companyName']})
     compagny = compagny_div.find('a', {'class':['css-1f8zkg3','e19afand0']})
-    salary_div = soup.find('div', {'id':['salaryInfoAndJobType']})
     salary = ""
     type_job = ""
-    skills = ""
-    skills_ul = soup.find('ul',{'class':['js-match-insights-provider-bcv69m','eu4oa1w0']})
-    print(skills_ul)
-    if skills_ul is not None:
-        skills = skills_ul.find('li')
-        print(skills)
+
+    # OK
+    salary_and_jobtype_header = soup.find('div', {'id':['salaryInfoAndJobType']}) 
+    if salary_and_jobtype_header is not None:
+        salary = salary_and_jobtype_header.find('span',{'class':['css-2iqe2o']})
+        type_job = salary_and_jobtype_header.find('span',{'class':['css-k5flys']})
+
+    if salary != "" and salary is not None:
+        salary = salary.text
+    if type_job != "" and type_job is not None:
+        type_job = type_job.text
+
+
+    skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
+
+    print("salaire : ",salary)
+    print("type job : ",type_job)
+    print("compétences : ",skills_div)
     
-    #print(skills_ul.find_all('li'))
-    print(salary)
-    print(type_job)
-    print(skills)
+
     if title:
         title = title.text.strip()
         print(f"title : {title}")
     else:
         title = ""
-        print("Aucun emplacement trouvé.")
 
     if location:
         location = location.text.strip()
         print(f"location : {location}")
     else:
         location = ""
-        print("Aucun emplacement trouvé.")
-    
-    if type_job:
-        type_job = type_job.text.strip()
-        print(f"type_job : {type_job}")
-    else:
-        type_job = ""
-        print("Aucun emplacement trouvé.")
-
     if compagny:
         compagny = compagny.text.strip()
         print(f"compagny : {compagny}")
     else:
         compagny = ""
-        print("Aucun emplacement trouvé.")
 
     if description:
         description = description.text.strip()
-        fields_to_find = []
-        if not salary:
-            fields_to_find.append("salary")
-        if not type_job:
-            fields_to_find.append("type_job")
-        if not skills_ul:
-            fields_to_find.append("skills")
+        # fields_to_find = []
+        # if not salary:
+        #     fields_to_find.append("salary")
+        # if not type_job:
+        #     fields_to_find.append("type_job")
+        # if not skills_ul:
+        #     fields_to_find.append("skills")
             
-        scrap_description_indeed(description,["salary","type_job"])
+        # scrap_description_indeed(description,["salary","type_job"])
     else:
         description = ""
-        print("Aucun emplacement trouvé.")
-
-
 
     print("\n ================== \n")
 

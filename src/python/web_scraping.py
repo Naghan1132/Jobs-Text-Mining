@@ -27,15 +27,15 @@ def build_url_job_research(job_name):
     urls = ["https://fr.indeed.com/jobs?q=JobToInput&l=France",
         "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput&typesConvention=143684&typesConvention=143685&typesConvention=143686&typesConvention=143687",
         "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm",
-        "https://www.hellowork.com/fr-fr/emploi/recherche.html?k=JobToInput",
         "https://candidat.pole-emploi.fr/offres/recherche?motsCles=JobToInput&offresPartenaires=true&rayon=10&tri=0"]
 
     cpt = 0
     modified_urls = []
     for url in urls:
-        if cpt == 0 or cpt == 3:
+        if cpt == 0:
             job_name_modified = job_name.replace(" ", "+")
             modified_url = url.replace("JobToInput",job_name_modified)
+
         elif cpt == 1:
             job_name_modified = job_name.replace(" ", " ") # do nothing
             modified_url = url.replace("JobToInput",job_name_modified)
@@ -62,10 +62,9 @@ def build_url_job_research(job_name):
                 # Remplacer la valeur par la nouvelle valeur
                 modified_url = re.sub(r',\d+\.htm', f',{nombre_caracteres}.htm', modified_url)
                 
-        elif cpt==4:
+        if cpt == 3:
             job_name_modified = job_name.replace(" ", "-")
             modified_url = url.replace("JobToInput",job_name_modified)
-
         
         modified_urls.append(modified_url)
         cpt = cpt + 1
@@ -98,8 +97,6 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         source = "apec" 
     elif "glassdoor" in url:
         source = "glassdoor"
-    elif "hellowork" in url:
-        source = "hellowork"
     elif "pole-emploi" in url:
         source = "pole_emploi"
     else:
@@ -145,20 +142,6 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
                 cpt += 1
                 time.sleep(2) # attendre que les offres chargent
 
-    elif source == "hellowork":
-        while True:
-            base_url = driver.current_url
-            html_source = driver.page_source
-            
-
-            links = get_linkedin_job_links(html_source)
-            if links is None:
-                driver.quit()
-                return df
-            n_current_posts = n_current_posts + len(links) 
-            print("nombre jobs : ",n_current_posts)
-
-
     elif source == "pole_emploi":
         cookies = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="footer_tc_privacy_button_2"]'))
@@ -167,8 +150,8 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         if cookies is not None:
             driver.execute_script("arguments[0].click();", cookies)
             time.sleep(2)
+
         while True:
-        
             base_url = driver.current_url
             html_source = driver.page_source
             
@@ -177,8 +160,6 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             if links is None:
                 driver.quit()
                 return df
-            
-            print(links)
         
             for link in links:    
                     if link is not None:
@@ -195,9 +176,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
                 driver.quit()
                 return df
             else:
-                #bouton suivant
-                # Trouve le bouton par son attribut name
-                #suivant_button = driver.find_element(By.CSS_SELECTOR,"button[class='btn btn-primary']")
+                #bouton page suivante
                 suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
                 driver.execute_script("arguments[0].click();", suivant_button)
                 time.sleep(3) # attendre que les offres chargent
@@ -215,6 +194,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             if links is None:
                 driver.quit()
                 return df
+            
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
     
@@ -308,12 +288,12 @@ def main_web_scraping(job_name,n_posts_max = 50):
 
 #main_web_scraping(job_name,45)
 
-job_name = "Data"
+job_name = "Data Scientist"
 urls = build_url_job_research(job_name)
 
 driver = create_driver()
 df = create_df()
-df = web_scrap(driver,df,urls[4],n_posts_max=45)
+df = web_scrap(driver,df,urls[0],n_posts_max=45)
 save_df(df,df['source'][0])
 
 
