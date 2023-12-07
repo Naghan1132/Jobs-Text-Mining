@@ -1,13 +1,15 @@
 from bs4 import BeautifulSoup
 from scrap_description import *
 import time
+from datetime import datetime, timedelta
 
-def get_linkedin_job_links(html_source):
+
+def get_indeed_job_links(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
     h2_tags = soup.find_all('h2', class_=['jobTitle', 'css-mr1oe7', 'eu4oa1w0'])
     list_id = [h.find('a')['data-jk'] if h.find('a') else None for h in h2_tags]
-    return list_id
-
+    date = soup.find_all('span', {'class': ['date']})
+    return list_id,date
 
 
 def get_first_apec_job_link(html_source):
@@ -80,7 +82,11 @@ def scrap_pole_job(html_source):
     
     global_location = postal_code + " " + locality + " " + region + " " + country
 
-    date = soup.find_all('span', {'itemprop': 'datePosted'})
+    date_spans = soup.find_all('span', {'itemprop': 'datePosted'})
+    date_span = date_spans[0]
+    date = date_span.get('content', '')
+
+
     print(title)
     print(type_job)
     print(skills)
@@ -88,7 +94,8 @@ def scrap_pole_job(html_source):
     print("date : ",date)
     print("======")
 
-    return [title,type_job,salary,compagny,global_location,description,"pole_emploi"]
+    return [title,type_job,salary,compagny,global_location,"language","skills",date,description,"pole_emploi"]
+
 
 def scrap_apec_job(html_source):
    
@@ -138,30 +145,31 @@ def scrap_apec_job(html_source):
 
     
 
-
-    body_div = soup.find('div',{'class':['col-lg-8', 'border-L']})
+   
+    body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
     if body_div is not None:
         skills = soup.find_all('div', {'class':['added-skills-manager__knowledge','mb-0']}) 
         #print(skills)
 
-        details = body_div.find_all('p')
+        details = body_div.select('p:not(.mb-20)') # pas  la dernière => useless
+
         for d in details:
             description += d.text + " "
-
+        print(description) 
     if description != "":
         #scrap_description_apec(description,["salary","type_job"])
         pass
 
     print("=============")
 
-    liste = [title, type_job,salary,compagny, location,description,source]
+    liste = [title,type_job,salary,compagny,location,"language","skills",date,description,source]
     
     return liste
 
     
 
 
-def scrap_indeed_job(html_source):
+def scrap_indeed_job(html_source,date):
 
     soup = BeautifulSoup(html_source, 'html.parser')
 
@@ -189,8 +197,10 @@ def scrap_indeed_job(html_source):
     if type_job != "" and type_job is not None:
         type_job = type_job.text
 
-    date = soup.find('span', {'class': ['date']})
-    print("date : ",date)
+
+    # ouii
+    print(date)
+    print("date : ",date.text)
 
     # régler les skills !
     skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
@@ -233,7 +243,7 @@ def scrap_indeed_job(html_source):
 
     print("\n ================== \n")
 
-    liste = [title, type_job,salary,compagny, location,description,source]
+    liste = [title,type_job,salary,compagny,location,"language","skills",date,description,source]
 
     return liste
 
@@ -245,6 +255,14 @@ def scrap_glassdoor_job(html_source):
      
     source = "glassdoor"
 
+    type_job = ""
+    salaire = ""
+    title = ""
+    compagny = ""
+    skills = ""
+    location = ""
+    description = ""
+    date = ""
     compagny = job_header.find('span', {'class': ['EmployerProfile_employerName__Xemli']})
     title = soup.find('div', {'class': ['JobDetails_jobTitle__Rw_gn']})
     description = soup.find('div', {'class':['JobDetails_jobDescription__6VeBn','JobDetails_blurDescription__fRQYh']})
@@ -254,36 +272,12 @@ def scrap_glassdoor_job(html_source):
     salaire = soup.find('p', text=lambda t: t and "Salaire" in t)
     skills = soup.find('p', text=lambda t: t and "Compétences" in t)
 
-
-    if type_job:
-        type_job = type_job.text.strip()
-        print(f"type_job : {type_job}")
-    else:
-        type_job = ""
-        print("Aucun emplacement trouvé.")
-    if salaire:
-        salaire = salaire.text.strip()
-        print(f"salaire : {salaire}")
-    else:
-        salaire = ""
-        print("Aucun emplacement trouvé.")
-    if title:
-        title = title.text.strip()
-        print(f"title : {title}")
-    else:
-        title = ""
-        print("Aucun emplacement trouvé.")
-
-    if compagny:    
-        compagny = compagny.text.strip()
-        print(f"compagny : {compagny}")
-    else:
-        print("Aucun emplacement trouvé.")
-    if skills:    
-        skills = skills.text.strip()
-        print(f"skills : {skills}")
-    else:
-        print("Aucun emplacement trouvé.")
+    
+    print(f"type_job : {type_job}")
+    print(f"salaire : {salaire}")
+    print(f"title : {title}")
+    print(f"skills : {skills}")
+    print(f"location : {location}")
 
     if description:
         description = description.text.strip()
@@ -296,20 +290,30 @@ def scrap_glassdoor_job(html_source):
             fields_to_find.append("type_job")
             
         #scrap = scrap_description_glassdoor(description,fields_to_find)
-    else:
-        description = ""
-        print("Aucun emplacement trouvé.")
-    if location:
-        location = location.text.strip()
-        print(f"location : {location}")
-    else:
-        location = ""
-        print("Aucun emplacement trouvé.")
+
     
-    date = soup.find('div', {'data-test': ['job-age']})
+    date_posted = soup.find('div', {'data-test': ['job-age']})
+    date_posted = date_posted.text if date_posted else ""
+    date_du_jour = datetime.now()
+    if "h" in date_posted:
+        # Soustrayez les heures à la date du jour
+        hours = re.findall(r'\d+', date_posted)
+        date = date_du_jour - timedelta(hours=int(hours[0]))
+    elif "j" in date_posted:
+        if "+" in date_posted:
+            # + de 30 jours (peut-être faire un autre truc)
+            days = re.findall(r'\d+', date_posted)
+            date = date_du_jour - timedelta(days=int(days[0]))
+        else:
+            days = re.findall(r'\d+', date_posted)
+            date = date_du_jour - timedelta(days=int(days[0]))
+
+
+    date = date.strftime("%Y-%m-%d")
     print("date : ",date)
 
     print("\n ================== \n")
 
-    liste = [title,type_job,salaire,compagny,location,description,source]
+
+    liste = [title,type_job,salaire,compagny,location,"language","skills",date,description,source]
     return liste

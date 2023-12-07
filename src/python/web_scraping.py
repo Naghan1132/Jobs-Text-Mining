@@ -12,7 +12,7 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
 
-
+#### RÉSUMÉ ####
 # Indeed OK (pagination + scrapping OK)
 # APEC OK (pagination + scrapping OK)
 # Glassdoor OK (pagination + scrapping OK)
@@ -24,7 +24,7 @@ from selenium.common.exceptions import NoSuchElementException
 # Emploi Territorial (moteur de recherche très mauvais => à abandonner)
 
 def build_url_job_research(job_name):
-    urls = ["https://fr.indeed.com/jobs?q=JobToInput&l=France",
+    urls = ["https://fr.indeed.com/jobs?q=JobToInput&l=France&from=searchOnHP",
         "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput",
         "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm",
         "https://candidat.pole-emploi.fr/offres/recherche?motsCles=JobToInput&offresPartenaires=true&rayon=10&tri=0"]
@@ -109,8 +109,40 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
     html_source = driver.page_source
 
 
-    if source == "apec":
+    if source == "indeed":
+        while True:
+            base_url = driver.current_url
+            html_source = driver.page_source
+            
 
+            links,dates = get_indeed_job_links(html_source)
+            if links is None:
+                driver.quit()
+                return df
+
+            n_current_posts = n_current_posts + len(links) 
+            print("nombre jobs : ",n_current_posts)
+    
+            for link in links:    
+                if link is not None:    
+                    driver.get("https://fr.indeed.com/viewjob?jk="+str(link))
+                    time.sleep(5)
+                    html_source = driver.page_source
+                    df = add_row(df,scrap_indeed_job(html_source,dates[links.index(link)]))
+                time.sleep(3) # ajouter du temps sinon l'anti-bot detecte
+            
+            if n_current_posts >= n_posts_max:
+                driver.quit()
+                return df
+            else:
+                driver.get(base_url)
+                # clicker sur la page d'après
+                suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a') 
+                # appyuer sur le bouton suivant "Plus d'offres d'emploi"
+                driver.execute_script("arguments[0].click();", suivant_button)
+                time.sleep(3) # attendre que les offres chargent
+
+    elif source == "apec":
         base_url = driver.current_url
         html_source = driver.page_source
         link = get_first_apec_job_link(html_source)     
@@ -135,82 +167,8 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             
         driver.quit()
         return df
-
-    elif source == "pole_emploi":
-        cookies = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="footer_tc_privacy_button_2"]'))
-            )
-        if cookies is not None:
-            driver.execute_script("arguments[0].click();", cookies)
-            time.sleep(2)
-
-        while True:
-            base_url = driver.current_url
-            html_source = driver.page_source
-            
-            links = get_pole_job_links(html_source)
         
-            if links is None:
-                driver.quit()
-                return df
         
-            for link in links:    
-                    if link is not None:
-                        u = "https://candidat.pole-emploi.fr/offres/recherche/detail/"+link
-                        driver.get(u)
-                        time.sleep(1)
-                        html_source = driver.page_source
-                        df = add_row(df,scrap_pole_job(html_source))
-                      
-            n_current_posts = n_current_posts + len(links) 
-            print("nombre jobs : ",n_current_posts)
-
-            if n_current_posts >= n_posts_max:
-                driver.quit()
-                return df
-            else:
-                #bouton page suivante
-                suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
-                driver.execute_script("arguments[0].click();", suivant_button)
-                time.sleep(3) # attendre que les offres chargent
-
-
-
-    elif source == "indeed":
-        
-        while True:
-            base_url = driver.current_url
-            html_source = driver.page_source
-            
-
-            links = get_linkedin_job_links(html_source)
-            if links is None:
-                driver.quit()
-                return df
-            
-            n_current_posts = n_current_posts + len(links) 
-            print("nombre jobs : ",n_current_posts)
-    
-            for link in links:    
-                if link is not None:    
-                    driver.get("https://fr.indeed.com/viewjob?jk="+str(link))
-                    time.sleep(5)
-                    html_source = driver.page_source
-                    df = add_row(df,scrap_indeed_job(html_source))
-                time.sleep(3) # ajouter du temps sinon l'anti-bot detecte
-            
-            if n_current_posts >= n_posts_max:
-                driver.quit()
-                return df
-            else:
-                driver.get(base_url)
-                # clicker sur la page d'après
-                suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a') 
-                # appyuer sur le bouton suivant "Plus d'offres d'emploi"
-                driver.execute_script("arguments[0].click();", suivant_button)
-                time.sleep(3) # attendre que les offres chargent
-
-
     elif source == "glassdoor":
 
         # cliquez sur une offre => cliquez sur "Voir plus" => scrapping => cliquez sur l'offre suivante etc....
@@ -264,6 +222,43 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         driver.quit()
         return df
 
+    elif source == "pole_emploi":
+        cookies = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="footer_tc_privacy_button_2"]'))
+            )
+        if cookies is not None:
+            driver.execute_script("arguments[0].click();", cookies)
+            time.sleep(2)
+
+        while True:
+            base_url = driver.current_url
+            html_source = driver.page_source
+            
+            links = get_pole_job_links(html_source)
+        
+            if links is None:
+                driver.quit()
+                return df
+        
+            for link in links:    
+                    if link is not None:
+                        u = "https://candidat.pole-emploi.fr/offres/recherche/detail/"+link
+                        driver.get(u)
+                        time.sleep(1)
+                        html_source = driver.page_source
+                        df = add_row(df,scrap_pole_job(html_source))
+                      
+            n_current_posts = n_current_posts + len(links) 
+            print("nombre jobs : ",n_current_posts)
+
+            if n_current_posts >= n_posts_max:
+                driver.quit()
+                return df
+            else:
+                #bouton page suivante
+                suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+                driver.execute_script("arguments[0].click();", suivant_button)
+                time.sleep(3) # attendre que les offres chargent
     else:
         print("Source inconnue")
         driver.quit()
@@ -281,12 +276,12 @@ def main_web_scraping(job_name,n_posts_max = 50):
 
 #main_web_scraping(job_name,45)
 
-job_name = "Data"
+job_name = "Data Scientist"
 urls = build_url_job_research(job_name)
 
 driver = create_driver()
 df = create_df()
-df = web_scrap(driver,df,urls[3],n_posts_max=45)
+df = web_scrap(driver,df,urls[0],n_posts_max=20)
 save_df(df,df['source'][0])
 
 
