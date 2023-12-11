@@ -18,7 +18,7 @@ def insert_observations(df, cursor):
     
         # Extract values from the DataFrame row
         title = row['title']
-        #type_job = row['type_job']
+        type_job = row['type_job']
         salary = row['salary']
         company = row['compagny']
         location = row['location']
@@ -29,14 +29,17 @@ def insert_observations(df, cursor):
         # source = row['source']
 
         # Insert Observation
-        # type_job_id_1 = insert_dimension('H_type_job', 'type_job', type_job, cursor)
+        type_job_id_1 = insert_dimension('H_type_job', 'type_job', type_job, cursor)
+        #print(f"type_job_id_1: {type_job_id_1}")
         # source_id_1 = insert_dimension('D_source', 'source', source, cursor)
         company_id_1 = insert_dimension('D_company', 'company', company, cursor)
         salary_id_1 = insert_dimension('D_salary', 'salary', salary, cursor)
         date_id_1 = insert_dimension('D_date', 'date', date, cursor)
         location_id_1 = insert_dimension('D_location', 'location', location, cursor)
         description_id_1 = insert_dimension('D_description', 'description', description, cursor)
-
+        
+        #cursor.execute("INSERT INTO D_company (type_job_id)""VALUES (?)",(type_job_id_1))
+        
         cursor.execute("INSERT INTO F_title (company_id, date_id, location_id, description_id, salary_id, title) "
                        "VALUES (?, ?, ?, ?, ?, ?)",
                        (company_id_1, date_id_1, location_id_1, description_id_1, salary_id_1, title))
