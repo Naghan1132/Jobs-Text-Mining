@@ -30,7 +30,7 @@ def create_database():
     
     cursor.execute(
         '''CREATE TABLE IF NOT EXISTS H_type_job(
-        id_type_job INTEGER PRIMARY KEY AUTOINCREMENT,
+        type_job_id INTEGER PRIMARY KEY AUTOINCREMENT,
         type_job TEXT
         )''')
         
@@ -38,8 +38,8 @@ def create_database():
         '''CREATE TABLE IF NOT EXISTS D_company (
         company_id INTEGER PRIMARY KEY AUTOINCREMENT,
         company TEXT,
-        id_type_job INTEGER, 
-        FOREIGN KEY (id_type_job) REFERENCES H_type_job(id_type_job)
+        type_job_id INTEGER, 
+        FOREIGN KEY (type_job_id) REFERENCES H_type_job(type_job_id)
         )''')
 
     cursor.execute(
