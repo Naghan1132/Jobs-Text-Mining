@@ -56,7 +56,7 @@ def create_database():
         )''')
     
     cursor.execute(
-        '''CREATE TABLE IF NOT EXISTS D_competences (
+        '''CREATE TABLE IF NOT EXISTS H_competences (
         competence_id INTEGER PRIMARY KEY AUTOINCREMENT,
         competence TEXT
         )''')
@@ -73,7 +73,9 @@ def create_database():
         description_id INTEGER PRIMARY KEY AUTOINCREMENT,
         description TEXT,
         language_id INTEGER,
-        FOREIGN KEY (language_id) REFERENCES H_language(language_id)
+        competence_id INTEGER,
+        FOREIGN KEY (language_id) REFERENCES H_language(language_id),
+        FOREIGN KEY (competence_id) REFERENCES H_competences(competence_id)
         )''')
     
     
