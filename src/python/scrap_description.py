@@ -5,7 +5,8 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from collections import Counter
 import spacy
-
+from spacy.lang.fr.stop_words import STOP_WORDS
+import string
 from langdetect import detect
 
 
@@ -86,9 +87,43 @@ def get_tokens(text,language):
     tokens = [word for word in tokens if word not in stopwords.words(language)]  # Supprimez les mots vides
     lemmatizer = WordNetLemmatizer()
     tokens = [lemmatizer.lemmatize(word) for word in tokens]  # Lemmatization
-    word_counts = Counter(tokens)
-    return word_counts
+    #word_counts = Counter(tokens)
+    text = " ".join(tokens)
+    print(text)
+    return text
 
+def preprocess_text(nlp,text):
+    # Retirer la ponctuation
+    #translator = str.maketrans(string.punctuation, " " * len(string.punctuation))
+    #text = text.translate(translator)
+
+    #text = text.strip()
+    #text = text.replace("\n", "")
+
+    # Mettre en minuscules
+    #text = text.lower()
+
+    #print(text)
+    # Tokeniser le texte avec spaCy pour retirer les stop words
+    tokens = nlp(text)
+    # Retirer les stop words
+    tokens = [token.text for token in tokens if token.text not in STOP_WORDS]
+    # Rejoindre les tokens pour former le texte prétraité
+    text_preprocessed = " ".join(tokens)
+    #print(text_preprocessed)
+    return text_preprocessed
+
+
+def get_skills(text):
+    nlp = spacy.load("fr_core_news_sm")
+    text_preprocessed = preprocess_text(nlp,text)
+    #text_preprocessed = get_tokens(text,"fr")
+    doc = nlp(text_preprocessed)
+    skills = []
+    for ent in doc.ents:
+        if ent.label_ == "MISC" or ent.label_ == "PER":
+            skills.append(ent.text)
+    return(skills)    
 
 def detect_language(text):
     try:

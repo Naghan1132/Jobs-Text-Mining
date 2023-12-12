@@ -34,7 +34,7 @@ def scrap_pole_job(html_source):
     title = title.text if title else ""
 
     compagny = soup.find('h3',{'class':['t4','title']})
-    compagny = compagny.text if compagny else ""
+    compagny = compagny.text.strip() if compagny else ""
 
     postal_code = soup.find('span',{'itemprop':['postalCode']})
     postal_code = postal_code.get('content', '')
@@ -56,13 +56,14 @@ def scrap_pole_job(html_source):
     description_div = soup.find('div',{'itemprop':['description']})
     description = description_div.find('p').text if description_div else ""
 
-    description = scrap_description_pole_emploi(description,["salary","type_job"])
+    skills = get_skills(description)
 
     dd_element = soup.select_one('dl.icon-group dd') 
         # Vérifie si la balise <dd> a été trouvée
     if dd_element:
         # Récupère le texte de la balise <dd> jusqu'à la balise <br/>
         type_job = dd_element.get_text(separator='\n', strip=True).split('\n', 1)[0]
+        type_job = type_job.strip()
     else:
         type_job = ""
 
@@ -73,12 +74,14 @@ def scrap_pole_job(html_source):
         # Récupère toutes les valeurs des éléments <li> sous la balise <ul>
         salary = [li.text.strip() for li in salary_container.find_all('li')]
         salary = ', '.join(salary)
+        salary = salary.strip()
     else:
         salary = ""
 
 
     skills_elements = soup.find_all('span', {'itemprop': 'skills'})
-    skills = [skills.text.strip() for skills in skills_elements]
+    skills2 = [skills.text.strip() for skills in skills_elements]
+
     
     global_location = postal_code + " " + locality + " " + region + " " + country
 
@@ -94,7 +97,7 @@ def scrap_pole_job(html_source):
     print("date : ",date)
     print("======")
 
-    return [title,type_job,salary,compagny,global_location,"language","skills",date,description,"pole_emploi"]
+    return [title,type_job,salary,compagny,global_location,"language",skills,date,description,"pole_emploi"]
 
 
 def scrap_apec_job(html_source):
@@ -144,8 +147,6 @@ def scrap_apec_job(html_source):
         experience = experience_div.find('span').text
 
     
-
-   
     body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
     if body_div is not None:
         skills = soup.find_all('div', {'class':['added-skills-manager__knowledge','mb-0']}) 
@@ -155,14 +156,14 @@ def scrap_apec_job(html_source):
 
         for d in details:
             description += d.text + " "
-        print(description) 
+        #print(description) 
+
     if description != "":
-        #scrap_description_apec(description,["salary","type_job"])
-        pass
+        skills = get_skills(description)
 
     print("=============")
 
-    liste = [title,type_job,salary,compagny,location,"language","skills",date,description,source]
+    liste = [title,type_job,salary,compagny,location,"language",skills,date,description,source]
     
     return liste
 
@@ -197,17 +198,30 @@ def scrap_indeed_job(html_source,date):
     if type_job != "" and type_job is not None:
         type_job = type_job.text
 
+    type_job = type_job.replace("-", "")
 
-    # ouii
-    print(date)
-    print("date : ",date.text)
+
+    date = date.text
+    new_string = date.replace("Posted", "")
+
+    if "Aujourd'hui" in new_string:
+        date = datetime.now()
+    elif "plus de 30" in new_string:
+        days = re.findall(r'\d+', new_string)
+        date = datetime.now() - timedelta(days=30)
+    else:
+        days = re.findall(r'\d+', new_string)
+        date = datetime.now() - timedelta(days=int(days[0]))
+
+    date = date.strftime("%Y-%m-%d")
+    print("date : ",date)
+
 
     # régler les skills !
-    skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
+    #skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
 
     print("salaire : ",salary)
     print("type job : ",type_job)
-    print("compétences : ",skills_div)
     
 
     if title:
@@ -228,6 +242,7 @@ def scrap_indeed_job(html_source,date):
         compagny = ""
 
     if description:
+        skills = get_skills(description.text)
         description = description.text.strip()
         # fields_to_find = []
         # if not salary:
@@ -243,7 +258,7 @@ def scrap_indeed_job(html_source,date):
 
     print("\n ================== \n")
 
-    liste = [title,type_job,salary,compagny,location,"language","skills",date,description,source]
+    liste = [title,type_job,salary,compagny,location,"language",skills,date,description,source]
 
     return liste
 
@@ -264,12 +279,18 @@ def scrap_glassdoor_job(html_source):
     description = ""
     date = ""
     compagny = job_header.find('span', {'class': ['EmployerProfile_employerName__Xemli']})
+    compagny = compagny.text if compagny else ""
     title = soup.find('div', {'class': ['JobDetails_jobTitle__Rw_gn']})
+    title = title.text if title else ""
     description = soup.find('div', {'class':['JobDetails_jobDescription__6VeBn','JobDetails_blurDescription__fRQYh']})
     location = job_header.find('div', {'class': ['JobDetails_location__MbnUM']})
+    location = location.text if location else ""
+
     # Recherchez le paragraphe contenant "Type d'emploi"
     type_job = soup.find('p', text=lambda t: t and "Type d'emploi" in t)
+    type_job = type_job.text if type_job else ""
     salaire = soup.find('p', text=lambda t: t and "Salaire" in t)
+    salaire = salaire.text if salaire else ""
     skills = soup.find('p', text=lambda t: t and "Compétences" in t)
 
     
@@ -281,6 +302,8 @@ def scrap_glassdoor_job(html_source):
 
     if description:
         description = description.text.strip()
+        #skills = get_skills(description)
+
         fields_to_find = []
         if not salaire:
             fields_to_find.append("salary")
