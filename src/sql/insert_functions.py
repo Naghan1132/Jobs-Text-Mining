@@ -30,6 +30,10 @@ def insert_observations(df, cursor):
 
         # Insert Observation
         type_job_id_1 = insert_dimension('H_type_job', 'type_job', type_job, cursor)
+        language_id_1 = insert_dimension('H_language', 'language', language, cursor)
+        competence_id_1 = insert_dimension('H_competences', 'competence', skills, cursor)
+        print(type(type_job_id_1))
+
         #print(f"type_job_id_1: {type_job_id_1}")
         # source_id_1 = insert_dimension('D_source', 'source', source, cursor)
         company_id_1 = insert_dimension('D_company', 'company', company, cursor)
@@ -38,7 +42,9 @@ def insert_observations(df, cursor):
         location_id_1 = insert_dimension('D_location', 'location', location, cursor)
         description_id_1 = insert_dimension('D_description', 'description', description, cursor)
         
-        #cursor.execute("INSERT INTO D_company (type_job_id)""VALUES (?)",(type_job_id_1))
+        # cursor.execute("INSERT INTO D_company (type_job_id)""VALUES (?)",(type_job_id_1))
+        # cursor.execute("INSERT INTO D_description (language_id)""VALUES (?)",(language_id_1))
+        # cursor.execute("INSERT INTO D_description (competence_id)""VALUES (?)",(competence_id_1))
         
         cursor.execute("INSERT INTO F_title (company_id, date_id, location_id, description_id, salary_id, title) "
                        "VALUES (?, ?, ?, ?, ?, ?)",
