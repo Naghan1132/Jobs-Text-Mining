@@ -1,8 +1,19 @@
 from bs4 import BeautifulSoup
 from scrap_description import *
 import time
+from geopy.geocoders import Nominatim
 from datetime import datetime, timedelta
 
+
+geolocator = Nominatim(user_agent="my_geocoder")
+
+def get_coordinates(city):
+    location = geolocator.geocode(f"{city}, France")
+    if location:
+        return location.latitude, location.longitude
+    else:
+        return None, None
+    
 
 def get_indeed_job_links(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
@@ -30,9 +41,6 @@ def get_jungle_job_link(html_source):
     a_tags = soup.find_all('a', {'class': ['sc-6i2fyx-0', 'gIvJqh']})
     href_list = [a.get('href') for a in a_tags]
     return href_list
-
-
-
 
 
 def scrap_pole_job(html_source):
@@ -103,9 +111,14 @@ def scrap_pole_job(html_source):
     print(skills)
     print(global_location)
     print("date : ",date)
+
+    latitude, longitude = get_coordinates(location)
+
+    tokens = scrap_description(description)
+
     print("======")
 
-    return [title,type_job,salary,compagny,global_location,"language",skills,date,description,"pole_emploi"]
+    return [title,type_job,salary,compagny,global_location,latitude,longitude,"language",skills,date,description,tokens,"pole_emploi"]
 
 
 def scrap_apec_job(html_source):
@@ -169,9 +182,13 @@ def scrap_apec_job(html_source):
     if description != "":
         skills = get_skills(description)
 
+    latitude, longitude = get_coordinates(location)
+
+    tokens = scrap_description(description)
+
     print("=============")
 
-    liste = [title,type_job,salary,compagny,location,"language",skills,date,description,source]
+    liste = [title,type_job,salary,compagny,location,latitude,longitude,"language",skills,date,description,tokens,source]
     
     return liste
 
@@ -264,9 +281,13 @@ def scrap_indeed_job(html_source,date):
     else:
         description = ""
 
+    latitude, longitude = get_coordinates(location)
+
+    tokens = scrap_description(description)
+
     print("\n ================== \n")
 
-    liste = [title,type_job,salary,compagny,location,"language",skills,date,description,source]
+    liste = [title,type_job,salary,compagny,location,latitude,longitude,"language",skills,date,description,tokens,source]
 
     return liste
 
@@ -310,17 +331,7 @@ def scrap_glassdoor_job(html_source):
 
     if description:
         description = description.text.strip()
-        #skills = get_skills(description)
-
-        fields_to_find = []
-        if not salaire:
-            fields_to_find.append("salary")
-        if not type_job:
-            fields_to_find.append("type_job")
-        if not skills:
-            fields_to_find.append("type_job")
-            
-        #scrap = scrap_description_glassdoor(description,fields_to_find)
+        print(description)
 
     
     date_posted = soup.find('div', {'data-test': ['job-age']})
@@ -343,10 +354,14 @@ def scrap_glassdoor_job(html_source):
     date = date.strftime("%Y-%m-%d")
     print("date : ",date)
 
+    latitude, longitude = get_coordinates(location)
+
+    tokens = scrap_description(description)
+
     print("\n ================== \n")
 
 
-    liste = [title,type_job,salaire,compagny,location,"language","skills",date,description,source]
+    liste = [title,type_job,salaire,compagny,location,latitude,longitude,"language","skills",date,description,tokens,source]
     return liste
 
 
@@ -400,7 +415,7 @@ def scrap_jungle_job(html_source):
             print(education)
 
     competence_div = soup.find('div',class_=['sc-18ygef-1','ezamTS'])
-    print(competence_div.text)
+    #print(competence_div.text)
 
     date = soup.find('time')['datetime']
     print(date)
@@ -408,7 +423,15 @@ def scrap_jungle_job(html_source):
     print(location)
     print(title)
     print(compagny)    
+    latitude, longitude = get_coordinates(location)
+
+    tokens = scrap_description(competence_div.text)
+    print(tokens)
+
+
     print("=============")
 
-    liste = [title,type_job,salary,compagny,location,"language","skills",date,competence_div.text,source]
+    liste = [title,type_job,salary,compagny,location,latitude,longitude,"language","skills",date,competence_div.text,tokens,source]
     return liste
+
+

@@ -15,15 +15,15 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 # Fonction pour afficher l'accueil
 def afficher_accueil():
     st.write("Key Word : Data")
-    df = load_data("src/data/concatenated_data_with_coordinates.csv")
+    df = load_data("src/data/welcome_to_the_jungle.csv")
 
     # Affichage de la carte
     m = folium.Map(location=[48.8566, 2.3522], zoom_start=5)
     marker_cluster = MarkerCluster().add_to(m)
 
     for index, row in df.iterrows():
-        if pd.notnull(row['location']):
-            folium.Marker([row['latitude'], row['longitude']], popup=f"<b>{row['title']}</b>",tooltip=row['title']).add_to(marker_cluster)
+        if pd.notnull(row['location']) and pd.notnull(row['latitude']) and pd.notnull(row['longitude']):
+            folium.Marker([row['latitude'], row['longitude']], popup=f"<b>{row['title']}</b> <br> <i>{row['compagny']}</i>",tooltip=row['title']).add_to(marker_cluster)
     
     folium_static(m)
 
@@ -54,37 +54,53 @@ def afficher_accueil():
 # Fonction pour afficher les données
 def afficher_donnees():
     # Read the CSV file
-    df = pd.read_csv("../data/apec.csv")
-
+    #df = pd.read_csv("../data/apec.csv")
+    df = pd.read_csv("src/data/welcome_to_the_jungle.csv")
     # Afficher les 5 premières lignes du CSV
     st.write("Affichage des 5 premières lignes du fichier CSV :")
     st.write(df.head())
+
+
 
 # Fonction pour l'analyse de texte
 def analyse_texte():
     # Titre de la section
     st.header("Analyse de Texte Word Cloud")
 
+    df = load_data("src/data/welcome_to_the_jungle.csv")
+
+    # Concaténer tous les tokens en une seule chaîne
+    all_tokens = ' '.join(df['tokens'].dropna())
+    
+    # Générer le wordcloud
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_tokens)
+    
+    # Afficher le wordcloud à l'aide de matplotlib
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')  # Masquer les axes
+    st.pyplot(plt)  # Afficher le plot dans Streamlit
+
     # Zone de texte pour saisir le texte
-    texte_utilisateur = st.text_area("Collez votre texte ici :", "Votre texte ici...")
+    #texte_utilisateur = st.text_area("Collez votre texte ici :", "Votre texte ici...")
 
     # Bouton pour lancer l'analyse
-    if st.button("Analyser le texte"):
-        mots = texte_utilisateur.split()
-        df_mots = pd.Series(mots).value_counts().reset_index()
-        df_mots.columns = ['Mot', 'Fréquence']
+    #if st.button("Analyser le texte"):
+     #   mots = texte_utilisateur.split()
+      #  df_mots = pd.Series(mots).value_counts().reset_index()
+       # df_mots.columns = ['Mot', 'Fréquence']
 
         # Affichage de la table avec la fréquence des mots
-        st.write("### Fréquence des Mots")
-        st.table(df_mots)
+       # st.write("### Fréquence des Mots")
+       # st.table(df_mots)
 
         # Word cloud
-        st.write("### Nuage de Mots")
-        nuage_mots = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(df_mots.set_index('Mot').to_dict()['Fréquence'])
-        plt.figure(figsize=(10, 5))
-        plt.imshow(nuage_mots, interpolation='bilinear')
-        plt.axis('off')
-        st.pyplot()
+        #st.write("### Nuage de Mots")
+        #nuage_mots = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(df_mots.set_index('Mot').to_dict()['Fréquence'])
+        #plt.figure(figsize=(10, 5))
+        #plt.imshow(nuage_mots, interpolation='bilinear')
+        #plt.axis('off')
+        #st.pyplot()
 
 def scrapping():
     st.header("Scrapper les emplois de votre choix sur Indeed, Glassdoor et Apec")

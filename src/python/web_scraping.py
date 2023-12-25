@@ -6,7 +6,7 @@ import os
 import re
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By  # N'oubliez pas cette ligne
+from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -24,24 +24,24 @@ from selenium.webdriver.support import expected_conditions as EC
 # hello work KO anti bot trop fort
 
 def build_url_job_research(job_name):
-    urls = ["https://fr.indeed.com/jobs?q=JobToInput&l=France&from=searchOnHP",
+    urls = [
+        #"https://fr.indeed.com/jobs?q=JobToInput&l=France&from=searchOnHP",
         "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput",
         "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm",
         "https://candidat.pole-emploi.fr/offres/recherche?motsCles=JobToInput&offresPartenaires=true&rayon=10&tri=0",
         "https://www.welcometothejungle.com/fr/jobs?refinementList%5Boffices.country_code%5D%5B%5D=FR&query=JobToInput&page=1"]
 
-    cpt = 0
     modified_urls = []
     for url in urls:
-        if cpt == 0:
+        if "indeed" in url:
             job_name_modified = job_name.replace(" ", "+")
             modified_url = url.replace("JobToInput",job_name_modified)
 
-        elif cpt == 1:
+        elif "apec" in url:
             job_name_modified = job_name.replace(" ", " ") # do nothing
             modified_url = url.replace("JobToInput",job_name_modified)
 
-        elif cpt == 2:
+        elif "glassdoor" in url:
             job_name = job_name.lower()
             job_name_modified = job_name.replace(" ", "-")
             modified_url = url.replace("JobToInput",job_name_modified)
@@ -63,16 +63,15 @@ def build_url_job_research(job_name):
                 # Remplacer la valeur par la nouvelle valeur
                 modified_url = re.sub(r',\d+\.htm', f',{nombre_caracteres}.htm', modified_url)
                 
-        elif cpt == 3:
+        elif "candidat.pole-emploi" in url:
             job_name_modified = job_name.replace(" ", "-")
             modified_url = url.replace("JobToInput",job_name_modified)
 
-        if cpt == 4:
+        elif "welcometothejungle" in url:
             job_name_modified = job_name.replace(" ", " ") # do nothing
             modified_url = url.replace("JobToInput",job_name_modified)
         
         modified_urls.append(modified_url)
-        cpt = cpt + 1
 
     return modified_urls
 
@@ -83,8 +82,10 @@ def create_driver():
     #chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
-
+    #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0")
+    #chrome_options.add_argument('--no-sandbox') # Bypass OS security model
+    #chrome_options.add_argument('--disable-dev-shm-usage') # overcome limited resource problems
     # Instancier le navigateur avec les options configurées
     driver = webdriver.Chrome(options=chrome_options)
     return(driver)
@@ -120,7 +121,6 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         while True:
             base_url = driver.current_url
             html_source = driver.page_source
-            
 
             links,dates = get_indeed_job_links(html_source)
             if links is None:
@@ -133,7 +133,16 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
             for link in links:    
                 if link is not None:    
                     driver.get("https://fr.indeed.com/viewjob?jk="+str(link))
-                    time.sleep(5)
+                    
+                    checkbox = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="checkbox"]'))
+                    )
+
+                    driver.execute_script("arguments[0].click();", checkbox) 
+                    print("Case à cocher cliquée!")
+
+                    time.sleep(3)
+
                     html_source = driver.page_source
                     df = add_row(df,scrap_indeed_job(html_source,dates[links.index(link)]))
                 time.sleep(3) # ajouter du temps sinon l'anti-bot detecte
@@ -293,17 +302,6 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         driver.quit()
         return df
 
-
-
-def main_web_scraping(job_name,n_posts_max = 50):
-    urls = build_url_job_research(job_name)
-    for url in urls:
-        df = create_df()
-        driver = create_driver()
-        df = web_scrap(driver,df,url,n_posts_max=n_posts_max)
-        save_df(df,df['source'][0])
-
-
 def concat_data(folder_path='src/data/'):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"Le dossier {folder_path} n'existe pas.")
@@ -325,19 +323,31 @@ def concat_data(folder_path='src/data/'):
     output_file_path = os.path.join(folder_path, 'concatenated_data.csv')
     concatenated_df.to_csv(output_file_path, index=False)
 
-#main_web_scraping(job_name,45)
+
+def main_web_scraping(job_name,n_posts_max = 50):
+    urls = build_url_job_research(job_name)
+    for url in urls:
+        df = create_df()
+        driver = create_driver()
+        df = web_scrap(driver,df,url,n_posts_max=n_posts_max)
+        save_df(df,df['source'][0])
+    concat_data()
+
+
 
 job_name = "Data Scientist"
-urls = build_url_job_research(job_name)
+main_web_scraping(job_name,30)
+
+#urls = build_url_job_research(job_name)
+#driver = create_driver()
+#df = create_df()
+#df = web_scrap(driver,df,urls[4],n_posts_max=15)
+#save_df(df,df['source'][0])
+#concat_data()
 
 
 
-driver = create_driver()
-df = create_df()
-df = web_scrap(driver,df,urls[4],n_posts_max=65)
-save_df(df,df['source'][0])
-concat_data()
-
+# indeed à rajouter une sécurité pour le scrapping....
 
 # to do =>
 # tester si il n'y a pas ou plus de jobs à scrapper !!
@@ -345,8 +355,8 @@ concat_data()
 # scrapper les compétences etc...!!
 
 # moteur de recherche sur les comptétences : 
-# - user note les compétences qu'il a ou qu'il recherche
-# - on recherche et retourne les offres qui correspondent aux compétences (via description ou tokenisation de la description)
+# - l'user note les compétences qu'il a ou qu'il recherche
+# - on recherche et retourne les offres qui correspondent aux compétences (via description / tokenisation de la description)
 
 
 # régler type_job et salaire Glassdoor !!!

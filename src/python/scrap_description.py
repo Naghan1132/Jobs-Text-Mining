@@ -35,11 +35,8 @@ def scrap_description_glassdoor(texte,fields_to_find):
     print(extract_salary_re(texte,language))
     print(get_tokens(texte,language))
 
-def scrap_description_pole_emploi(texte,fields_to_find):
-    #print(f"description : {texte}")
+def scrap_description(texte):
     language = detect_language(texte)
-    #print(extract_salary_re(texte,language))
-
     return get_tokens(texte,language)
 
 
@@ -87,9 +84,9 @@ def get_tokens(text,language):
     tokens = [word for word in tokens if word not in stopwords.words(language)]  # Supprimez les mots vides
     lemmatizer = WordNetLemmatizer()
     tokens = [lemmatizer.lemmatize(word) for word in tokens]  # Lemmatization
-    #word_counts = Counter(tokens)
+    word_counts = Counter(tokens)
+    #print(word_counts)
     text = " ".join(tokens)
-    print(text)
     return text
 
 def preprocess_text(nlp,text):

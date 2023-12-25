@@ -9,10 +9,13 @@ def create_df():
     df['salary'] = None
     df['compagny'] = None
     df['location'] = None
+    df['latitude'] = None
+    df['longitude'] = None
     df['language'] = None
     df['skills'] = None
     df['date'] = None
     df['description'] = None
+    df['tokens'] = None
     df['source'] = None
 
     return df
