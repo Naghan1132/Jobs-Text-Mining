@@ -2,12 +2,54 @@ import streamlit as st
 import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import folium
+from folium.plugins import MarkerCluster
+from streamlit_folium import folium_static
+
+def load_data(file_path):
+    data = pd.read_csv(file_path)
+    return data
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Fonction pour afficher l'accueil
 def afficher_accueil():
-    st.write("Jobs Text Minning")
+    st.write("Key Word : Data")
+    df = load_data("src/data/concatenated_data_with_coordinates.csv")
+
+    # Affichage de la carte
+    m = folium.Map(location=[48.8566, 2.3522], zoom_start=5)
+    marker_cluster = MarkerCluster().add_to(m)
+
+    for index, row in df.iterrows():
+        if pd.notnull(row['location']):
+            folium.Marker([row['latitude'], row['longitude']], popup=f"<b>{row['title']}</b>",tooltip=row['title']).add_to(marker_cluster)
+    
+    folium_static(m)
+
+    # Utilisez une balise HTML pour séparer la carte des informations
+    st.markdown("---")
+    
+    # Affichage des informations
+    st.write("<h2>Informations du marqueur sélectionné</h2>", unsafe_allow_html=True)
+    marker_info = st.empty()  # Élément pour afficher les informations du marqueur
+
+    # Code JavaScript pour mettre à jour les informations lorsque vous cliquez sur un marqueur
+    js_code = """
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const markers = document.querySelectorAll('.leaflet-marker-icon');
+            markers.forEach(marker => {
+                marker.addEventListener('click', function() {
+                    const title = marker.alt;
+                    const infoDiv = document.querySelector('#marker_info');
+                    infoDiv.innerHTML = "<h2>Informations du marqueur sélectionné</h2><p>" + title + "</p>";
+                });
+            });
+        });
+    </script>
+    """
+    st.markdown(js_code, unsafe_allow_html=True)
 
 # Fonction pour afficher les données
 def afficher_donnees():
@@ -28,7 +70,6 @@ def analyse_texte():
 
     # Bouton pour lancer l'analyse
     if st.button("Analyser le texte"):
-        # Analyse de la fréquence des mots
         mots = texte_utilisateur.split()
         df_mots = pd.Series(mots).value_counts().reset_index()
         df_mots.columns = ['Mot', 'Fréquence']
@@ -54,13 +95,29 @@ def scrapping():
     if st.button("Analyser le texte"):
         pass
 
+
+
 # Titre de l'application
 st.title("JOBS TEXT MINNING")
 
+# Appliquer le style CSS pour les onglets et supprimer les puces
+st.markdown("""
+<style>
+div.stRadio > div > label {
+    list-style-type: none;
+}
+div.stRadio > div > label > div {
+    display: inline-block;
+    border: 2px solid #ccc;
+    padding: 8px 16px;
+    margin-right: 5px;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# Options de navigation dans la barre latérale
-options_navigation = ["Accueil", "Afficher les données", "Analyse de Texte","Scrapper des données"]
-selected_option = st.sidebar.selectbox("Navigation", options_navigation)
+# Options de navigation pour les onglets
+options_navigation = ["Accueil", "Afficher les données", "Analyse de Texte", "Scrapper des données"]
+selected_option = st.sidebar.radio("Navigation", options_navigation)
 
 # Contenu de l'application en fonction de l'option sélectionnée
 if selected_option == "Accueil":

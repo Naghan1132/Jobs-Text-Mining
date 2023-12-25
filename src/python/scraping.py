@@ -25,6 +25,14 @@ def get_pole_job_links(html_source):
     data_id_offre_list = [item['data-id-offre'] for item in li]
     return data_id_offre_list
 
+def get_jungle_job_link(html_source):
+    soup = BeautifulSoup(html_source, 'html.parser')
+    a_tags = soup.find_all('a', {'class': ['sc-6i2fyx-0', 'gIvJqh']})
+    href_list = [a.get('href') for a in a_tags]
+    return href_list
+
+
+
 
 
 def scrap_pole_job(html_source):
@@ -339,4 +347,68 @@ def scrap_glassdoor_job(html_source):
 
 
     liste = [title,type_job,salaire,compagny,location,"language","skills",date,description,source]
+    return liste
+
+
+def scrap_jungle_job(html_source):
+   
+    soup = BeautifulSoup(html_source, 'html.parser')
+
+    source = "welcome_to_the_jungle"
+    compagny = ""
+    type_job = ""
+    location = ""
+    title = ""
+    salary = ""
+  
+    compagny = soup.find('span',{'class':['sc-ERObt', 'kkLHbJ', 'wui-text']})
+    compagny = compagny.text
+    title = soup.find('h2',{'class':['sc-ERObt','fMYXdq','wui-text']})
+    title = title.text
+   
+    infos_div = soup.find('div',{'class':['sc-bXCLTC ','hdepoj']})
+    location = infos_div.find('span',{'class':['sc-1eoldvz-0' ,'bZJPQK']})
+    location = location.text
+
+    
+    i_tag = soup.find('i', {'name': 'salary'})
+    if i_tag:
+        div_with_salary = i_tag.find_parent('div')
+        if div_with_salary:
+            salary = div_with_salary.text.strip()
+            print(salary)
+
+    i_tag = soup.find('i', {'name': 'suitcase'})
+    if i_tag:
+        div_with_experience = i_tag.find_parent('div')
+        if div_with_experience:
+            experience = div_with_experience.text.strip()
+            print(experience)
+
+    i_tag = soup.find('i', {'name': 'contract'})
+    if i_tag:
+        div_with_contract = i_tag.find_parent('div')
+        if div_with_contract:
+            type_job = div_with_contract.text.strip()
+            print(type_job)
+
+    i_tag = soup.find('i', {'name': 'education_level'})
+    if i_tag:
+        div_with_education = i_tag.find_parent('div')
+        if div_with_education:
+            education = div_with_education.text.strip()
+            print(education)
+
+    competence_div = soup.find('div',class_=['sc-18ygef-1','ezamTS'])
+    print(competence_div.text)
+
+    date = soup.find('time')['datetime']
+    print(date)
+
+    print(location)
+    print(title)
+    print(compagny)    
+    print("=============")
+
+    liste = [title,type_job,salary,compagny,location,"language","skills",date,competence_div.text,source]
     return liste
