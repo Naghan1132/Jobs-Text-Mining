@@ -3,9 +3,23 @@ from scrap_description import *
 import time
 from geopy.geocoders import Nominatim
 from datetime import datetime, timedelta
+from geopy.geocoders import Photon
+
 
 
 geolocator = Nominatim(user_agent="my_geocoder")
+geolocator_region = Nominatim(user_agent="my_geocoder")
+
+def get_region_department(lat, lon):
+    location = geolocator_region.reverse((lat, lon), exactly_one=True) 
+    print(lat)
+    print(lon) 
+    print(location)
+    if location:
+        address = location.raw['address']
+        if address:
+            return address.get('region', ''), address.get('county', '')
+    return None,None
 
 def get_coordinates(city):
     location = geolocator.geocode(f"{city}, France")
@@ -113,12 +127,12 @@ def scrap_pole_job(html_source):
     print("date : ",date)
 
     latitude, longitude = get_coordinates(location)
-
+    region, departement = get_region_department(latitude, longitude)
     tokens = scrap_description(description)
 
     print("======")
 
-    return [title,type_job,salary,compagny,global_location,latitude,longitude,"language",skills,date,description,tokens,"pole_emploi"]
+    return [title,type_job,salary,compagny,global_location,region,departement,latitude,longitude,"language",skills,date,description,tokens,"pole_emploi"]
 
 
 def scrap_apec_job(html_source):
@@ -154,8 +168,10 @@ def scrap_apec_job(html_source):
     experience = ""
     date = "" # OK
     
-    date = soup.find('div',{'class':['date-offre']}).text
-    print("date : ",date)
+    date = soup.find('div',{'class':['date-offre']})
+    if date is not None:
+        date = date.text
+        print("date : ",date)
 
     outer_div = soup.find('div', class_='col-lg-4')
     if outer_div is not None:
@@ -165,6 +181,43 @@ def scrap_apec_job(html_source):
 
         title = title_div.find('span').text # OK
         salary = salary_div.find('span').text # OK
+
+        if "A négocier" in salary:
+            salary = ""
+            print("a négocier")
+        elif "A partir" in salary:
+            match = re.search(r'(A partir de )?(\d+) k€ brut annuel', salary)
+            if match:
+                # Vérifiez si la chaîne commence par "A partir de "
+                if match.group(1):
+                    return int(match.group(2)) * 1000  # Convertir k€ en €
+                else:
+                    # Convertir les valeurs en format annuel (en supposant que les valeurs sont mensuelles)
+                    valeur = int(match.group(2))
+                    valeur *= 12  # Convertir en brut annuel
+                    salary = valeur
+                print(salary)
+            else:
+                salary = ""
+
+        elif "brut annuel" in salary:
+            match = re.search(r'(\d+) - (\d+) k€ brut annuel', salary)
+            if match:
+                min_value = int(match.group(1))
+                max_value = int(match.group(2))
+                
+                # Convertir les valeurs en format annuel (en supposant que les valeurs sont mensuelles)
+                min_value *= 12
+                max_value *= 12
+                
+                salary = (min_value + max_value) / 2
+                print(salary)
+               
+            else:
+                salary = ""
+        
+
+    
         experience = experience_div.find('span').text
 
     
@@ -183,12 +236,13 @@ def scrap_apec_job(html_source):
         skills = get_skills(description)
 
     latitude, longitude = get_coordinates(location)
+    region, departement = get_region_department(latitude, longitude)
 
     tokens = scrap_description(description)
 
     print("=============")
 
-    liste = [title,type_job,salary,compagny,location,latitude,longitude,"language",skills,date,description,tokens,source]
+    liste = [title,type_job,salary,compagny,location,region,departement,latitude,longitude,"language",skills,date,description,tokens,source]
     
     return liste
 
@@ -282,12 +336,13 @@ def scrap_indeed_job(html_source,date):
         description = ""
 
     latitude, longitude = get_coordinates(location)
+    region, departement = get_region_department(latitude, longitude)
 
     tokens = scrap_description(description)
 
     print("\n ================== \n")
 
-    liste = [title,type_job,salary,compagny,location,latitude,longitude,"language",skills,date,description,tokens,source]
+    liste = [title,type_job,salary,compagny,location,region, departement,latitude,longitude,"language",skills,date,description,tokens,source]
 
     return liste
 
@@ -355,13 +410,14 @@ def scrap_glassdoor_job(html_source):
     print("date : ",date)
 
     latitude, longitude = get_coordinates(location)
+    region, departement = get_region_department(latitude, longitude)
 
     tokens = scrap_description(description)
 
     print("\n ================== \n")
 
 
-    liste = [title,type_job,salaire,compagny,location,latitude,longitude,"language","skills",date,description,tokens,source]
+    liste = [title,type_job,salaire,compagny,location,region, departement,latitude,longitude,"language","skills",date,description,tokens,source]
     return liste
 
 
@@ -391,6 +447,32 @@ def scrap_jungle_job(html_source):
         div_with_salary = i_tag.find_parent('div')
         if div_with_salary:
             salary = div_with_salary.text.strip()
+            if "Non spécifié" in salary:
+                salary = ""
+            elif "par mois" in salary:
+                match = re.search(r"Salaire : ([\d,\.]+)(K?)\s*€ par mois", salary)
+                if match:
+                    salaire = match.group(1).replace(',', '')  # Supprimez les virgules pour la conversion
+                    is_k = match.group(2)
+                    salaire_annuel = float(salaire)
+                    if is_k:
+                        salaire_annuel *= 1000
+                    salaire_annuel *= 12
+                    salary = salaire_annuel
+                else:
+                    salary = ""
+            else:
+                match = re.search(r"Salaire : (\d+)K à (\d+)K\s*€", salary)
+                if match:
+                    salaire_min = int(match.group(1)) * 1000  # Convertir en euros
+                    salaire_max = int(match.group(2)) * 1000  # Convertir en euros
+                    
+                    # Calculer la moyenne des salaires
+                    salaire_moyen = (salaire_min + salaire_max) / 2
+                    
+                    salary = salaire_moyen * 12  # Convertir en salaire annuel
+                else:
+                    salary = ""
             print(salary)
 
     i_tag = soup.find('i', {'name': 'suitcase'})
@@ -424,6 +506,7 @@ def scrap_jungle_job(html_source):
     print(title)
     print(compagny)    
     latitude, longitude = get_coordinates(location)
+    region, departement = get_region_department(latitude, longitude)
 
     tokens = scrap_description(competence_div.text)
     print(tokens)
@@ -431,7 +514,7 @@ def scrap_jungle_job(html_source):
 
     print("=============")
 
-    liste = [title,type_job,salary,compagny,location,latitude,longitude,"language","skills",date,competence_div.text,tokens,source]
+    liste = [title,type_job,salary,compagny,location,region, departement,latitude,longitude,"language","skills",date,competence_div.text,tokens,source]
     return liste
 
 

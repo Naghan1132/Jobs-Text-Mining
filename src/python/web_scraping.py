@@ -12,24 +12,39 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 #### RÉSUMÉ ####
-# Indeed OK (pagination + scrapping OK)
-# APEC OK (pagination + scrapping OK)
-# Glassdoor OK (pagination + scrapping OK)
-# Pole Emploi OK (pagination + scrapping OK)
-# Welcome to the jungle OK (pagination + scrapping OK)
+
+# APEC PARFAIT
+# Glassdoor
+# Pole Emploi => cookies à accepter
+# Welcome to the jungle PARFAIT
 
 # LinkedIn KO (compliqué à revoir, faut se connecter etc...)
+# Indeed KO (NOUVEL ANTI BOT)
 # Emploi Public KO (pas de mots clé dans l'url)
 # Emploi Territorial (moteur de recherche très mauvais => à abandonner)
 # hello work KO anti bot trop fort
 
-def build_url_job_research(job_name):
-    urls = [
-        #"https://fr.indeed.com/jobs?q=JobToInput&l=France&from=searchOnHP",
+def build_url_job_research(job_name,sites):
+    base_urls = [
+        "https://fr.indeed.com/jobs?q=JobToInput&l=France&from=searchOnHP",
         "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput",
         "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm",
         "https://candidat.pole-emploi.fr/offres/recherche?motsCles=JobToInput&offresPartenaires=true&rayon=10&tri=0",
         "https://www.welcometothejungle.com/fr/jobs?refinementList%5Boffices.country_code%5D%5B%5D=FR&query=JobToInput&page=1"]
+    
+    urls = []
+    for s in sites:
+        if s == "Indeed":
+            urls.append(base_urls[0])
+        elif s == "Apec":
+            urls.append(base_urls[1])
+        elif s == "Glassdoor":
+            urls.append(base_urls[2])
+        elif s == "Pole_Emploi":
+            urls.append(base_urls[3])
+        elif s == "Welcome_to_the_jungle":
+            urls.append(base_urls[4])
+        
 
     modified_urls = []
     for url in urls:
@@ -84,15 +99,12 @@ def create_driver():
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0")
-    #chrome_options.add_argument('--no-sandbox') # Bypass OS security model
-    #chrome_options.add_argument('--disable-dev-shm-usage') # overcome limited resource problems
-    # Instancier le navigateur avec les options configurées
     driver = webdriver.Chrome(options=chrome_options)
     return(driver)
 
 
 
-def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):    
+def web_scrap(df,url,n_posts_max,n_current_posts = 0):    
     if "indeed" in url:
         source = "indeed"
     elif "apec" in url:
@@ -108,6 +120,7 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
     print("URL actuelle:", url)
 
+    driver = create_driver()
     driver.get(url)
 
     # Attendre que la page soit complètement chargée
@@ -228,13 +241,14 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
         return df
 
     elif source == "pole_emploi":
+        time.sleep(1)
         cookies = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="footer_tc_privacy_button_2"]'))
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="pecookies-accept-all"]'))
             )
-        if cookies is not None:
-            driver.execute_script("arguments[0].click();", cookies)
-            time.sleep(2)
-
+        print(cookies)
+        driver.execute_script("arguments[0].click();", cookies)
+            
+        print("testt")
         while True:
             base_url = driver.current_url
             html_source = driver.page_source
@@ -278,8 +292,8 @@ def web_scrap(driver,df,url,n_posts_max = 5,n_current_posts = 0):
 
             n_current_posts = n_current_posts + len(links) 
             print("nombre jobs : ",n_current_posts)
-    
-            for link in links:    
+            time.sleep(3)
+            for link in links:      
                 if link is not None:    
                     driver.get("https://www.welcometothejungle.com"+str(link))
                     time.sleep(1)
@@ -324,35 +338,27 @@ def concat_data(folder_path='src/data/'):
     concatenated_df.to_csv(output_file_path, index=False)
 
 
-def main_web_scraping(job_name,n_posts_max = 50):
-    urls = build_url_job_research(job_name)
+def main_web_scraping(job_name,n_posts_max,sites):
+    urls = build_url_job_research(job_name,sites)
     for url in urls:
         df = create_df()
-        driver = create_driver()
-        df = web_scrap(driver,df,url,n_posts_max=n_posts_max)
+        df = web_scrap(df,url,n_posts_max=n_posts_max)
         save_df(df,df['source'][0])
     concat_data()
 
 
-
-job_name = "Data Scientist"
-main_web_scraping(job_name,30)
-
-#urls = build_url_job_research(job_name)
-#driver = create_driver()
-#df = create_df()
-#df = web_scrap(driver,df,urls[4],n_posts_max=15)
-#save_df(df,df['source'][0])
-#concat_data()
+liste_sites = ["Apec","Welcome_to_the_jungle"]
+job_name = "Data"
+main_web_scraping(job_name,30,liste_sites)
 
 
-
-# indeed à rajouter une sécurité pour le scrapping....
+# indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant
 
 # to do =>
 # tester si il n'y a pas ou plus de jobs à scrapper !!
 # récupérer seulement les jobs où il n'y a pas d'infos manquantes ??
-# scrapper les compétences etc...!!
+# scrapper les compétences etc...!
+# régler le problème de la librairie pour récupérer le département, (elle a un nombre d'essais limite)
 
 # moteur de recherche sur les comptétences : 
 # - l'user note les compétences qu'il a ou qu'il recherche
