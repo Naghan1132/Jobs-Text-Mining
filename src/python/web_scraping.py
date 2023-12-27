@@ -94,7 +94,7 @@ def build_url_job_research(job_name,sites):
 def create_driver():
     # Configurer les options du navigateur en mode headless
     chrome_options = Options()
-    chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
+    #chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
@@ -104,7 +104,7 @@ def create_driver():
 
 
 
-def web_scrap(df,url,n_posts_max,n_current_posts = 0):    
+def web_scrap(df,url,n_posts_max):    
     
     if "indeed" in url:
         source = "indeed"
@@ -130,6 +130,7 @@ def web_scrap(df,url,n_posts_max,n_current_posts = 0):
     # Récupérer la page source (HTML) actuelle
     html_source = driver.page_source
 
+    n_current_posts = 0
 
     if source == "indeed":
         while True:
@@ -185,8 +186,8 @@ def web_scrap(df,url,n_posts_max,n_current_posts = 0):
             time.sleep(2)
             html_source = driver.page_source
             df = add_row(df,scrap_apec_job(html_source))
+            n_current_posts += 1
                 
-
         while n_current_posts < n_posts_max:
             suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[class="nextpage"]') 
             driver.execute_script("arguments[0].click();", suivant_button)
@@ -317,23 +318,23 @@ def web_scrap(df,url,n_posts_max,n_current_posts = 0):
         driver.quit()
         return df
 
-def concat_data(folder_path='src/data/'):
+def concat_data(sites,folder_path='src/data/'):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"Le dossier {folder_path} n'existe pas.")
-    # Liste pour stocker les DataFrames individuels
+
     dfs = []
-    list_csv = ["apec.csv","glassdoor.csv","indeed.csv","pole_emploi.csv","welcome_to_the_jungle.csv"]
+
+    list_csv = [site + ".csv" for site in sites]  # Add ".csv" to each element in the list
+
     for filename in list_csv:
         file_path = os.path.join(folder_path, filename)
         if os.path.exists(file_path):
             df = pd.read_csv(file_path)
             dfs.append(df)
         
-    # Concaténer tous les DataFrames dans la liste
     concatenated_df = pd.concat(dfs, ignore_index=True)
-    
-    # Sauvegarder le DataFrame concaténé dans un fichier CSV dans le dossier 'data/'
-    output_file_path = os.path.join(folder_path, 'concatenated_data.csv')
+
+    output_file_path = os.path.join(folder_path, 'all_data.csv')
     concatenated_df.to_csv(output_file_path, index=False)
 
 
@@ -343,9 +344,10 @@ def main_web_scraping(job_name,n_posts_max,sites):
         df = create_df()
         df = web_scrap(df,url,n_posts_max=n_posts_max)
         save_df(df,df['source'][0])
-    concat_data()
+    concat_data(sites)
 
 
+#liste_sites = ["Apec","Indeed", "Glassdoor","Pole_Emploi", "Welcome_to_the_jungle"]
 #liste_sites = ["Apec"]
 #job_name = "Data"
 #main_web_scraping(job_name,30,liste_sites)

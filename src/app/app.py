@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
@@ -15,12 +16,9 @@ import time
 
 # Chemin absolu actuel de main_streamlit.py
 chemin_actuel = os.path.dirname(os.path.abspath(__file__))
-# Construire le chemin vers le dossier 'python' en utilisant le chemin relatif
 chemin_python = os.path.join(chemin_actuel, '..', 'python')
 # Ajouter le chemin au système PYTHONPATH
 sys.path.append(chemin_python)
-
-# Vous pouvez maintenant importer des modules de 'python'
 from web_scraping import main_web_scraping
 
 
@@ -42,7 +40,7 @@ def afficher_accueil():
         afficher_carte_par_defaut()
 
     # Dans la deuxième colonne, ajoutez un bouton pour "Département"
-    if col2.button("Département"):
+    if col2.button("Salaire Moyen Département"):
         afficher_carte_departement()
 
 
@@ -85,53 +83,70 @@ def afficher_carte_par_defaut():
 
 
 def afficher_carte_departement():
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    
+    # Calculez la moyenne des salaires par département
+    moyennes_par_departement = df.groupby('departement')['salary'].mean().reset_index()
+    min_moyennes = min(moyennes_par_departement['salary'])
+    max_moyennes = max(moyennes_par_departement['salary'])
+    
+    median_salary = moyennes_par_departement['salary'].median()
+    moyennes_par_departement['salary'].fillna(median_salary, inplace=True)
+    print(moyennes_par_departement)
 
-    # Calculez la moyenne des salaires par région
-    moyenne_par_departement = df.groupby('departement')['latitude'].mean().reset_index()
-    print(moyenne_par_departement)
+    quantiles = np.quantile(moyennes_par_departement['salary'], [0, 0.25, 0.5, 0.75, 1])
+
+    print(quantiles)
 
     # Créez une carte Folium centrée sur la France
     m = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
-
-    # Définir des intervalles de couleurs basés sur les quantiles
-    quantiles = np.quantile(moyenne_par_departement['latitude'], [0, 0.25, 0.5, 0.75, 1])
-    colors = ['blue', 'green', 'yellow', 'orange', 'red']
     
-
-    # Ajoutez des marqueurs pour chaque région avec la moyenne des salaires comme popup
-    for index, row in moyenne_par_departement.iterrows():
-        departement = row['departement']
-        moyenne_salary = row['latitude']
-
-        # Trouver la couleur correspondante basée sur le quantile
-        color_idx = np.sum(moyenne_salary > quantiles)
-        color = colors[color_idx]
-
-        # Ajouter le marqueur avec la couleur appropriée
-        folium.Marker(
-            location=[0, 0],  # Remplacez ceci par les coordonnées GPS de chaque département si nécessaire
-            popup=f"Département: {departement}<br>Moyenne Salaire: {moyenne_salary:.2f} €",
-            icon=folium.Icon(color=color)
-        ).add_to(m)
-
-
-    # Charger le fichier GeoJSON des départements français
-    with open('./departements.geojson', 'r') as f:
+    # Construire le chemin vers le fichier GeoJSON
+    chemin_data = os.path.join(chemin_actuel, '..', 'data')
+    chemin_geojson = os.path.join(chemin_data, 'departements.geojson')
+    
+    # Charger le fichier GeoJSON
+    with open(chemin_geojson, 'r') as f:
         geojson_data = json.load(f)
+
+    def get_color(moyenne_salary_array):
+        if len(moyenne_salary_array) != 0:
+            moyenne_salary = moyenne_salary_array[0]
+            
+            # Normalisez la moyenne des salaires entre 0 et 1
+            normalized_salary = (moyenne_salary - min_moyennes) / (max_moyennes - min_moyennes)
+        
+            r = 0
+            g = max(30, int(255 * normalized_salary))
+            b = 0
+            
+            # Formatez la couleur en chaîne hexadécimale
+            color_hex = "#{:02x}{:02x}{:02x}".format(r, g, b)
+            
+            return color_hex
+        else:
+            return '#f8f7f5'
+
+        
+    # Fonction pour formater le contenu de la popup
+    def format_popup_content(departement, moyenne_salary):
+        print(f"Nom du département : {departement}<br>Moyenne Salaire : {moyenne_salary} €")
+        return f"{departement}<br>Moyenne Salaire : {moyenne_salary} €"
+
 
     folium.GeoJson(
         geojson_data,
         style_function=lambda feature: {
-            'fillColor': 'green' if feature['properties']['NOM_DEPT'] in df['departement'].values else 'red',
+            'fillColor': get_color(moyennes_par_departement[moyennes_par_departement['departement'] == feature['properties']['nom']]['salary'].values),
             'color': 'black',
             'weight': 2,
             'dashArray': '5, 5',
-            'fillOpacity': 0.5,
+            'fillOpacity': 0.7,
+            'popup': format_popup_content(feature['properties']['nom'], moyennes_par_departement.get(feature['properties']['nom'], 'Non disponible'))
         }
     ).add_to(m)
-
+    
     folium_static(m)
-
 
 
 def afficher_donnees():
@@ -167,7 +182,7 @@ def analyse_texte():
     mots_communs = compteur.most_common(20)
 
     # Créer un DataFrame pour les 20 mots les plus courants
-    df_mots = pd.DataFrame(mots_communs, columns=['Mot', 'Fréquence'])
+    df_mots = pd.DataFrame(mots_communs, columns=['Mot', 'Occurence'])
 
     # Afficher le graphique à barres des 20 mots les plus courants
     plt.figure(figsize=(10, 8))
@@ -250,7 +265,7 @@ def main():
         st.write("Sélectionnez une option de navigation dans la barre latérale.")
 
 
-df = load_data("src/data/apec.csv")
+df = load_data("src/data/all_data.csv")
 
 if __name__ == "__main__":
     main()

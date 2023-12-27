@@ -132,14 +132,14 @@ def scrap_pole_job(html_source):
 
     print("======")
 
-    return [title,type_job,salary,compagny,global_location,region,departement,latitude,longitude,"language",skills,date,description,tokens,"pole_emploi"]
+    return [title,type_job,salary,compagny,global_location,region,departement,latitude,longitude,"language",skills,date,description,tokens,"Pole_Emploi"]
 
 
 def scrap_apec_job(html_source):
    
     soup = BeautifulSoup(html_source, 'html.parser')
 
-    source = "apec"
+    source = "Apec"
     compagny = ""
     type_job = ""
     location = ""
@@ -232,7 +232,7 @@ def scrap_indeed_job(html_source,date):
 
     soup = BeautifulSoup(html_source, 'html.parser')
 
-    source = "indeed"
+    source = "Indeed"
 
     div_title = soup.find('h1', class_='jobsearch-JobInfoHeader-title')   
     title = div_title.find('span')
@@ -331,7 +331,7 @@ def scrap_glassdoor_job(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
     job_header = soup.find('header', {'class':['JobDetails_jobDetailsHeaderWrapper__iHvDC JobDetails_sticky__fQ4Aq']})
      
-    source = "glassdoor"
+    source = "Glassdoor"
 
     type_job = ""
     salaire = ""
