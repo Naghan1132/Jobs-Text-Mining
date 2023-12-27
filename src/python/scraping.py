@@ -157,21 +157,25 @@ def scrap_apec_job(html_source):
             type_job = li_elements[1].text
             location = li_elements[2].text
 
-        print("compagny : ",compagny) # OK
-        print("location : ",location) # OK
-        print("type job : ",type_job) # OK
+    if type_job[1].isdigit():
+        # Supprimer le premier caractère (le chiffre) et les espaces
+        type_job = type_job[4:]
+    print(type_job)
 
     title = ""
     salary = ""
     description = ""
-    skills = ""
     experience = ""
-    date = "" # OK
+    date = ""
     
     date = soup.find('div',{'class':['date-offre']})
     if date is not None:
         date = date.text
-        print("date : ",date)
+        match = re.search(r'\d{2}/\d{2}/\d{4}', date)
+        if match:
+            date = match.group()
+            date = re.sub(r'\s+', '', date)
+            print(date)
 
     outer_div = soup.find('div', class_='col-lg-4')
     if outer_div is not None:
@@ -184,56 +188,31 @@ def scrap_apec_job(html_source):
 
         if "A négocier" in salary:
             salary = ""
-            print("a négocier")
         elif "A partir" in salary:
             match = re.search(r'(A partir de )?(\d+) k€ brut annuel', salary)
             if match:
-                # Vérifiez si la chaîne commence par "A partir de "
-                if match.group(1):
-                    return int(match.group(2)) * 1000  # Convertir k€ en €
-                else:
-                    # Convertir les valeurs en format annuel (en supposant que les valeurs sont mensuelles)
-                    valeur = int(match.group(2))
-                    valeur *= 12  # Convertir en brut annuel
-                    salary = valeur
-                print(salary)
+                salary = int(match.group(2)) * 1000 # Convertir k€ en €
             else:
                 salary = ""
 
         elif "brut annuel" in salary:
             match = re.search(r'(\d+) - (\d+) k€ brut annuel', salary)
             if match:
-                min_value = int(match.group(1))
-                max_value = int(match.group(2))
-                
-                # Convertir les valeurs en format annuel (en supposant que les valeurs sont mensuelles)
-                min_value *= 12
-                max_value *= 12
-                
-                salary = (min_value + max_value) / 2
-                print(salary)
-               
+                min_value = int(match.group(1)) * 1000
+                max_value = int(match.group(2)) * 1000
+                # Prendre la moitié
+                salary = (min_value + max_value) / 2 
             else:
                 salary = ""
-        
-
     
         experience = experience_div.find('span').text
 
     
     body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
     if body_div is not None:
-        skills = soup.find_all('div', {'class':['added-skills-manager__knowledge','mb-0']}) 
-        #print(skills)
-
         details = body_div.select('p:not(.mb-20)') # pas  la dernière => useless
-
         for d in details:
             description += d.text + " "
-        #print(description) 
-
-    if description != "":
-        skills = get_skills(description)
 
     latitude, longitude = get_coordinates(location)
     region, departement = get_region_department(latitude, longitude)
@@ -242,7 +221,7 @@ def scrap_apec_job(html_source):
 
     print("=============")
 
-    liste = [title,type_job,salary,compagny,location,region,departement,latitude,longitude,"language",skills,date,description,tokens,source]
+    liste = [title,type_job,salary,compagny,location,region,departement,latitude,longitude,experience,"skills",date,description,tokens,source]
     
     return liste
 

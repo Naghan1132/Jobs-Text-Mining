@@ -9,11 +9,21 @@ import numpy as np
 import json
 from collections import Counter
 import seaborn as sns
-
-
+import os
 import sys
-#sys.path.insert(0, '~/fac/m2/s1/projet_text_mining/Jobs-Text-Mining/src/python')
-#from web_scraping import main_web_scrapping
+import time
+
+# Chemin absolu actuel de main_streamlit.py
+chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+# Construire le chemin vers le dossier 'python' en utilisant le chemin relatif
+chemin_python = os.path.join(chemin_actuel, '..', 'python')
+# Ajouter le chemin au système PYTHONPATH
+sys.path.append(chemin_python)
+
+# Vous pouvez maintenant importer des modules de 'python'
+from web_scraping import main_web_scraping
+
+
 
 def load_data(file_path):
     data = pd.read_csv(file_path)
@@ -173,26 +183,30 @@ def scrapping():
     st.header("Scrapper les emplois de votre choix sur Indeed, Glassdoor et Apec etc...")
     st.markdown(''':rainbow[ATTENTION une offre scrappée = 2 secondes, prenez un café].''')
 
-    liste_sites = ["Indeed","Apec", "Glassdoor","Pole_Emploi", "Welcome_to_the_jungle"]
+    liste_sites = ["Apec","Indeed", "Glassdoor","Pole_Emploi", "Welcome_to_the_jungle"]
     
-    
-    sites_selectionnes = st.multiselect("Sélectionnez les sites à scrapper :", liste_sites, default=["Indeed"])
+    sites_selectionnes = st.multiselect("Sélectionnez les sites à scrapper :", liste_sites, default=["Apec"])
     
     # Zone de texte avec une taille réduite pour entrer le métier
-    texte_utilisateur = st.text_area("Entrer un métier :", "exemple : data scientist", height=10)
-
-    job_name = texte_utilisateur
+    job_name = st.text_area("Entrer un métier :", "exemple : data scientist", height=10)
     
     # Sélecteur numérique pour entrer le nombre d'emplois à scrapper par site
     n_jobs = st.number_input("Nombre d'emplois à scrapper par sites :", min_value=1, max_value=1000, value=30)
     
     # Bouton pour lancer le scraping
-    if st.button("Analyser le texte"):
+    if st.button("Scrapper les emplois"):
         st.write(f"Vous avez sélectionné les sites suivants pour le scraping : {sites_selectionnes}")
-        st.write(f"Métier sélectionné : {texte_utilisateur}")
+        st.write(f"Métier sélectionné : {job_name}")
         st.write(f"Nombre d'emplois à scrapper par sites : {n_jobs}")
+       
+        with st.spinner("Scrapping en cours..."):
+            
+            # Appeler votre fonction de scraping
+            result = main_web_scraping(job_name,n_jobs,sites_selectionnes)
+            
+            # Une fois le scraping terminé, mettre à jour le message
+            st.success("Scrapping terminé avec succès!")
 
-        #main_web_scrapping(texte_utilisateur,n_jobs,sites_selectionnes)
         
 
 

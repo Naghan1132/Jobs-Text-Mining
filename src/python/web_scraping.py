@@ -94,7 +94,7 @@ def build_url_job_research(job_name,sites):
 def create_driver():
     # Configurer les options du navigateur en mode headless
     chrome_options = Options()
-    #chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
+    chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
@@ -105,6 +105,7 @@ def create_driver():
 
 
 def web_scrap(df,url,n_posts_max,n_current_posts = 0):    
+    
     if "indeed" in url:
         source = "indeed"
     elif "apec" in url:
@@ -193,7 +194,7 @@ def web_scrap(df,url,n_posts_max,n_current_posts = 0):
             html_source = driver.page_source
             df = add_row(df,scrap_apec_job(html_source))
             n_current_posts += 1
-            
+       
         driver.quit()
         return df
         
@@ -327,8 +328,6 @@ def concat_data(folder_path='src/data/'):
         if os.path.exists(file_path):
             df = pd.read_csv(file_path)
             dfs.append(df)
-        else:
-            print(f"Le fichier {filename} n'a pas été trouvé dans le dossier {folder_path}.")
         
     # Concaténer tous les DataFrames dans la liste
     concatenated_df = pd.concat(dfs, ignore_index=True)
@@ -347,9 +346,9 @@ def main_web_scraping(job_name,n_posts_max,sites):
     concat_data()
 
 
-liste_sites = ["Apec","Welcome_to_the_jungle"]
-job_name = "Data"
-main_web_scraping(job_name,30,liste_sites)
+#liste_sites = ["Apec"]
+#job_name = "Data"
+#main_web_scraping(job_name,30,liste_sites)
 
 
 # indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant
@@ -359,14 +358,16 @@ main_web_scraping(job_name,30,liste_sites)
 # récupérer seulement les jobs où il n'y a pas d'infos manquantes ??
 # scrapper les compétences etc...!
 # régler le problème de la librairie pour récupérer le département, (elle a un nombre d'essais limite)
+# régler cookies pole emploi
+# mettre en dataframe plutot qu'en csv (faire les 2 en réalité)
 
 # moteur de recherche sur les comptétences : 
 # - l'user note les compétences qu'il a ou qu'il recherche
 # - on recherche et retourne les offres qui correspondent aux compétences (via description / tokenisation de la description)
 
 
+
 # régler type_job et salaire Glassdoor !!!
 # ajouter type_job et salaire pour Indeed !!!
-# extraire les compétences avec une recherche dans la description comme pour le salaire indeed etc...
 # probleme de concatenation de texte dans glassdoor (quelques fois) => Type post : CadreSalaire : 30k    
 
