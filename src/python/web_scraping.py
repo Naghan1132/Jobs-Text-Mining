@@ -365,3 +365,4 @@ def main_web_scraping(job_name,n_posts_max,sites):
 # - on recherche et retourne les offres qui correspondent aux compétences (via description / tokenisation de la description)
 # 
 
+# barplot des type de contrat ?

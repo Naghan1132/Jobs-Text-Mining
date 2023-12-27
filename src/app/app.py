@@ -14,15 +14,6 @@ import os
 import sys
 import time
 
-# Chemin absolu actuel de main_streamlit.py
-chemin_actuel = os.path.dirname(os.path.abspath(__file__))
-chemin_python = os.path.join(chemin_actuel, '..', 'python')
-# Ajouter le chemin au système PYTHONPATH
-sys.path.append(chemin_python)
-from web_scraping import main_web_scraping
-
-
-
 def load_data(file_path):
     data = pd.read_csv(file_path)
     return data
@@ -33,7 +24,6 @@ def afficher_accueil():
 
     # Création d'une mise en page en utilisant des colonnes pour aligner les boutons côte à côte
     col1, col2 = st.columns(2)
-
 
     # Dans la première colonne, ajoutez un bouton pour "Par défaut"
     if col1.button("Par défaut"):
@@ -87,9 +77,9 @@ def afficher_carte_departement():
     
     # Calculez la moyenne des salaires par département
     moyennes_par_departement = df.groupby('departement')['salary'].mean().reset_index()
-    min_moyennes = min(moyennes_par_departement['salary'])
-    max_moyennes = max(moyennes_par_departement['salary'])
-    
+    min_moyennes = moyennes_par_departement['salary'].min(skipna=True)
+    max_moyennes = moyennes_par_departement['salary'].max(skipna=True)
+
     #median_salary = moyennes_par_departement['salary'].median()
     #moyennes_par_departement['salary'].fillna(median_salary, inplace=True)
     print(moyennes_par_departement)
@@ -109,12 +99,19 @@ def afficher_carte_departement():
 
         if len(moyenne_salary_array) != 0:
             moyenne_salary = moyenne_salary_array[0]
+            
+            #print("moyenne_salary : ")
+            #print(moyenne_salary)
+
             if np.isnan(moyenne_salary):
                 return '#f8f7f5'
-    
+
+            # bug quand on a pas de données !!! 
+
             # Normalisez la moyenne des salaires entre 0 et 1
             normalized_salary = (moyenne_salary - min_moyennes) / (max_moyennes - min_moyennes)
-        
+            #print(normalized_salary)
+
             r = 0
             g = max(30, int(255 * normalized_salary))
             b = 0
@@ -194,6 +191,13 @@ def analyse_texte():
 
 
 def scrapping():
+    # Chemin absolu actuel de main_streamlit.py
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_python = os.path.join(chemin_actuel, '..', 'python')
+    # Ajouter le chemin au système PYTHONPATH
+    sys.path.append(chemin_python)
+    from web_scraping import main_web_scraping
+
     st.header("Scrapper les emplois de votre choix sur Indeed, Glassdoor et Apec etc...")
     st.markdown(''':rainbow[ATTENTION une offre scrappée = 2 secondes, prenez un café].''')
 

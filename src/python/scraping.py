@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from geopy.geocoders import Photon
 
 
-
 geolocator = Nominatim(user_agent="my_geocoder")
 geolocator_region = Nominatim(user_agent="my_geocoder")
 
@@ -14,11 +13,14 @@ def get_region_department(lat, lon):
     location = geolocator_region.reverse((lat, lon), exactly_one=True) 
     print(lat)
     print(lon) 
-    print(location)
     if location:
         address = location.raw['address']
-        if address:
-            return address.get('region', ''), address.get('county', '')
+        print("raw : ")
+        print(address)
+        if address.get('city') == 'Paris':
+            return address.get('state', ''), address.get('postcode', '')
+        elif address:
+            return address.get('state', ''), address.get('county', '')
     return None,None
 
 def get_coordinates(city):
@@ -213,6 +215,11 @@ def scrap_apec_job(html_source):
         details = body_div.select('p:not(.mb-20)') # pas  la dernière => useless
         for d in details:
             description += d.text + " "
+
+    # pb departelement avec coordonnées de parus
+    # la librairie geopy ne trouve pas le départements 
+    # (mais trouve pleins d'autres infos => Cathédrale Notre-Dame de Paris, 6, 
+    # Parvis Notre-Dame - Place Jean-Paul II, Quartier Les Îles, Paris 4e Arrondissement, Paris, Île-de-France, France métropolitaine, 75004, France
 
     latitude, longitude = get_coordinates(location)
     region, departement = get_region_department(latitude, longitude)
@@ -449,7 +456,7 @@ def scrap_jungle_job(html_source):
                     # Calculer la moyenne des salaires
                     salaire_moyen = (salaire_min + salaire_max) / 2
                     
-                    salary = salaire_moyen * 12  # Convertir en salaire annuel
+                    salary = salaire_moyen
                 else:
                     salary = ""
             print(salary)
