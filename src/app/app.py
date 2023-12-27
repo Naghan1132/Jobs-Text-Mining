@@ -90,13 +90,9 @@ def afficher_carte_departement():
     min_moyennes = min(moyennes_par_departement['salary'])
     max_moyennes = max(moyennes_par_departement['salary'])
     
-    median_salary = moyennes_par_departement['salary'].median()
-    moyennes_par_departement['salary'].fillna(median_salary, inplace=True)
+    #median_salary = moyennes_par_departement['salary'].median()
+    #moyennes_par_departement['salary'].fillna(median_salary, inplace=True)
     print(moyennes_par_departement)
-
-    quantiles = np.quantile(moyennes_par_departement['salary'], [0, 0.25, 0.5, 0.75, 1])
-
-    print(quantiles)
 
     # Créez une carte Folium centrée sur la France
     m = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
@@ -110,9 +106,12 @@ def afficher_carte_departement():
         geojson_data = json.load(f)
 
     def get_color(moyenne_salary_array):
+
         if len(moyenne_salary_array) != 0:
             moyenne_salary = moyenne_salary_array[0]
-            
+            if np.isnan(moyenne_salary):
+                return '#f8f7f5'
+    
             # Normalisez la moyenne des salaires entre 0 et 1
             normalized_salary = (moyenne_salary - min_moyennes) / (max_moyennes - min_moyennes)
         
@@ -120,7 +119,6 @@ def afficher_carte_departement():
             g = max(30, int(255 * normalized_salary))
             b = 0
             
-            # Formatez la couleur en chaîne hexadécimale
             color_hex = "#{:02x}{:02x}{:02x}".format(r, g, b)
             
             return color_hex
@@ -130,7 +128,7 @@ def afficher_carte_departement():
         
     # Fonction pour formater le contenu de la popup
     def format_popup_content(departement, moyenne_salary):
-        print(f"Nom du département : {departement}<br>Moyenne Salaire : {moyenne_salary} €")
+        #print(f"Nom du département : {departement}<br>Moyenne Salaire : {moyenne_salary} €")
         return f"{departement}<br>Moyenne Salaire : {moyenne_salary} €"
 
 
@@ -152,6 +150,7 @@ def afficher_carte_departement():
 def afficher_donnees():
     st.write("Affichage des 5 premières lignes du fichier CSV :")
     st.write(df.head())
+    st.write("Taille du corpus : ",len(df))
 
 
 def analyse_texte():
@@ -186,9 +185,9 @@ def analyse_texte():
 
     # Afficher le graphique à barres des 20 mots les plus courants
     plt.figure(figsize=(10, 8))
-    sns.barplot(x='Fréquence', y='Mot', data=df_mots, palette='viridis')
+    sns.barplot(x='Occurence', y='Mot', data=df_mots, palette='viridis')
     plt.title('20 mots les plus utilisés')
-    plt.xlabel('Fréquence')
+    plt.xlabel('Occurence')
     plt.ylabel('Mot')
     st.pyplot(plt)  # Afficher le plot dans Streamlit
 
@@ -223,11 +222,20 @@ def scrapping():
             st.success("Scrapping terminé avec succès!")
 
         
+def recherche():
+    st.header("retourne les emplois les plus pertinents en fonction de votre recherche")
+    st.write("entrer peut-être le type emploi, le nom du job et compétences etc... via description")
 
+    # Widget de barre de recherche
+    search_query_emploi = st.text_input("Titre Emploi : ", "")
+    search_query_contrat = st.text_input("Type contrat : ", "")
+
+    # Bouton de recherche
+    if st.button('Rechercher'):
+        st.write(f"Vous avez recherché: {search_query_emploi} et {search_query_contrat}")
 
 def main():
 
-    job_name = ""
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
     # Titre de l'application
@@ -249,12 +257,14 @@ def main():
 
 
     # Options de navigation pour les onglets
-    options_navigation = ["Accueil", "Afficher les données", "Analyse de Texte", "Scrapper des données"]
+    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte", "Scrapper des données"]
     selected_option = st.sidebar.radio("Navigation", options_navigation)
 
     # Contenu de l'application en fonction de l'option sélectionnée
     if selected_option == "Accueil":
         afficher_accueil()
+    elif selected_option == "Recherche":
+        recherche()
     elif selected_option == "Afficher les données":
         afficher_donnees()
     elif selected_option == "Analyse de Texte":

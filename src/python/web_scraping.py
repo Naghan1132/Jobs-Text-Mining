@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 #### RÉSUMÉ ####
 
-# APEC PARFAIT
+# APEC PARFAIT (rapide, efficace)
 # Glassdoor
 # Pole Emploi => cookies à accepter
 # Welcome to the jungle PARFAIT
@@ -291,27 +291,24 @@ def web_scrap(df,url,n_posts_max):
             if links is None:
                 driver.quit()
                 return df
-
-            n_current_posts = n_current_posts + len(links) 
-            print("nombre jobs : ",n_current_posts)
-            time.sleep(3)
+        
             for link in links:      
                 if link is not None:    
                     driver.get("https://www.welcometothejungle.com"+str(link))
                     time.sleep(1)
                     html_source = driver.page_source
                     df = add_row(df,scrap_jungle_job(html_source))
-                time.sleep(1) # ajouter du temps sinon l'anti-bot detecte
+                    n_current_posts += 1
+                    if n_current_posts >= n_posts_max:
+                        driver.quit()
+                        return df
+                #time.sleep(1) # ajouter du temps sinon l'anti-bot detecte
             
             cpt = cpt + 1
-            if n_current_posts >= n_posts_max:
-                driver.quit()
-                return df
-            else:
-                page_modified = "page="+str(cpt)
-                base_url = re.sub(r'page=\d+', page_modified, base_url)
-                driver.get(base_url)
-                time.sleep(2) # attendre que les offres chargent
+            page_modified = "page="+str(cpt)
+            base_url = re.sub(r'page=\d+', page_modified, base_url)
+            driver.get(base_url)
+            time.sleep(1) # attendre que les offres chargent
         
     else:
         print("Source inconnue")
@@ -366,10 +363,5 @@ def main_web_scraping(job_name,n_posts_max,sites):
 # moteur de recherche sur les comptétences : 
 # - l'user note les compétences qu'il a ou qu'il recherche
 # - on recherche et retourne les offres qui correspondent aux compétences (via description / tokenisation de la description)
-
-
-
-# régler type_job et salaire Glassdoor !!!
-# ajouter type_job et salaire pour Indeed !!!
-# probleme de concatenation de texte dans glassdoor (quelques fois) => Type post : CadreSalaire : 30k    
+# 
 

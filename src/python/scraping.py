@@ -404,7 +404,7 @@ def scrap_jungle_job(html_source):
    
     soup = BeautifulSoup(html_source, 'html.parser')
 
-    source = "welcome_to_the_jungle"
+    source = "Welcome_to_the_jungle"
     compagny = ""
     type_job = ""
     location = ""
