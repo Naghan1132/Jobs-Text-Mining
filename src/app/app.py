@@ -23,14 +23,18 @@ def afficher_accueil():
     st.write("Key Word : ",job_name)
 
     # Création d'une mise en page en utilisant des colonnes pour aligner les boutons côte à côte
-    col1, col2 = st.columns(2)
+    col1, col2,col3 = st.columns(3)
 
     # Dans la première colonne, ajoutez un bouton pour "Par défaut"
     if col1.button("Par défaut"):
         afficher_carte_par_defaut()
 
     # Dans la deuxième colonne, ajoutez un bouton pour "Département"
-    if col2.button("Salaire Moyen Département"):
+    if col2.button("Salaire Moyen Région"):
+        afficher_carte_region()
+
+    # Dans la deuxième colonne, ajoutez un bouton pour "Département"
+    if col3.button("Salaire Moyen Département"):
         afficher_carte_departement()
 
 
@@ -133,6 +137,77 @@ def afficher_carte_departement():
         geojson_data,
         style_function=lambda feature: {
             'fillColor': get_color(moyennes_par_departement[moyennes_par_departement['departement'] == feature['properties']['nom']]['salary'].values),
+            'color': 'black',
+            'weight': 2,
+            'dashArray': '5, 5',
+            'fillOpacity': 0.7,
+            'popup': format_popup_content(feature['properties']['nom'], moyennes_par_departement.get(feature['properties']['nom'], 'Non disponible'))
+        }
+    ).add_to(m)
+    
+    folium_static(m)
+
+def afficher_carte_region():
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    
+    # Calculez la moyenne des salaires par département
+    moyennes_par_departement = df.groupby('region')['salary'].mean().reset_index()
+    min_moyennes = moyennes_par_departement['salary'].min(skipna=True)
+    max_moyennes = moyennes_par_departement['salary'].max(skipna=True)
+
+    #median_salary = moyennes_par_departement['salary'].median()
+    #moyennes_par_departement['salary'].fillna(median_salary, inplace=True)
+    print(moyennes_par_departement)
+
+    # Créez une carte Folium centrée sur la France
+    m = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
+    
+    # Construire le chemin vers le fichier GeoJSON
+    chemin_data = os.path.join(chemin_actuel, '..', 'data')
+    chemin_geojson = os.path.join(chemin_data, 'regions.geojson')
+    
+    # Charger le fichier GeoJSON
+    with open(chemin_geojson, 'r') as f:
+        geojson_data = json.load(f)
+
+    def get_color(moyenne_salary_array):
+
+        if len(moyenne_salary_array) != 0:
+            moyenne_salary = moyenne_salary_array[0]
+            
+            #print("moyenne_salary : ")
+            #print(moyenne_salary)
+
+            if np.isnan(moyenne_salary):
+                return '#f8f7f5'
+
+            # bug quand on a pas de données !!! 
+
+            # Normalisez la moyenne des salaires entre 0 et 1
+            normalized_salary = (moyenne_salary - min_moyennes) / (max_moyennes - min_moyennes)
+            #print(normalized_salary)
+
+            r = 0
+            g = max(30, int(255 * normalized_salary))
+            b = 0
+            
+            color_hex = "#{:02x}{:02x}{:02x}".format(r, g, b)
+            
+            return color_hex
+        else:
+            return '#f8f7f5'
+
+        
+    # Fonction pour formater le contenu de la popup
+    def format_popup_content(departement, moyenne_salary):
+        #print(f"Nom du département : {departement}<br>Moyenne Salaire : {moyenne_salary} €")
+        return f"{departement}<br>Moyenne Salaire : {moyenne_salary} €"
+
+
+    folium.GeoJson(
+        geojson_data,
+        style_function=lambda feature: {
+            'fillColor': get_color(moyennes_par_departement[moyennes_par_departement['region'] == feature['properties']['nom']]['salary'].values),
             'color': 'black',
             'weight': 2,
             'dashArray': '5, 5',
