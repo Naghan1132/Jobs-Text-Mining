@@ -171,7 +171,6 @@ def scrap_pole_job(html_source):
     date_span = date_spans[0]
     date = date_span.get('content', '')
     date = datetime.strptime(date, '%Y-%m-%d')
-    # Formater la date en "20/12/2023"
     date = date.strftime('%d/%m/%Y')
 
     print(type_job) # OK
@@ -392,7 +391,7 @@ def scrap_indeed_job(html_source,date):
 
     print("\n ================== \n")
 
-    liste = [title,type_job,salary,compagny,location,region, departement,latitude,longitude,"language",skills,date,description,tokens,source]
+    liste = [title,type_job,salary,compagny,location,region, departement,latitude,longitude,"experience","skills",date,description,tokens,source]
 
     return liste
 

@@ -289,10 +289,10 @@ def scrapping():
     sys.path.append(chemin_python)
     from web_scraping import main_web_scraping
 
-    st.header("Scrapper les emplois de votre choix sur Indeed, Glassdoor et Apec etc...")
+    st.header("Scrapper les emplois de votre choix sur Indeed, Pole Emploi et Apec etc...")
     st.markdown(''':rainbow[ATTENTION une offre scrappée = 2 secondes, prenez un café].''')
 
-    liste_sites = ["Apec","Indeed", "Glassdoor","Pole_Emploi", "Welcome_to_the_jungle"]
+    liste_sites = ["Apec","Indeed","Pole_Emploi", "Welcome_to_the_jungle"]
     
     sites_selectionnes = st.multiselect("Sélectionnez les sites à scrapper :", liste_sites, default=["Apec"])
     

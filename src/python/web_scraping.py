@@ -19,8 +19,7 @@ from selenium.common.exceptions import TimeoutException
 # Welcome to the jungle PARFAIT
 
 # Indeed (réessayer quand meme car compétences à scrapper !!!)
-# Glassdoor (infos dures à scrapper)
-
+# Glassdoor (bco d'infos manquantes/dures à scrapper) => à abandonner
 
 # LinkedIn KO (compliqué à revoir, faut se connecter etc...)
 # Emploi Public KO (pas de mots clé dans l'url)
@@ -97,7 +96,7 @@ def build_url_job_research(job_name,sites):
 def create_driver():
     # Configurer les options du navigateur en mode headless
     chrome_options = Options()
-    chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
+    #chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
@@ -135,7 +134,7 @@ def web_scrap(df,url,n_posts_max):
 
     n_current_posts = 0
 
-    if source == "indeed":
+    if source == "indeed":                
         while True:
             base_url = driver.current_url
             html_source = driver.page_source
@@ -145,36 +144,28 @@ def web_scrap(df,url,n_posts_max):
                 driver.quit()
                 return df
 
-            n_current_posts = n_current_posts + len(links) 
-            print("nombre jobs : ",n_current_posts)
-    
             for link in links:    
                 if link is not None:    
                     driver.get("https://fr.indeed.com/viewjob?jk="+str(link))
-                    
-                    checkbox = WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="checkbox"]'))
-                    )
-
-                    driver.execute_script("arguments[0].click();", checkbox) 
-                    print("Case à cocher cliquée!")
-
-                    time.sleep(3)
-
+                    # checkbox anti - bot
+                    WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[title='Widget containing a Cloudflare security challenge']")))
+                    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "label.ctp-checkbox-label"))).click()
+                    print("OK")
+                    time.sleep(8)
                     html_source = driver.page_source
                     df = add_row(df,scrap_indeed_job(html_source,dates[links.index(link)]))
+                    n_current_posts += 1
+                    if n_current_posts >= n_posts_max:
+                        driver.quit()
+                        return df
                 time.sleep(3) # ajouter du temps sinon l'anti-bot detecte
             
-            if n_current_posts >= n_posts_max:
-                driver.quit()
-                return df
-            else:
-                driver.get(base_url)
-                # clicker sur la page d'après
-                suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a') 
-                # appyuer sur le bouton suivant "Plus d'offres d'emploi"
-                driver.execute_script("arguments[0].click();", suivant_button)
-                time.sleep(3) # attendre que les offres chargent
+            driver.get(base_url)
+            # clicker sur la page d'après
+            suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a') 
+            # appyuer sur le bouton suivant "Plus d'offres d'emploi"
+            driver.execute_script("arguments[0].click();", suivant_button)
+            time.sleep(3) # attendre que les offres chargent
 
     elif source == "apec":
         base_url = driver.current_url
@@ -337,8 +328,8 @@ def main_web_scraping(job_name,n_posts_max,sites):
     concat_data(sites)
 
 
-#liste_sites = ["Apec","Indeed", "Glassdoor","Pole_Emploi", "Welcome_to_the_jungle"]
-liste_sites = ["Welcome_to_the_jungle","Pole_Emploi","Apec"]
+#liste_sites = ["Apec","Indeed","Pole_Emploi", "Welcome_to_the_jungle"]
+liste_sites = ["Indeed"]
 job_name = "Data"
 main_web_scraping(job_name,8,liste_sites)
 
@@ -346,16 +337,13 @@ main_web_scraping(job_name,8,liste_sites)
 # Indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant
 
 # TODO =>
-# tester si il n'y a pas ou plus de jobs à scrapper (déjà fait)
 # récupérer seulement les jobs où il n'y a pas d'infos manquantes ?? (peut-être)
-# scrapper les compétences etc... => impossible il faut avoir un modèle entrainé hyper précis ?
+# re-scrapper Indeed pour les compétences
 # mettre en dataframe plutot qu'en csv (faire les 2 en réalité, c'est pas dur)
-
 
 # Homogénisation format de type_job (CDI, CDD etc...), date (jour/mois/annee), etc...
 # réduire au MAXIMUM les time.sleep() => pour diminuer le temps de scrapping
 
-# strip les descriptions => enlever retour chariot, emojis etc...
 
 # Axes d'analyse :
 # - barplot des type de contrat ?
