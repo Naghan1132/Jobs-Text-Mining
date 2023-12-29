@@ -147,7 +147,7 @@ def web_scrap(df,url,n_posts_max):
             for link in links:    
                 if link is not None:    
                     driver.get("https://fr.indeed.com/viewjob?jk="+str(link))
-                    # checkbox anti - bot
+                    # checkbox anti - bot OK
                     WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[title='Widget containing a Cloudflare security challenge']")))
                     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "label.ctp-checkbox-label"))).click()
                     print("CAPTCHA vérifié")
