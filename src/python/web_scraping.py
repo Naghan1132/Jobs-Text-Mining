@@ -15,15 +15,17 @@ from selenium.common.exceptions import TimeoutException
 #### RÉSUMÉ ####
 
 # APEC PARFAIT (rapide, efficace)
-# Glassdoor
-# Pole Emploi => cookies à accepter
+# Pole Emploi PARFAIT
 # Welcome to the jungle PARFAIT
 
+# Indeed (réessayer quand meme car compétences à scrapper !!!)
+# Glassdoor (infos dures à scrapper)
+
+
 # LinkedIn KO (compliqué à revoir, faut se connecter etc...)
-# Indeed KO (NOUVEL ANTI BOT)
 # Emploi Public KO (pas de mots clé dans l'url)
 # Emploi Territorial (moteur de recherche très mauvais => à abandonner)
-# hello work KO anti bot trop fort
+# Hello work KO anti-bot trop fort
 
 def build_url_job_research(job_name,sites):
     base_urls = [
@@ -95,7 +97,7 @@ def build_url_job_research(job_name,sites):
 def create_driver():
     # Configurer les options du navigateur en mode headless
     chrome_options = Options()
-    #chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
+    chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
@@ -182,17 +184,14 @@ def web_scrap(df,url,n_posts_max):
         if link is None:
             driver.quit()
             return df
-        else:
-            driver.get("https://www.apec.fr"+link)
-            time.sleep(2)
-            html_source = driver.page_source
-            df = add_row(df,scrap_apec_job(html_source))
-            n_current_posts += 1
-                
+        
+        driver.get("https://www.apec.fr"+link)
+        html_source = driver.page_source
+
         while n_current_posts < n_posts_max:
             suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[class="nextpage"]') 
             driver.execute_script("arguments[0].click();", suivant_button)
-            time.sleep(2) # attendre que les offres chargent
+            #time.sleep(2) # attendre que les offres chargent
             html_source = driver.page_source
             df = add_row(df,scrap_apec_job(html_source))
             n_current_posts += 1
@@ -248,7 +247,6 @@ def web_scrap(df,url,n_posts_max):
             cookies = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.ID, "cookie-id"))
             )
-            print(cookies)
             driver.execute_script("arguments[0].click();", cookies)
             
         except TimeoutException:
@@ -266,21 +264,19 @@ def web_scrap(df,url,n_posts_max):
                         if link is not None:
                             u = "https://candidat.pole-emploi.fr/offres/recherche/detail/"+link
                             driver.get(u)
-                            time.sleep(1)
+                            #time.sleep(1)
                             html_source = driver.page_source
                             df = add_row(df,scrap_pole_job(html_source))
+                            n_current_posts += 1
+                            if n_current_posts >= n_posts_max:
+                                driver.quit()
+                                return df
                         
-                n_current_posts = n_current_posts + len(links) 
-                print("nombre jobs : ",n_current_posts)
-
-                if n_current_posts >= n_posts_max:
-                    driver.quit()
-                    return df
-                else:
-                    #bouton page suivante
-                    suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
-                    driver.execute_script("arguments[0].click();", suivant_button)
-                    time.sleep(3) # attendre que les offres chargent
+                
+                #bouton page suivante
+                suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+                driver.execute_script("arguments[0].click();", suivant_button)
+                #time.sleep(3) # attendre que les offres chargent
 
     elif source == "welcome_to_the_jungle":
         cpt = 0
@@ -296,42 +292,38 @@ def web_scrap(df,url,n_posts_max):
             for link in links:      
                 if link is not None:    
                     driver.get("https://www.welcometothejungle.com"+str(link))
-                    time.sleep(1)
+                    #time.sleep(1)
                     html_source = driver.page_source
                     df = add_row(df,scrap_jungle_job(html_source))
                     n_current_posts += 1
                     if n_current_posts >= n_posts_max:
                         driver.quit()
                         return df
-                #time.sleep(1) # ajouter du temps sinon l'anti-bot detecte
             
             cpt = cpt + 1
             page_modified = "page="+str(cpt)
             base_url = re.sub(r'page=\d+', page_modified, base_url)
             driver.get(base_url)
-            time.sleep(1) # attendre que les offres chargent
+            #time.sleep(1) # attendre que les offres chargent
         
     else:
         print("Source inconnue")
         driver.quit()
         return df
 
+
+
 def concat_data(sites,folder_path='src/data/'):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"Le dossier {folder_path} n'existe pas.")
-
     dfs = []
-
     list_csv = [site + ".csv" for site in sites]  # Add ".csv" to each element in the list
-
     for filename in list_csv:
         file_path = os.path.join(folder_path, filename)
         if os.path.exists(file_path):
             df = pd.read_csv(file_path)
-            dfs.append(df)
-        
+            dfs.append(df)   
     concatenated_df = pd.concat(dfs, ignore_index=True)
-
     output_file_path = os.path.join(folder_path, 'all_data.csv')
     concatenated_df.to_csv(output_file_path, index=False)
 
@@ -346,22 +338,29 @@ def main_web_scraping(job_name,n_posts_max,sites):
 
 
 #liste_sites = ["Apec","Indeed", "Glassdoor","Pole_Emploi", "Welcome_to_the_jungle"]
-liste_sites = ["Pole_Emploi"]
+liste_sites = ["Welcome_to_the_jungle","Pole_Emploi","Apec"]
 job_name = "Data"
-main_web_scraping(job_name,30,liste_sites)
+main_web_scraping(job_name,8,liste_sites)
 
 
-# indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant
+# Indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant
 
-# to do =>
-# tester si il n'y a pas ou plus de jobs à scrapper !!
-# récupérer seulement les jobs où il n'y a pas d'infos manquantes ??
-# scrapper les compétences etc... => impossible ?
+# TODO =>
+# tester si il n'y a pas ou plus de jobs à scrapper (déjà fait)
+# récupérer seulement les jobs où il n'y a pas d'infos manquantes ?? (peut-être)
+# scrapper les compétences etc... => impossible il faut avoir un modèle entrainé hyper précis ?
 # mettre en dataframe plutot qu'en csv (faire les 2 en réalité, c'est pas dur)
 
-# moteur de recherche sur les comptétences / tokens plutot: 
+
+# Homogénisation format de type_job (CDI, CDD etc...), date (jour/mois/annee), etc...
+# réduire au MAXIMUM les time.sleep() => pour diminuer le temps de scrapping
+
+# strip les descriptions => enlever retour chariot, emojis etc...
+
+# Axes d'analyse :
+# - barplot des type de contrat ?
+# - filtres carte ou autres (date, type de contrat, salaire, etc...)
+# - moteur de recherche sur les comptétences / tokens plutot: 
 # - l'user note les compétences qu'il a ou qu'il recherche
 # - on recherche et retourne les offres qui correspondent aux compétences (via description / tokenisation de la description)
 
-
-# barplot des type de contrat ?

@@ -13,7 +13,7 @@ def create_df():
     df['departement'] = None
     df['latitude'] = None
     df['longitude'] = None
-    df['language'] = None
+    df['experience'] = None
     df['skills'] = None
     df['date'] = None
     df['description'] = None
