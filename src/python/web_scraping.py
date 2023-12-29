@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 
 #### RÉSUMÉ ####
@@ -243,43 +244,43 @@ def web_scrap(df,url,n_posts_max):
         return df
 
     elif source == "pole_emploi":
-        time.sleep(1)
-        cookies = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="pecookies-accept-all"]'))
+        try:
+            cookies = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.ID, "cookie-id"))
             )
-        print(cookies)
-        driver.execute_script("arguments[0].click();", cookies)
+            print(cookies)
+            driver.execute_script("arguments[0].click();", cookies)
             
-        print("testt")
-        while True:
-            base_url = driver.current_url
-            html_source = driver.page_source
+        except TimeoutException:
+            while True:
+                base_url = driver.current_url
+                html_source = driver.page_source
+                
+                links = get_pole_job_links(html_source)
             
-            links = get_pole_job_links(html_source)
-        
-            if links is None:
-                driver.quit()
-                return df
-        
-            for link in links:    
-                    if link is not None:
-                        u = "https://candidat.pole-emploi.fr/offres/recherche/detail/"+link
-                        driver.get(u)
-                        time.sleep(1)
-                        html_source = driver.page_source
-                        df = add_row(df,scrap_pole_job(html_source))
-                      
-            n_current_posts = n_current_posts + len(links) 
-            print("nombre jobs : ",n_current_posts)
+                if links is None:
+                    driver.quit()
+                    return df
+            
+                for link in links:    
+                        if link is not None:
+                            u = "https://candidat.pole-emploi.fr/offres/recherche/detail/"+link
+                            driver.get(u)
+                            time.sleep(1)
+                            html_source = driver.page_source
+                            df = add_row(df,scrap_pole_job(html_source))
+                        
+                n_current_posts = n_current_posts + len(links) 
+                print("nombre jobs : ",n_current_posts)
 
-            if n_current_posts >= n_posts_max:
-                driver.quit()
-                return df
-            else:
-                #bouton page suivante
-                suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
-                driver.execute_script("arguments[0].click();", suivant_button)
-                time.sleep(3) # attendre que les offres chargent
+                if n_current_posts >= n_posts_max:
+                    driver.quit()
+                    return df
+                else:
+                    #bouton page suivante
+                    suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+                    driver.execute_script("arguments[0].click();", suivant_button)
+                    time.sleep(3) # attendre que les offres chargent
 
     elif source == "welcome_to_the_jungle":
         cpt = 0
@@ -345,9 +346,9 @@ def main_web_scraping(job_name,n_posts_max,sites):
 
 
 #liste_sites = ["Apec","Indeed", "Glassdoor","Pole_Emploi", "Welcome_to_the_jungle"]
-#liste_sites = ["Apec"]
-#job_name = "Data"
-#main_web_scraping(job_name,30,liste_sites)
+liste_sites = ["Pole_Emploi"]
+job_name = "Data"
+main_web_scraping(job_name,30,liste_sites)
 
 
 # indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant
@@ -355,14 +356,12 @@ def main_web_scraping(job_name,n_posts_max,sites):
 # to do =>
 # tester si il n'y a pas ou plus de jobs à scrapper !!
 # récupérer seulement les jobs où il n'y a pas d'infos manquantes ??
-# scrapper les compétences etc...!
-# régler le problème de la librairie pour récupérer le département, (elle a un nombre d'essais limite)
-# régler cookies pole emploi
-# mettre en dataframe plutot qu'en csv (faire les 2 en réalité)
+# scrapper les compétences etc... => impossible ?
+# mettre en dataframe plutot qu'en csv (faire les 2 en réalité, c'est pas dur)
 
-# moteur de recherche sur les comptétences : 
+# moteur de recherche sur les comptétences / tokens plutot: 
 # - l'user note les compétences qu'il a ou qu'il recherche
 # - on recherche et retourne les offres qui correspondent aux compétences (via description / tokenisation de la description)
-# 
+
 
 # barplot des type de contrat ?

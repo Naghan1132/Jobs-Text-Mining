@@ -9,18 +9,20 @@ from geopy.geocoders import Photon
 geolocator = Nominatim(user_agent="my_geocoder")
 geolocator_region = Nominatim(user_agent="my_geocoder")
 
-def get_region_department(lat, lon):
+def get_region_department(lat, lon, only_dep = False):
     location = geolocator_region.reverse((lat, lon), exactly_one=True) 
-    print(lat)
-    print(lon) 
     if location:
         address = location.raw['address']
-        print("raw : ")
-        print(address)
+        #print("raw : ")
+        #   print(address)
         if address.get('city') == 'Paris':
-            return address.get('state', ''), address.get('postcode', '')
+            return address.get('state', ''), address.get('city_district', '')
         elif address:
-            return address.get('state', ''), address.get('county', '')
+            if only_dep == False:
+                return address.get('state', ''), address.get('county', '')
+            else:
+                return address.get('county', '')
+
     return None,None
 
 def get_coordinates(city):
@@ -76,8 +78,6 @@ def scrap_pole_job(html_source):
     region = region.get('content', '')
     country = soup.find('span',{'itemprop':['addressCountry']})
     country = country.get('content', '')
-
-    location = soup.find('span',{'itemprop':['name']})
     
     
     postal_code = postal_code if postal_code else ""
@@ -96,6 +96,19 @@ def scrap_pole_job(html_source):
         # Récupère le texte de la balise <dd> jusqu'à la balise <br/>
         type_job = dd_element.get_text(separator='\n', strip=True).split('\n', 1)[0]
         type_job = type_job.strip()
+        if type_job:
+            pattern_1 = r"indéterminée"
+            pattern_2 = r"déterminée"
+            pattern_3 = r"intérimaire"
+
+            if re.search(pattern_1, type_job):
+                type_job = "CDI"
+            elif re.search(pattern_2, type_job):
+                # prendre nombre mois ?? "intérimaire - 3 Mois"
+                type_job = "CDD"
+            elif re.search(pattern_3, type_job):
+                type_job = "Intérim"
+
     else:
         type_job = ""
 
@@ -107,29 +120,75 @@ def scrap_pole_job(html_source):
         salary = [li.text.strip() for li in salary_container.find_all('li')]
         salary = ', '.join(salary)
         salary = salary.strip()
+        salary = salary.lower()
+
+        # Expression régulière pour rechercher "Selon profils", "Selon profil" ou "négociable"
+        pattern = r"selon profils?|\bselon profil\b|négociable"
+        pattern_chiffres = r"\D+"
+
+        if not re.search(pattern_chiffres, salary) or re.search(pattern, salary, re.IGNORECASE):
+            # pas de chiffre ou à négocier => pas de salaire
+            salary = ""
+        else:
+            monthly_pattern = r"mensuel de (\d+,\d{2}) euros"
+            annual_borne_pattern = r"annuel de (\d+,\d{2}) euros à (\d+,\d{2}) euros"
+            annual_pattern = r"annuel de (\d+,\d{2}) euros"
+            horaire_borne_pattern = r"horaire de (\d+,\d{2}) euros à (\d+,\d{2}) euros"
+
+            monthly_match = re.search(monthly_pattern, salary)
+            annual_borne_match = re.search(annual_borne_pattern, salary)
+            annual_match = re.search(annual_pattern, salary)
+            horaire_borne_match = re.search(horaire_borne_pattern, salary)
+
+            if monthly_match:
+                print("salaire mois")
+                print(salary)
+                print(monthly_match)
+                monthly_salary = float(monthly_match.group(1).replace(',', '.'))
+                annual_salary = monthly_salary * 12
+                salary = annual_salary
+                print("res : ")
+                print(salary)
+            
+            elif annual_borne_match:
+                print("salaire année")
+                print(salary)
+                lower_salary = float(annual_borne_match.group(1).replace(',', '.'))
+                upper_salary = float(annual_borne_match.group(2).replace(',', '.'))
+                print("upper")
+                print(upper_salary)
+                print("lower")
+                print(lower_salary)
+                annual_salary = (lower_salary + upper_salary) / 2
+                salary = annual_salary
+                print("res : ")
+                print(salary)
+            elif annual_match:
+                salary = float(annual_match.group(1).replace(',', '.'))
+                
+            elif horaire_borne_match:
+                salary = "" # galère 
+            else:
+                salary = ""
+
     else:
         salary = ""
-
-
-    skills_elements = soup.find_all('span', {'itemprop': 'skills'})
-    skills2 = [skills.text.strip() for skills in skills_elements]
-
     
-    global_location = postal_code + " " + locality + " " + region + " " + country
+    global_location = locality + " " + postal_code + " " + region
 
     date_spans = soup.find_all('span', {'itemprop': 'datePosted'})
     date_span = date_spans[0]
     date = date_span.get('content', '')
 
 
-    print(title)
-    print(type_job)
-    print(skills)
-    print(global_location)
-    print("date : ",date)
+    print(title) # OK
+    print(type_job) # OK
+    print(global_location) # OK
+    print(date) # OK
 
-    latitude, longitude = get_coordinates(location)
-    region, departement = get_region_department(latitude, longitude)
+    latitude, longitude = get_coordinates(locality + " - " + postal_code) # OK
+    departement = get_region_department(latitude, longitude,only_dep=True) # OK
+    print(region)
     tokens = scrap_description(description)
 
     print("======")
@@ -215,11 +274,6 @@ def scrap_apec_job(html_source):
         details = body_div.select('p:not(.mb-20)') # pas  la dernière => useless
         for d in details:
             description += d.text + " "
-
-    # pb departelement avec coordonnées de parus
-    # la librairie geopy ne trouve pas le départements 
-    # (mais trouve pleins d'autres infos => Cathédrale Notre-Dame de Paris, 6, 
-    # Parvis Notre-Dame - Place Jean-Paul II, Quartier Les Îles, Paris 4e Arrondissement, Paris, Île-de-France, France métropolitaine, 75004, France
 
     latitude, longitude = get_coordinates(location)
     region, departement = get_region_department(latitude, longitude)

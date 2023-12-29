@@ -147,17 +147,18 @@ def afficher_carte_departement():
     
     folium_static(m)
 
+
 def afficher_carte_region():
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
     
     # Calculez la moyenne des salaires par département
-    moyennes_par_departement = df.groupby('region')['salary'].mean().reset_index()
-    min_moyennes = moyennes_par_departement['salary'].min(skipna=True)
-    max_moyennes = moyennes_par_departement['salary'].max(skipna=True)
+    moyennes_par_region = df.groupby('region')['salary'].mean().reset_index()
+    min_moyennes = moyennes_par_region['salary'].min(skipna=True)
+    max_moyennes = moyennes_par_region['salary'].max(skipna=True)
 
-    #median_salary = moyennes_par_departement['salary'].median()
-    #moyennes_par_departement['salary'].fillna(median_salary, inplace=True)
-    print(moyennes_par_departement)
+    #median_salary = moyennes_par_region['salary'].median()
+    #moyennes_par_region['salary'].fillna(median_salary, inplace=True)
+    print(moyennes_par_region)
 
     # Créez une carte Folium centrée sur la France
     m = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
@@ -207,23 +208,38 @@ def afficher_carte_region():
     folium.GeoJson(
         geojson_data,
         style_function=lambda feature: {
-            'fillColor': get_color(moyennes_par_departement[moyennes_par_departement['region'] == feature['properties']['nom']]['salary'].values),
+            'fillColor': get_color(moyennes_par_region[moyennes_par_region['region'] == feature['properties']['nom']]['salary'].values),
             'color': 'black',
             'weight': 2,
             'dashArray': '5, 5',
             'fillOpacity': 0.7,
-            'popup': format_popup_content(feature['properties']['nom'], moyennes_par_departement.get(feature['properties']['nom'], 'Non disponible'))
+            'popup': format_popup_content(feature['properties']['nom'], moyennes_par_region.get(feature['properties']['nom'], 'Non disponible'))
         }
     ).add_to(m)
+    
+    legend_html = '''
+    <div style="position: fixed; 
+                bottom: 50px; left: 50px; width: 150px; height: 120px; 
+                border:2px solid grey; z-index:9999; font-size:14px;
+                background-color: white;
+                ">&nbsp; Légende <br>
+                  &nbsp; Min - Max <br>
+                  &nbsp; <i style="background:#f8f7f5"></i> Non disponible <br>
+                  &nbsp; <i style="background:#001E00"></i> Salaires moyens <br>
+    </div>
+    '''
+    
+    # Ajouter la légende à la carte
+    m.get_root().html.add_child(folium.Element(legend_html))
     
     folium_static(m)
 
 
 def afficher_donnees():
     st.write("Affichage des 5 premières lignes du fichier CSV :")
-    st.write(df.head())
     st.write("Taille du corpus : ",len(df))
-
+    st.write(df.head())
+    
 
 def analyse_texte():
     # Titre de la section
