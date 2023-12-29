@@ -150,8 +150,17 @@ def web_scrap(df,url,n_posts_max):
                     # checkbox anti - bot
                     WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[title='Widget containing a Cloudflare security challenge']")))
                     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "label.ctp-checkbox-label"))).click()
-                    print("OK")
+                    print("CAPTCHA vérifié")
                     time.sleep(8)
+                    # attendre que la page job se charge
+                    # try:
+                    #     WebDriverWait(driver, 20).until(
+                    #         EC.presence_of_element_located((By.CSS_SELECTOR, "h1.jobsearch-JobInfoHeader-title.css-1hwk56k.e1tiznh50"))
+                    #     )
+                    # except TimeoutException:
+                    #     print("err")
+                    
+                 
                     html_source = driver.page_source
                     df = add_row(df,scrap_indeed_job(html_source,dates[links.index(link)]))
                     n_current_posts += 1
