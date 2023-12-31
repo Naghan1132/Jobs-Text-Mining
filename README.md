@@ -14,8 +14,7 @@ Ce projet vise à analyser des données textuelles pour extraire des information
 
 1. Clonez le dépôt GitHub :
    ```bash
-   git clone https://github.com/Naghan1132/Jobs-Text-Mining.git
-
+   git clone https://github.com/Naghan1132/Jobs-Text-Mining.git```
 
 2. Lancer le docker :
    ```bash
@@ -27,11 +26,18 @@ Ce projet vise à analyser des données textuelles pour extraire des information
 
 ## Structure du projet
 
-- **`data/` :** Ce dossier contient des données additionnelles aux fichiers CSV utilisés.
-- **`python/` :** Ce dossier contient les modèles entraînés.
+- **`python/`:**
+  - **`web_scraping.py` :** Contient les scripts
+  - **`build_data.py` :** Contient les scripts
+  - **`scraping.py` :** Contient les scripts
+  - **`preprocess_text.py` :** Contient les scripts
+- **`sql/`:**
+  - **`....` :** Contient les scripts
+- **`app/`:**
+  - **`app.py` :** Main streamlit
+- **`data/`:**
+  - **`Apec.csv` :** ...
 - **`requirements.txt` :** Ce fichier contient la liste des dépendances requises pour le projet.
-- **`sql/` :** Ce fichier contient la liste des dépendances requises pour le projet.
-
 ## Auteurs
 
 - Nathan GRIMAULT   
