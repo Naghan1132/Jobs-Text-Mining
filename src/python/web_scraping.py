@@ -14,13 +14,13 @@ from selenium.common.exceptions import TimeoutException
 
 #### RÉSUMÉ ####
 
-# APEC PARFAIT (rapide, efficace)
-# Pole Emploi PARFAIT
+# APEC PARFAIT
+# Pole Emploi PARFAIT 
 # Welcome to the jungle PARFAIT
 
 # Indeed (réessayer quand meme car compétences à scrapper !!!)
-# Glassdoor (bco d'infos manquantes/dures à scrapper) => à abandonner
 
+# Glassdoor (bco d'infos manquantes/dures à scrapper) => à abandonner
 # LinkedIn KO (compliqué à revoir, faut se connecter etc...)
 # Emploi Public KO (pas de mots clé dans l'url)
 # Emploi Territorial (moteur de recherche très mauvais => à abandonner)
@@ -198,49 +198,6 @@ def web_scrap(df,url,n_posts_max):
        
         driver.quit()
         return df
-        
-    elif source == "glassdoor":
-        # cliquez sur une offre => cliquez sur "Voir plus" => scrapping => cliquez sur l'offre suivante etc....
-        while(True):
-
-            jobs = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'li[class="JobsList_jobListItem__JBBUV"]'))
-            )
-            time.sleep(2)
-            if jobs is None:
-                driver.quit()
-                return df
-            print(len(jobs))
-            if len(jobs) >= n_posts_max:
-                #jobs = jobs[:n_posts_max] # prends les n posts demandés
-                break  # Sortir de la boucle si le nombre d'offres souhaité est atteint
-
-            # appyuer sur le bouton suivant "Plus d'offres d'emploi"
-            suivant_button = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[data-test="load-more"]'))
-            )
-            driver.execute_script("arguments[0].click();", suivant_button)            
-            # attendre que les nouvelles offres soient chargées
-            time.sleep(2)
-            # Trouver le bouton de la popup 
-            closeButton = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="CloseButton"]'))
-            )
-            if closeButton is not None:
-                # Cliquer sur le bouton de la popup si elle existe
-                driver.execute_script("arguments[0].click();", closeButton)
-                time.sleep(2)
-
-        # scrapper toutes les offres récupérées
-        for job in jobs:
-            driver.execute_script("arguments[0].click();", job) # works
-            time.sleep(10)
-            html_source = driver.page_source
-            df = add_row(df,scrap_glassdoor_job(html_source))
-          
-
-        driver.quit()
-        return df
 
     elif source == "pole_emploi":
         try:
@@ -273,7 +230,7 @@ def web_scrap(df,url,n_posts_max):
                                 return df
                         
                 
-                #bouton page suivante
+                # bouton page suivante
                 suivant_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
                 driver.execute_script("arguments[0].click();", suivant_button)
                 #time.sleep(3) # attendre que les offres chargent
@@ -283,7 +240,8 @@ def web_scrap(df,url,n_posts_max):
         while True:
             base_url = driver.current_url
             html_source = driver.page_source
-            links = get_jungle_job_link(html_source)     
+            links = get_jungle_job_link(html_source)  
+            time.sleep(5)   
         
             if links is None:
                 driver.quit()
@@ -292,7 +250,7 @@ def web_scrap(df,url,n_posts_max):
             for link in links:      
                 if link is not None:    
                     driver.get("https://www.welcometothejungle.com"+str(link))
-                    #time.sleep(1)
+                    time.sleep(2)
                     html_source = driver.page_source
                     df = add_row(df,scrap_jungle_job(html_source))
                     n_current_posts += 1
@@ -304,7 +262,7 @@ def web_scrap(df,url,n_posts_max):
             page_modified = "page="+str(cpt)
             base_url = re.sub(r'page=\d+', page_modified, base_url)
             driver.get(base_url)
-            #time.sleep(1) # attendre que les offres chargent
+            time.sleep(3) # attendre que les offres chargent
         
     else:
         print("Source inconnue")
@@ -338,26 +296,23 @@ def main_web_scraping(job_name,n_posts_max,sites):
 
 
 #liste_sites = ["Apec","Indeed","Pole_Emploi", "Welcome_to_the_jungle"]
-liste_sites = ["Indeed"]
+liste_sites = ["Welcome_to_the_jungle","Apec","Pole_Emploi"]
 job_name = "Data"
-main_web_scraping(job_name,8,liste_sites)
+main_web_scraping(job_name,100,liste_sites)
 
 
 # Indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant
 
 # TODO =>
-# récupérer seulement les jobs où il n'y a pas d'infos manquantes ?? (peut-être)
 # re-scrapper Indeed pour les compétences
 # mettre en dataframe plutot qu'en csv (faire les 2 en réalité, c'est pas dur)
 
-# Homogénisation format de type_job (CDI, CDD etc...), date (jour/mois/annee), etc...
+# Homogénisation format de type_job (CDI, CDD etc...), expérience, date (jour/mois/annee), etc... !!!
 # réduire au MAXIMUM les time.sleep() => pour diminuer le temps de scrapping
 
 
 # Axes d'analyse :
-# - barplot des type de contrat ?
+# - barplot des type de contrats ?
 # - filtres carte ou autres (date, type de contrat, salaire, etc...)
-# - moteur de recherche sur les comptétences / tokens plutot: 
-# - l'user note les compétences qu'il a ou qu'il recherche
-# - on recherche et retourne les offres qui correspondent aux compétences (via description / tokenisation de la description)
-
+# - moteur de recherche sur les comptétences ou tokens sinon : et ressortir les offres qui correspondent le mieux
+# - améliorer le wordcloud

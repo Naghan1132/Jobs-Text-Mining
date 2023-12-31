@@ -86,17 +86,6 @@ def get_text_tokenize(text,language):
     return text
 
 
-# def get_skills(text):
-#     nlp = spacy.load("fr_core_news_sm")
-#     text_preprocessed = preprocess_text(nlp,text)
-#     #text_preprocessed = get_tokens(text,"fr")
-#     doc = nlp(text_preprocessed)
-#     skills = []
-#     for ent in doc.ents:
-#         if ent.label_ == "MISC" or ent.label_ == "PER":
-#             skills.append(ent.text)
-#     return(skills)    
-
 def detect_language(text):
     try:
         language = detect(text)

@@ -104,9 +104,6 @@ def afficher_carte_departement():
         if len(moyenne_salary_array) != 0:
             moyenne_salary = moyenne_salary_array[0]
             
-            #print("moyenne_salary : ")
-            #print(moyenne_salary)
-
             if np.isnan(moyenne_salary):
                 return '#f8f7f5'
 
@@ -114,7 +111,6 @@ def afficher_carte_departement():
 
             # Normalisez la moyenne des salaires entre 0 et 1
             normalized_salary = (moyenne_salary - min_moyennes) / (max_moyennes - min_moyennes)
-            #print(normalized_salary)
 
             r = 0
             g = max(30, int(255 * normalized_salary))

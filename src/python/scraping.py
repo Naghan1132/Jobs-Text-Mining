@@ -163,7 +163,7 @@ def scrap_pole_job(html_source):
     for skills_element in skills_elements:
         if skills_element:
             skills.append(skills_element.text)
-
+    
     
     global_location = locality + " " + postal_code + " " + region
 
@@ -289,7 +289,7 @@ def scrap_apec_job(html_source):
                 skills = get_tokens_and_find_language(next_p_element.text)
     else:
         # tokenizer les skills aussi ??
-        pass
+        skills = [skill.lower() for skill in skills]
 
     latitude, longitude = get_coordinates(location)
     region, departement = get_region_department(latitude, longitude)
@@ -395,80 +395,6 @@ def scrap_indeed_job(html_source,date):
 
     return liste
 
-    
-def scrap_glassdoor_job(html_source):
-    
-    soup = BeautifulSoup(html_source, 'html.parser')
-    job_header = soup.find('header', {'class':['JobDetails_jobDetailsHeaderWrapper__iHvDC JobDetails_sticky__fQ4Aq']})
-     
-    source = "Glassdoor"
-
-    type_job = ""
-    salaire = ""
-    title = ""
-    compagny = ""
-    skills = ""
-    location = ""
-    description = ""
-    date = ""
-    compagny = job_header.find('span', {'class': ['EmployerProfile_employerName__Xemli']})
-    compagny = compagny.text if compagny else ""
-    title = soup.find('div', {'class': ['JobDetails_jobTitle__Rw_gn']})
-    title = title.text if title else ""
-    description = soup.find('div', {'class':['JobDetails_jobDescription__6VeBn','JobDetails_blurDescription__fRQYh']})
-    location = job_header.find('div', {'class': ['JobDetails_location__MbnUM']})
-    location = location.text if location else ""
-
-    # Recherchez le paragraphe contenant "Type d'emploi"
-    type_job = soup.find('p', text=lambda t: t and "Type d'emploi" in t)
-    type_job = type_job.text if type_job else ""
-    salaire = soup.find('p', text=lambda t: t and "Salaire" in t)
-    salaire = salaire.text if salaire else ""
-    skills = soup.find('p', text=lambda t: t and "Compétences" in t)
-
-    
-    print(f"type_job : {type_job}")
-    print(f"salaire : {salaire}")
-    print(f"title : {title}")
-    print(f"skills : {skills}")
-    print(f"location : {location}")
-
-    if description:
-        description = description.text.strip()
-        description = clean_description(description)
-
-    
-    date_posted = soup.find('div', {'data-test': ['job-age']})
-    date_posted = date_posted.text if date_posted else ""
-    date_du_jour = datetime.now()
-    if "h" in date_posted:
-        # Soustrayez les heures à la date du jour
-        hours = re.findall(r'\d+', date_posted)
-        date = date_du_jour - timedelta(hours=int(hours[0]))
-    elif "j" in date_posted:
-        if "+" in date_posted:
-            # + de 30 jours (peut-être faire un autre truc)
-            days = re.findall(r'\d+', date_posted)
-            date = date_du_jour - timedelta(days=int(days[0]))
-        else:
-            days = re.findall(r'\d+', date_posted)
-            date = date_du_jour - timedelta(days=int(days[0]))
-
-
-    date = date.strftime("%Y-%m-%d")
-    print("date : ",date)
-
-    latitude, longitude = get_coordinates(location)
-    region, departement = get_region_department(latitude, longitude)
-
-    tokens = get_text_tokenize_and_find_language(description)
-
-    print("\n ================== \n")
-
-
-    liste = [title,type_job,salaire,compagny,location,region, departement,latitude,longitude,"language","skills",date,description,tokens,source]
-    return liste
-
 
 def scrap_jungle_job(html_source):
    
@@ -553,6 +479,7 @@ def scrap_jungle_job(html_source):
         competence_text = competence_div.text
         clean_competence = clean_description(competence_text)
         skills = get_tokens_and_find_language(clean_competence)
+        skills = [skill.lower() for skill in skills]
 
     
     date = soup.find('time')['datetime']
