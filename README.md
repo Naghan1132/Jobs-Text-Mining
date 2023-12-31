@@ -14,8 +14,7 @@ Ce projet vise à analyser des données textuelles pour extraire des information
 
 1. Clonez le dépôt GitHub :
    ```bash
-   git clone https://github.com/Naghan1132/Jobs-Text-Mining.git```
-
+   git clone https://github.com/Naghan1132/Jobs-Text-Mining.git
 2. Lancer le docker :
    ```bash
    docker 
