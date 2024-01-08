@@ -7,20 +7,23 @@ def create_database():
     # Create a cursor object to execute SQL commands
     cursor = conn.cursor()
 
-    cursor.execute(
-        '''CREATE TABLE IF NOT EXISTS H_departement (
-        departement_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        departement TEXT,
-        region TEXT
-        )''')
+    #cursor.execute(
+    #    '''CREATE TABLE IF NOT EXISTS H_departement (
+   #     departement_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #    departement TEXT,
+    #    region TEXT
+     #   )''')
 
     cursor.execute(
         '''CREATE TABLE IF NOT EXISTS D_location (
         location_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        latitude REAL, 
+        longitude REAL, 
         location TEXT,
-        departement_id INTEGER,
-        FOREIGN KEY (departement_id) REFERENCES H_departement(departement_id)
+        departement TEXT,
+        region TEXT
         )''')
+# FOREIGN KEY (departement_id) REFERENCES H_departement(departement_id)
     
     cursor.execute(
         '''CREATE TABLE IF NOT EXISTS D_salary (

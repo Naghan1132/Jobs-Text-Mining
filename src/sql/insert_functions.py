@@ -12,14 +12,15 @@ def insert_dimension(table_name, column_name, value, cursor):
         return cursor.fetchone()[0]
     
 # Function to insert data into a dimension table with value check
-def insert_departement(departement, region, cursor):
-    cursor.execute(f"SELECT departement_id FROM H_departement WHERE departement = ?", (departement,))
+def insert_location(latitude, longitude, location, departement, region, cursor):
+    cursor.execute(f"SELECT latitude FROM D_location WHERE latitude = ?", (latitude,))
     result = cursor.fetchone()
     if result:
         return result[0]
     else:
-        cursor.execute(f"INSERT INTO H_departement (departement,region) VALUES (?,?)", (departement,region))
-        cursor.execute(f"SELECT last_insert_rowid() AS departement_id")
+        cursor.execute(f"INSERT INTO D_location (latitude, longitude, location, departement, region) VALUES (?,?,?,?,?)", 
+                       (latitude, longitude, location, departement, region))
+        cursor.execute(f"SELECT last_insert_rowid() AS location_id")
         return cursor.fetchone()[0]
 
     
@@ -45,8 +46,7 @@ def insert_observations(df, cursor):
         source = row['source']
 
         # Insert Observation
-        departement_id_1 = insert_departement(departement, region, cursor)
-        
+        #departement_id_1 = insert_departement(departement, region, cursor)
         skills_id_1 = insert_dimension('D_skills', 'skills', skills, cursor)
         experience_id_1 = insert_dimension('D_experience', 'experience', experience, cursor)
         tokens_id_1 = insert_dimension('D_tokens', 'tokens', tokens, cursor)
@@ -55,14 +55,16 @@ def insert_observations(df, cursor):
         type_job_id_1 = insert_dimension('D_type_job', 'type_job', type_job, cursor)
         salary_id_1 = insert_dimension('D_salary', 'salary', salary, cursor)
         date_id_1 = insert_dimension('D_date', 'date', date, cursor)
-        location_id_1 = insert_dimension('D_location', 'location', location, cursor)
+        #location_id_1 = insert_dimension('D_location', 'location', location, cursor)
         title_id_1 = insert_dimension('D_title', 'title', title, cursor)
+        location_id_1 = insert_location(latitude, longitude, location, departement, region, cursor)
         
         # cursor.execute(f"INSERT INTO D_location (departement_id) VALUES (?)", (departement_id_1))
         
         cursor.execute("INSERT INTO F_description (company_id, type_job_id, date_id, location_id, title_id, salary_id, skills_id, experience_id, tokens_id, description) "
                        "VALUES (?, ?, ?, ?, ?, ?,?,?,?,?)",
                        (company_id_1, type_job_id_1 ,date_id_1, location_id_1, title_id_1, salary_id_1,skills_id_1, experience_id_1, tokens_id_1, description))
+        
     
     # conn.commit()
     # conn.close()
