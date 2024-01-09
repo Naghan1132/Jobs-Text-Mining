@@ -1,27 +1,50 @@
 from bs4 import BeautifulSoup
-from scrap_description import *
+from preprocess_text import *
 import time
+from geopy.geocoders import Nominatim
+from datetime import datetime, timedelta
+from geopy.geocoders import Photon
 
-def get_linkedin_job_links(html_source):
+
+geolocator = Nominatim(user_agent="my_geocoder")
+geolocator_region = Nominatim(user_agent="my_geocoder")
+
+def get_region_department(lat, lon, only_dep = False):
+    location = geolocator_region.reverse((lat, lon), exactly_one=True) 
+    if location:
+        address = location.raw['address']
+        if address.get('city') == 'Paris':
+            return address.get('state', ''), address.get('city_district', '')
+        elif address:
+            if only_dep == False:
+                return address.get('state', ''), address.get('county', '')
+            else:
+                return address.get('county', '')
+
+    return None,None
+
+def get_coordinates(city):
+    location = geolocator.geocode(f"{city}, France")
+    if location:
+        return location.latitude, location.longitude
+    else:
+        return None, None
+    
+
+def get_indeed_job_links(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
     h2_tags = soup.find_all('h2', class_=['jobTitle', 'css-mr1oe7', 'eu4oa1w0'])
     list_id = [h.find('a')['data-jk'] if h.find('a') else None for h in h2_tags]
-    return list_id
+    date = soup.find_all('span', {'class': ['date']})
+    return list_id,date
 
 
-
-def get_apec_job_links(html_source):
+def get_first_apec_job_link(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
-    container_result = soup.find_all('div', class_='container-result')
-    divs_emplois = []
-    for div_container in container_result:
-        divs = div_container.find_all('div', recursive=False)[:-1] # sauf le dernier toujours un None
-        divs_emplois.extend(divs)
-    list_link = []
-    for emploi in divs_emplois:
-         lien = emploi.find('a')['href'] if emploi.find('a') else None
-         list_link.append(lien)
-    return(list_link)
+    container_result = soup.find('div', class_='container-result')
+    div = container_result.find('div') # sauf le dernier toujours un None
+    lien = div.find('a')['href'] if div.find('a') else None
+    return(lien)
 
 def get_pole_job_links(html_source):
     soup = BeautifulSoup(html_source, 'html.parser')
@@ -29,6 +52,11 @@ def get_pole_job_links(html_source):
     data_id_offre_list = [item['data-id-offre'] for item in li]
     return data_id_offre_list
 
+def get_jungle_job_link(html_source):
+    soup = BeautifulSoup(html_source, 'html.parser')
+    a_tags = soup.find_all('a', {'class': ['sc-6i2fyx-0', 'gIvJqh']})
+    href_list = [a.get('href') for a in a_tags]
+    return href_list
 
 
 def scrap_pole_job(html_source):
@@ -38,7 +66,7 @@ def scrap_pole_job(html_source):
     title = title.text if title else ""
 
     compagny = soup.find('h3',{'class':['t4','title']})
-    compagny = compagny.text if compagny else ""
+    compagny = compagny.text.strip() if compagny else ""
 
     postal_code = soup.find('span',{'itemprop':['postalCode']})
     postal_code = postal_code.get('content', '')
@@ -48,8 +76,6 @@ def scrap_pole_job(html_source):
     region = region.get('content', '')
     country = soup.find('span',{'itemprop':['addressCountry']})
     country = country.get('content', '')
-
-    location = soup.find('span',{'itemprop':['name']})
     
     
     postal_code = postal_code if postal_code else ""
@@ -59,14 +85,26 @@ def scrap_pole_job(html_source):
 
     description_div = soup.find('div',{'itemprop':['description']})
     description = description_div.find('p').text if description_div else ""
-
-    description = scrap_description_pole_emploi(description,["salary","type_job"])
+    description = clean_description(description)
+    
 
     dd_element = soup.select_one('dl.icon-group dd') 
-        # Vérifie si la balise <dd> a été trouvée
     if dd_element:
-        # Récupère le texte de la balise <dd> jusqu'à la balise <br/>
         type_job = dd_element.get_text(separator='\n', strip=True).split('\n', 1)[0]
+        type_job = type_job.strip()
+        if type_job:
+            pattern_1 = r"indéterminée"
+            pattern_2 = r"déterminée"
+            pattern_3 = r"intérimaire"
+
+            if re.search(pattern_1, type_job):
+                type_job = "CDI"
+            elif re.search(pattern_2, type_job):
+                # prendre nombre mois ?? "intérimaire - 3 Mois"
+                type_job = "CDD"
+            elif re.search(pattern_3, type_job):
+                type_job = "Intérim"
+
     else:
         type_job = ""
 
@@ -77,28 +115,80 @@ def scrap_pole_job(html_source):
         # Récupère toutes les valeurs des éléments <li> sous la balise <ul>
         salary = [li.text.strip() for li in salary_container.find_all('li')]
         salary = ', '.join(salary)
+        salary = salary.strip()
+        salary = salary.lower()
+
+        # Expression régulière pour rechercher "Selon profils", "Selon profil" ou "négociable"
+        pattern = r"selon profils?|\bselon profil\b|négociable"
+        pattern_chiffres = r"\D+"
+
+        if not re.search(pattern_chiffres, salary) or re.search(pattern, salary, re.IGNORECASE):
+            # pas de chiffre ou presence de "à négocier" etc... => pas de salaire
+            salary = ""
+        else:
+            monthly_pattern = r"mensuel de (\d+,\d{2}) euros"
+            annual_borne_pattern = r"annuel de (\d+,\d{2}) euros à (\d+,\d{2}) euros"
+            annual_pattern = r"annuel de (\d+,\d{2}) euros"
+            horaire_borne_pattern = r"horaire de (\d+,\d{2}) euros à (\d+,\d{2}) euros"
+
+            monthly_match = re.search(monthly_pattern, salary)
+            annual_borne_match = re.search(annual_borne_pattern, salary)
+            annual_match = re.search(annual_pattern, salary)
+            horaire_borne_match = re.search(horaire_borne_pattern, salary)
+
+            if monthly_match:
+                monthly_salary = float(monthly_match.group(1).replace(',', '.'))
+                salary = monthly_salary * 12
+            elif annual_borne_match:
+                lower_salary = float(annual_borne_match.group(1).replace(',', '.'))
+                upper_salary = float(annual_borne_match.group(2).replace(',', '.'))
+                salary = (lower_salary + upper_salary) / 2
+            elif annual_match:
+                salary = float(annual_match.group(1).replace(',', '.'))
+            elif horaire_borne_match:
+                salary = "" # galère 
+            else:
+                salary = ""
+
     else:
         salary = ""
 
+    experience = ""
+    span_with_experience = soup.find('span', itemprop="experienceRequirements")
+    if span_with_experience:
+        experience = span_with_experience.text
 
-    skills_elements = soup.find_all('span', {'itemprop': 'skills'})
-    skills = [skills.text.strip() for skills in skills_elements]
+    skills = []
+    skills_elements = soup.find_all(attrs={"itemprop": "skills"})
+    for skills_element in skills_elements:
+        if skills_element:
+            skills.append(skills_element.text)
     
-    global_location = postal_code + " " + locality + " " + region + " " + country
+    
+    global_location = locality + " " + postal_code + " " + region
 
-    print(title)
-    print(type_job)
-    print(skills)
-    print(global_location)
+    date_spans = soup.find_all('span', {'itemprop': 'datePosted'})
+    date_span = date_spans[0]
+    date = date_span.get('content', '')
+    date = datetime.strptime(date, '%Y-%m-%d')
+    date = date.strftime('%d/%m/%Y')
+
+    print(type_job) # OK
+    print(date) # OK
+
+    latitude, longitude = get_coordinates(locality + " - " + postal_code) # OK
+    departement = get_region_department(latitude, longitude,only_dep=True) # OK
+
+    tokens = get_text_tokenize_and_find_language(description)
+
     print("======")
 
-    return [title,type_job,salary,compagny,global_location,description,"pole_emploi"]
+    return [title,type_job,salary,compagny,global_location,region,departement,latitude,longitude,experience,skills,date,description,tokens,"Pole_Emploi"]
+
 
 def scrap_apec_job(html_source):
-   
     soup = BeautifulSoup(html_source, 'html.parser')
-
-    source = "apec"
+    source = "Apec"
     compagny = ""
     type_job = ""
     location = ""
@@ -107,68 +197,119 @@ def scrap_apec_job(html_source):
     if head_div is not None:
         liste = head_div.find('ul')
         li_elements = liste.find_all('li') 
-  
-        if len(li_elements) >= 1:
+    
+        if len(li_elements) == 2:
+            type_job = li_elements[0].text
+            location = li_elements[1].text
+        if len(li_elements) == 3:
             compagny = li_elements[0].text
-        if len(li_elements) >= 2:
             type_job = li_elements[1].text
-        if len(li_elements) >= 3:
             location = li_elements[2].text
 
-        #print(compagny)
-        #print(location)
-        ##print(type_job)##
+    if type_job[1].isdigit():
+        # Supprimer le premier caractère (le chiffre) et les espaces
+        type_job = type_job[4:]
+    print(type_job)
 
     title = ""
     salary = ""
-    expericence = ""
     description = ""
-   
+    experience = ""
+    date = ""
+    
+    date = soup.find('div',{'class':['date-offre']})
+    if date is not None:
+        date = date.text
+        match = re.search(r'\d{2}/\d{2}/\d{4}', date)
+        if match:
+            date = match.group()
+            date = re.sub(r'\s+', '', date)
+            print(date)
+
     outer_div = soup.find('div', class_='col-lg-4')
     if outer_div is not None:
         salary_div = outer_div.find_all('div')[0]
         experience_div = outer_div.find_all('div')[2]
         title_div = outer_div.find_all('div')[3]
 
-        # Accéder au span avec la classe txt à l'intérieur de la quatrième div
-        title = title_div.find('span').text
-        salary = salary_div.find('span').text
-        expericence = experience_div.find('span').text
+        title = title_div.find('span').text # OK
+        salary = salary_div.find('span').text # OK
 
-        
-        #print(title)
-        #print(salary)
-        #print(expericence)
+        if "A négocier" in salary:
+            salary = ""
+        elif "A partir" in salary:
+            match = re.search(r'(A partir de )?(\d+) k€ brut annuel', salary)
+            if match:
+                salary = int(match.group(2)) * 1000 # Convertir k€ en €
+            else:
+                salary = ""
+
+        elif "brut annuel" in salary:
+            match = re.search(r'(\d+) - (\d+) k€ brut annuel', salary)
+            if match:
+                min_value = int(match.group(1)) * 1000
+                max_value = int(match.group(2)) * 1000
+                # Prendre la moitié
+                salary = (min_value + max_value) / 2 
+            else:
+                salary = ""
+    
+        experience = experience_div.find('span').text
 
     
-
     body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
     if body_div is not None:
-        skills = soup.find_all('div', {'class':['added-skills-manager__knowledge','mb-0']}) 
-        #print(skills)
-
-        details = body_div.find_all('p')
+        details = body_div.select('p:not(.mb-20)') # pas  la dernière => useless
         for d in details:
             description += d.text + " "
 
-    if description != "":
-        #scrap_description_apec(description,["salary","type_job"])
-        pass
+    description = clean_description(description)
+
+    skills = []
+    divs = soup.find_all('div', class_='infos_skills')
+
+    for div in divs:
+        first_p = div.find('p')
+        if first_p:
+            skills.append(first_p.text) 
+    
+    apec_details = soup.find_all('apec-competence-detail')
+    for detail in apec_details:
+        p_elements = detail.find('p')
+        if p_elements:
+            skills.append(p_elements.text) 
+            
+
+    if skills == []:
+        # alors prendre les mannuelement le texte
+        h4_element = soup.find('h4', string='Profil recherché')
+        if h4_element:
+            next_p_element = h4_element.find_next_sibling('p')
+            if next_p_element:
+                skills = get_tokens_and_find_language(next_p_element.text)
+    else:
+        # tokenizer les skills aussi ??
+        skills = [skill.lower() for skill in skills]
+
+    latitude, longitude = get_coordinates(location)
+    region, departement = get_region_department(latitude, longitude)
+
+    tokens = get_tokens_and_find_language(description)
 
     print("=============")
 
-    liste = [title, type_job,salary,compagny, location,description,source]
+    liste = [title,type_job,salary,compagny,location,region,departement,latitude,longitude,experience,skills,date,description,tokens,source]
     
     return liste
 
     
 
 
-def scrap_indeed_job(html_source):
+def scrap_indeed_job(html_source,date):
 
     soup = BeautifulSoup(html_source, 'html.parser')
 
-    source = "indeed"
+    source = "Indeed"
 
     div_title = soup.find('h1', class_='jobsearch-JobInfoHeader-title')   
     title = div_title.find('span')
@@ -192,13 +333,30 @@ def scrap_indeed_job(html_source):
     if type_job != "" and type_job is not None:
         type_job = type_job.text
 
+    type_job = type_job.replace("-", "")
+
+
+    date = date.text
+    new_string = date.replace("Posted", "")
+
+    if "Aujourd'hui" in new_string:
+        date = datetime.now()
+    elif "plus de 30" in new_string:
+        days = re.findall(r'\d+', new_string)
+        date = datetime.now() - timedelta(days=30)
+    else:
+        days = re.findall(r'\d+', new_string)
+        date = datetime.now() - timedelta(days=int(days[0]))
+
+    date = date.strftime("%Y-%m-%d")
+    print("date : ",date)
+
 
     # régler les skills !
-    skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
+    #skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
 
     print("salaire : ",salary)
     print("type job : ",type_job)
-    print("compétences : ",skills_div)
     
 
     if title:
@@ -219,96 +377,125 @@ def scrap_indeed_job(html_source):
         compagny = ""
 
     if description:
+        #skills = get_skills(description.text)
         description = description.text.strip()
-        # fields_to_find = []
-        # if not salary:
-        #     fields_to_find.append("salary")
-        # if not type_job:
-        #     fields_to_find.append("type_job")
-        # if not skills_ul:
-        #     fields_to_find.append("skills")
-            
-        # scrap_description_indeed(description,["salary","type_job"])
+        description = clean_description(description)
     else:
         description = ""
 
+    latitude, longitude = get_coordinates(location)
+    region, departement = get_region_department(latitude, longitude)
+
+    
+    tokens = get_text_tokenize_and_find_language(description)
+
     print("\n ================== \n")
 
-    liste = [title, type_job,salary,compagny, location,description,source]
+    liste = [title,type_job,salary,compagny,location,region, departement,latitude,longitude,"experience","skills",date,description,tokens,source]
 
     return liste
 
-    
-def scrap_glassdoor_job(html_source):
-    
+
+def scrap_jungle_job(html_source):
+   
     soup = BeautifulSoup(html_source, 'html.parser')
-    job_header = soup.find('header', {'class':['JobDetails_jobDetailsHeaderWrapper__iHvDC JobDetails_sticky__fQ4Aq']})
-     
-    source = "glassdoor"
 
-    compagny = job_header.find('span', {'class': ['EmployerProfile_employerName__Xemli']})
-    title = soup.find('div', {'class': ['JobDetails_jobTitle__Rw_gn']})
-    description = soup.find('div', {'class':['JobDetails_jobDescription__6VeBn','JobDetails_blurDescription__fRQYh']})
-    location = job_header.find('div', {'class': ['JobDetails_location__MbnUM']})
-    # Recherchez le paragraphe contenant "Type d'emploi"
-    type_job = soup.find('p', text=lambda t: t and "Type d'emploi" in t)
-    salaire = soup.find('p', text=lambda t: t and "Salaire" in t)
-    skills = soup.find('p', text=lambda t: t and "Compétences" in t)
+    source = "Welcome_to_the_jungle"
+    compagny = ""
+    type_job = ""
+    location = ""
+    title = ""
+    salary = ""
+    experience = ""
+  
+    compagny = soup.find('span',{'class':['sc-ERObt', 'kkLHbJ', 'wui-text']})
+    compagny = compagny.text
+    title = soup.find('h2',{'class':['sc-ERObt','fMYXdq','wui-text']})
+    title = title.text
+   
+    infos_div = soup.find('div',{'class':['sc-bXCLTC ','hdepoj']})
+    location = infos_div.find('span',{'class':['sc-1eoldvz-0' ,'bZJPQK']})
+    location = location.text
 
-
-    if type_job:
-        type_job = type_job.text.strip()
-        print(f"type_job : {type_job}")
-    else:
-        type_job = ""
-        print("Aucun emplacement trouvé.")
-    if salaire:
-        salaire = salaire.text.strip()
-        print(f"salaire : {salaire}")
-    else:
-        salaire = ""
-        print("Aucun emplacement trouvé.")
-    if title:
-        title = title.text.strip()
-        print(f"title : {title}")
-    else:
-        title = ""
-        print("Aucun emplacement trouvé.")
-
-    if compagny:    
-        compagny = compagny.text.strip()
-        print(f"compagny : {compagny}")
-    else:
-        print("Aucun emplacement trouvé.")
-    if skills:    
-        skills = skills.text.strip()
-        print(f"skills : {skills}")
-    else:
-        print("Aucun emplacement trouvé.")
-
-    if description:
-        description = description.text.strip()
-        fields_to_find = []
-        if not salaire:
-            fields_to_find.append("salary")
-        if not type_job:
-            fields_to_find.append("type_job")
-        if not skills:
-            fields_to_find.append("type_job")
-            
-        scrap = scrap_description_glassdoor(description,fields_to_find)
-    else:
-        description = ""
-        print("Aucun emplacement trouvé.")
-    if location:
-        location = location.text.strip()
-        print(f"location : {location}")
-    else:
-        location = ""
-        print("Aucun emplacement trouvé.")
     
+    i_tag = soup.find('i', {'name': 'salary'})
+    if i_tag:
+        div_with_salary = i_tag.find_parent('div')
+        if div_with_salary:
+            salary = div_with_salary.text.strip()
+            if "Non spécifié" in salary:
+                salary = ""
+            elif "par mois" in salary:
+                match = re.search(r"Salaire : ([\d,\.]+)(K?)\s*€ par mois", salary)
+                if match:
+                    salaire = match.group(1).replace(',', '')  # Supprimez les virgules pour la conversion
+                    is_k = match.group(2)
+                    salaire_annuel = float(salaire)
+                    if is_k:
+                        salaire_annuel *= 1000
+                    salaire_annuel *= 12
+                    salary = salaire_annuel
+                else:
+                    salary = ""
+            else:
+                match = re.search(r"Salaire : (\d+)K à (\d+)K\s*€", salary)
+                if match:
+                    salaire_min = int(match.group(1)) * 1000  # Convertir en euros
+                    salaire_max = int(match.group(2)) * 1000  # Convertir en euros
+                    
+                    # Calculer la moyenne des salaires
+                    salaire_moyen = (salaire_min + salaire_max) / 2
+                    
+                    salary = salaire_moyen
+                else:
+                    salary = ""
+            print(salary)
 
-    print("\n ================== \n")
+    i_tag = soup.find('i', {'name': 'suitcase'})
+    if i_tag:
+        div_with_experience = i_tag.find_parent('div')
+        if div_with_experience:
+            experience = div_with_experience.text.strip()
+            print(experience)
 
-    liste = [title,type_job,salaire,compagny,location,description,source]
+    i_tag = soup.find('i', {'name': 'contract'})
+    if i_tag:
+        div_with_contract = i_tag.find_parent('div')
+        if div_with_contract:
+            type_job = div_with_contract.text.strip()
+            print(type_job)
+
+    i_tag = soup.find('i', {'name': 'education_level'})
+    if i_tag:
+        div_with_education = i_tag.find_parent('div')
+        if div_with_education:
+            education = div_with_education.text.strip()
+            print(education)
+
+    skills = []
+    competence_div = soup.find('div',class_=['sc-18ygef-1','ezamTS'])
+    
+    if competence_div:
+        competence_text = competence_div.text
+        clean_competence = clean_description(competence_text)
+        skills = get_tokens_and_find_language(clean_competence)
+        skills = [skill.lower() for skill in skills]
+
+    
+    date = soup.find('time')['datetime']
+    date = date.split('T')[0]
+    date = datetime.strptime(date, '%Y-%m-%d')
+    date = date.strftime('%d/%m/%Y')
+
+    latitude, longitude = get_coordinates(location)
+    region, departement = get_region_department(latitude, longitude)
+
+    description = clean_description(competence_div.text)
+    tokens = get_text_tokenize_and_find_language(description)
+
+    print("=============")
+
+    liste = [title,type_job,salary,compagny,location,region, departement,latitude,longitude,experience,skills,date,description,tokens,source]
     return liste
+
+
