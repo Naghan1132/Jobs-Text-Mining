@@ -2,7 +2,7 @@ import sqlite3
 
 class data_base:
     def __init__(self):
-        self.con = sqlite3.connect('test2.db')
+        self.con = sqlite3.connect('warehouse.db')
         self.cur = self.con.cursor()
         self.create_type_job()
         self.create_salaire()
@@ -71,12 +71,13 @@ class data_base:
     def create_depatement(self):
         self.con.execute("""CREATE TABLE IF NOT EXISTS H_departement(
                          id_departement INTEGER PRIMARY KEY AUTOINCREMENT,
-                         departement TEXT
+                         departement TEXT,
+                         region TEXT
         )""")
 
     # Insert value into H_depatement
     def insert_departement(self, item):
-        self.cur.execute("""INSERT OR IGNORE INTO H_departement (departement) VALUES(?)""", item)
+        self.cur.execute("""INSERT OR IGNORE INTO H_departement (departement, region) VALUES(?,?)""", item)
 
 
     ### D_entreprise
