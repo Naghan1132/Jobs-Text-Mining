@@ -274,7 +274,6 @@ def main_web_scraping(job_name,n_posts_max,sites):
 # - améliorer le wordcloud
 
 
-# enlever Indeed
 # faire des excepion si le Nominatim ne marche pas !!!
 # Uniformiser les champs
 # enlever accent etc...
