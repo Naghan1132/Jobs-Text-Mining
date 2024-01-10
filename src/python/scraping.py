@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from preprocess_text import *
-import time
 from geopy.geocoders import Nominatim
 from datetime import datetime, timedelta
 from geopy.geocoders import Photon

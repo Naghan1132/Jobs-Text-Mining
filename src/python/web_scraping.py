@@ -12,6 +12,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
+import sqlite3
+
 
 #### RÉSUMÉ ####
 
@@ -287,8 +289,15 @@ def concat_data(sites,folder_path='src/data/'):
     concatenated_df = pd.concat(dfs, ignore_index=True)
     # NaN's
     concatenated_df = last_preprocessing(concatenated_df)
-    output_file_path = os.path.join(folder_path, 'all_data.csv')
-    concatenated_df.to_csv(output_file_path, index=False)
+
+    
+    #output_file_path = os.path.join(folder_path, 'all_data.csv')
+    #concatenated_df.to_csv(output_file_path, index=False)
+    
+    conn = sqlite3.connect('base_brute.db')
+    concatenated_df.to_sql('data', conn, if_exists='append', index=False)
+    conn.close()
+    
 
 
 def main_web_scraping(job_name,n_posts_max,sites):
@@ -303,7 +312,7 @@ def main_web_scraping(job_name,n_posts_max,sites):
 #liste_sites = ["Apec","Indeed","Pole_Emploi", "Welcome_to_the_jungle"]
 #liste_sites = ["Welcome_to_the_jungle","Apec","Pole_Emploi"]
 #job_name = "Data"
-#main_web_scraping(job_name,100,liste_sites)
+#main_web_scraping(job_name,2,liste_sites)
 
 
 # Indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant

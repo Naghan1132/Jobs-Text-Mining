@@ -7,7 +7,5 @@ import pandas as pd
 import sqlite3
 
 
-
-
 df, df2 = load_data(path=f'{os.getcwd()}/base_brute.db')
 create_dw(df, df2)

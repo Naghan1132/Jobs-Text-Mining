@@ -12,6 +12,7 @@ from collections import Counter
 import seaborn as sns
 import os
 import sys
+import sqlite3
 
 def load_data(file_path):
     data = pd.read_csv(file_path)
@@ -324,6 +325,31 @@ def recherche():
     if st.button('Rechercher'):
         st.write(f"Vous avez recherché: {search_query_emploi} et {search_query_contrat}")
 
+
+def test_sql():
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.join(chemin_actuel, '..', 'sql')
+    sys.path.append(chemin_sql)
+
+    st.title('Affichage des 5 premières lignes de la base de données')
+    # Établir une connexion à la base de données SQLite
+    conn = sqlite3.connect('base_brute.db')
+
+    # Écrire une requête SQL pour récupérer les trois premières lignes de la table 'data'
+    query = "SELECT * FROM data LIMIT 5"
+
+    # Utiliser pandas pour lire les données directement depuis la requête SQL
+    df = pd.read_sql_query(query, conn)
+
+    # Fermer la connexion à la base de données SQLite
+    conn.close()
+
+    # Afficher les données dans Streamlit
+    st.write("Voici les 3 premières lignes de la table 'data' :")
+    st.table(df)
+
+
+
 def main():
 
     st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -347,7 +373,7 @@ def main():
 
 
     # Options de navigation pour les onglets
-    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte", "Scrapper des données"]
+    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte", "Scrapper des données", "test sql"]
     selected_option = st.sidebar.radio("Navigation", options_navigation)
 
     # Contenu de l'application en fonction de l'option sélectionnée
@@ -361,6 +387,8 @@ def main():
         analyse_texte()
     elif selected_option == "Scrapper des données":
         scrapping()
+    elif selected_option == "test sql":
+        test_sql()
     else:
         st.write("Sélectionnez une option de navigation dans la barre latérale.")
 

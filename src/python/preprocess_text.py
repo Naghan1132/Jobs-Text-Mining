@@ -8,7 +8,7 @@ import spacy
 from spacy.lang.fr.stop_words import STOP_WORDS
 import string
 from langdetect import detect
-
+import numpy as np
 
 # Téléchargez les ressources nécessaires
 #nltk.download('punkt')
@@ -159,8 +159,12 @@ def preprocess_skills(skills_text):
     pass
 
 def last_preprocessing(df):
-    median_values = df.median()
-    # Remplacer les valeurs NaN par la médiane correspondante pour chaque colonne
-    df_filled = df.fillna(median_values)
-    return df_filled
+    # Identifiez les colonnes numériques pour imputer la médiane
+    colonnes_numeriques = df.select_dtypes(include=[np.number]).columns.tolist()
+
+    # Imputez la médiane pour les valeurs manquantes dans les colonnes numériques
+    for col in colonnes_numeriques:
+        df[col].fillna(df[col].median(), inplace=True)
+
+    return df
     
