@@ -1,5 +1,6 @@
 import time
 from scraping import *
+from preprocess_text import *
 from build_data import *
 import os
 
@@ -271,6 +272,7 @@ def web_scrap(df,url,n_posts_max):
 
 
 
+
 def concat_data(sites,folder_path='src/data/'):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"Le dossier {folder_path} n'existe pas.")
@@ -281,7 +283,10 @@ def concat_data(sites,folder_path='src/data/'):
         if os.path.exists(file_path):
             df = pd.read_csv(file_path)
             dfs.append(df)   
+    
     concatenated_df = pd.concat(dfs, ignore_index=True)
+    # NaN's
+    concatenated_df = last_preprocessing(concatenated_df)
     output_file_path = os.path.join(folder_path, 'all_data.csv')
     concatenated_df.to_csv(output_file_path, index=False)
 
@@ -296,9 +301,9 @@ def main_web_scraping(job_name,n_posts_max,sites):
 
 
 #liste_sites = ["Apec","Indeed","Pole_Emploi", "Welcome_to_the_jungle"]
-liste_sites = ["Welcome_to_the_jungle","Apec","Pole_Emploi"]
-job_name = "Data"
-main_web_scraping(job_name,100,liste_sites)
+#liste_sites = ["Welcome_to_the_jungle","Apec","Pole_Emploi"]
+#job_name = "Data"
+#main_web_scraping(job_name,100,liste_sites)
 
 
 # Indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant

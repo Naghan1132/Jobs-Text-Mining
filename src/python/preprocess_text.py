@@ -15,6 +15,27 @@ from langdetect import detect
 #nltk.download('stopwords')
 #nltk.download('wordnet')
 
+# Utilisez une image Python officielle comme image de base
+# FROM python:3.8-slim
+
+# # Définissez le répertoire de travail dans le conteneur
+# WORKDIR /app
+
+# # Installez les dépendances de votre application (si nécessaire)
+# # COPY requirements.txt .
+# # RUN pip install --no-cache-dir -r requirements.txt
+
+# # Installez les ressources NLTK
+# RUN pip install nltk
+# RUN python -m nltk.downloader punkt
+# RUN python -m nltk.downloader stopwords
+# RUN python -m nltk.downloader wordnet
+
+# # Copiez votre code source dans le conteneur
+# COPY . .
+
+# # Définissez la commande par défaut pour exécuter votre application
+# CMD [ "python", "votre_script.py" ]
 
 def get_tokens_and_find_language(texte):
     language = detect_language(texte)
@@ -136,3 +157,10 @@ def clean_description(description):
 
 def preprocess_skills(skills_text):
     pass
+
+def last_preprocessing(df):
+    median_values = df.median()
+    # Remplacer les valeurs NaN par la médiane correspondante pour chaque colonne
+    df_filled = df.fillna(median_values)
+    return df_filled
+    
