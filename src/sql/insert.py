@@ -1,7 +1,7 @@
 import pandas as pd
 import sqlite3
 from SQLite_v2 import data_base
-import os
+import sys
 
 def load_data(path):
     conn = sqlite3.connect(path)
@@ -14,6 +14,8 @@ def load_data(path):
 
     df = df.dropna()
     df = df.reset_index()
+
+    # A FAIRE DANS LE PREPROCESSING
     accent_dict = {"'": ' '}
     def remove_accents(input_str):
         return ''.join(accent_dict.get(char, char) for char in input_str)
@@ -24,8 +26,9 @@ def load_data(path):
 
     return df, df2
 
-def create_dw(df, df2):
-    bd = data_base()
+def create_dw(df, df2,chemin_actuel):
+
+    bd = data_base(chemin_actuel)
 
     ### insert into H_salaire
     for i in list(df['salary'].unique()):

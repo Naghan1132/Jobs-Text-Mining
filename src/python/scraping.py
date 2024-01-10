@@ -28,14 +28,7 @@ def get_coordinates(city):
         return location.latitude, location.longitude
     else:
         return None, None
-    
 
-def get_indeed_job_links(html_source):
-    soup = BeautifulSoup(html_source, 'html.parser')
-    h2_tags = soup.find_all('h2', class_=['jobTitle', 'css-mr1oe7', 'eu4oa1w0'])
-    list_id = [h.find('a')['data-jk'] if h.find('a') else None for h in h2_tags]
-    date = soup.find_all('span', {'class': ['date']})
-    return list_id,date
 
 
 def get_first_apec_job_link(html_source):
@@ -302,98 +295,6 @@ def scrap_apec_job(html_source):
     return liste
 
     
-
-
-def scrap_indeed_job(html_source,date):
-
-    soup = BeautifulSoup(html_source, 'html.parser')
-
-    source = "Indeed"
-
-    div_title = soup.find('h1', class_='jobsearch-JobInfoHeader-title')   
-    title = div_title.find('span')
-
-    location = soup.find('div', {'data-testid':['inlineHeader-companyLocation']}) 
-    description = soup.find('div', {'id':['jobDescriptionText']})
-
-    compagny_div = soup.find('div', {'data-testid':['inlineHeader-companyName']})
-    compagny = compagny_div.find('a', {'class':['css-1f8zkg3','e19afand0']})
-    salary = ""
-    type_job = ""
-
-    # OK
-    salary_and_jobtype_header = soup.find('div', {'id':['salaryInfoAndJobType']}) 
-    if salary_and_jobtype_header is not None:
-        salary = salary_and_jobtype_header.find('span',{'class':['css-2iqe2o']})
-        type_job = salary_and_jobtype_header.find('span',{'class':['css-k5flys']})
-
-    if salary != "" and salary is not None:
-        salary = salary.text
-    if type_job != "" and type_job is not None:
-        type_job = type_job.text
-
-    type_job = type_job.replace("-", "")
-
-
-    date = date.text
-    new_string = date.replace("Posted", "")
-
-    if "Aujourd'hui" in new_string:
-        date = datetime.now()
-    elif "plus de 30" in new_string:
-        days = re.findall(r'\d+', new_string)
-        date = datetime.now() - timedelta(days=30)
-    else:
-        days = re.findall(r'\d+', new_string)
-        date = datetime.now() - timedelta(days=int(days[0]))
-
-    date = date.strftime("%Y-%m-%d")
-    print("date : ",date)
-
-
-    # régler les skills !
-    #skills_div = soup.find('div', {'class': ['js-match-insights-provider-e6s05i', 'eu4oa1w0']})
-
-    print("salaire : ",salary)
-    print("type job : ",type_job)
-    
-
-    if title:
-        title = title.text.strip()
-        print(f"title : {title}")
-    else:
-        title = ""
-
-    if location:
-        location = location.text.strip()
-        print(f"location : {location}")
-    else:
-        location = ""
-    if compagny:
-        compagny = compagny.text.strip()
-        print(f"compagny : {compagny}")
-    else:
-        compagny = ""
-
-    if description:
-        #skills = get_skills(description.text)
-        description = description.text.strip()
-        description = clean_description(description)
-    else:
-        description = ""
-
-    latitude, longitude = get_coordinates(location)
-    region, departement = get_region_department(latitude, longitude)
-
-    
-    tokens = get_text_tokenize_and_find_language(description)
-
-    print("\n ================== \n")
-
-    liste = [title,type_job,salary,compagny,location,region, departement,latitude,longitude,"experience","skills",date,description,tokens,source]
-
-    return liste
-
 
 def scrap_jungle_job(html_source):
    

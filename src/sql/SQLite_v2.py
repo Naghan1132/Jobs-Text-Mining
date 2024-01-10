@@ -1,8 +1,9 @@
 import sqlite3
+import sys  
 
 class data_base:
-    def __init__(self):
-        self.con = sqlite3.connect('warehouse.db')
+    def __init__(self,chemin_actuel):
+        self.con = sqlite3.connect(chemin_actuel+'/warehouse.db')
         self.cur = self.con.cursor()
         self.create_type_job()
         self.create_salaire()

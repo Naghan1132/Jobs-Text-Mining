@@ -32,57 +32,24 @@ import sys
 
 def build_url_job_research(job_name,sites):
     base_urls = [
-        "https://fr.indeed.com/jobs?q=JobToInput&l=France&from=searchOnHP",
         "https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=JobToInput",
-        "https://www.glassdoor.fr/Emploi/france-JobToInput-emplois-SRCH_IL.0,6_IN86_KO7,11.htm",
         "https://candidat.pole-emploi.fr/offres/recherche?motsCles=JobToInput&offresPartenaires=true&rayon=10&tri=0",
         "https://www.welcometothejungle.com/fr/jobs?refinementList%5Boffices.country_code%5D%5B%5D=FR&query=JobToInput&page=1"]
     
     urls = []
     for s in sites:
-        if s == "Indeed":
+        if s == "Apec":
             urls.append(base_urls[0])
-        elif s == "Apec":
-            urls.append(base_urls[1])
-        elif s == "Glassdoor":
-            urls.append(base_urls[2])
         elif s == "Pole_Emploi":
-            urls.append(base_urls[3])
+            urls.append(base_urls[1])
         elif s == "Welcome_to_the_jungle":
-            urls.append(base_urls[4])
-        
+            urls.append(base_urls[3])
 
     modified_urls = []
     for url in urls:
-        if "indeed" in url:
-            job_name_modified = job_name.replace(" ", "+")
-            modified_url = url.replace("JobToInput",job_name_modified)
-
-        elif "apec" in url:
+        if "apec" in url:
             job_name_modified = job_name.replace(" ", " ") # do nothing
             modified_url = url.replace("JobToInput",job_name_modified)
-
-        elif "glassdoor" in url:
-            job_name = job_name.lower()
-            job_name_modified = job_name.replace(" ", "-")
-            modified_url = url.replace("JobToInput",job_name_modified)
-
-            # Le nombre de caractere dans le job et dans la ville change un parametre dans la requete donc ajouter le parametre
-            debut_sous_chaine = "https://www.glassdoor.fr/Emploi/"
-            fin_sous_chaine = "-emplois"
-
-            index_debut = modified_url.find(debut_sous_chaine) + len(debut_sous_chaine)
-            index_fin = modified_url.find(fin_sous_chaine)
-        
-            # Extraire la sous-chaîne entre les indices
-            sous_chaine_interieure = modified_url[index_debut:index_fin]
-            nombre_caracteres = len(sous_chaine_interieure)
-
-            
-            match = re.search(r',(\d+)\.htm', modified_url)
-            if match:
-                # Remplacer la valeur par la nouvelle valeur
-                modified_url = re.sub(r',\d+\.htm', f',{nombre_caracteres}.htm', modified_url)
                 
         elif "candidat.pole-emploi" in url:
             job_name_modified = job_name.replace(" ", "-")
@@ -100,7 +67,7 @@ def build_url_job_research(job_name,sites):
 def create_driver():
     # Configurer les options du navigateur en mode headless
     chrome_options = Options()
-    #chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
+    chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
@@ -112,9 +79,7 @@ def create_driver():
 
 def web_scrap(df,url,n_posts_max):    
     
-    if "indeed" in url:
-        source = "indeed"
-    elif "apec" in url:
+    if "apec" in url:
         source = "apec" 
     elif "glassdoor" in url:
         source = "glassdoor"
@@ -138,49 +103,8 @@ def web_scrap(df,url,n_posts_max):
 
     n_current_posts = 0
 
-    if source == "indeed":                
-        while True:
-            base_url = driver.current_url
-            html_source = driver.page_source
 
-            links,dates = get_indeed_job_links(html_source)
-            if links is None:
-                driver.quit()
-                return df
-
-            for link in links:    
-                if link is not None:    
-                    driver.get("https://fr.indeed.com/viewjob?jk="+str(link))
-                    # checkbox anti - bot OK
-                    WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[title='Widget containing a Cloudflare security challenge']")))
-                    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "label.ctp-checkbox-label"))).click()
-                    print("CAPTCHA vérifié")
-                    time.sleep(8)
-                    # attendre que la page job se charge
-                    # try:
-                    #     WebDriverWait(driver, 20).until(
-                    #         EC.presence_of_element_located((By.CSS_SELECTOR, "h1.jobsearch-JobInfoHeader-title.css-1hwk56k.e1tiznh50"))
-                    #     )
-                    # except TimeoutException:
-                    #     print("err")
-                    
-                 
-                    html_source = driver.page_source
-                    df = add_row(df,scrap_indeed_job(html_source,dates[links.index(link)]))
-                    n_current_posts += 1
-                    if n_current_posts >= n_posts_max:
-                        driver.quit()
-                        return df
-                time.sleep(3) # ajouter du temps sinon l'anti-bot detecte
-            
-            driver.get(base_url)
-            # clicker sur la page d'après
-            suivant_button = driver.find_element(By.CSS_SELECTOR, 'a[data-testid="pagination-page-next"].css-akkh0a') 
-            # appyuer sur le bouton suivant "Plus d'offres d'emploi"
-            driver.execute_script("arguments[0].click();", suivant_button)
-            time.sleep(3) # attendre que les offres chargent
-
-    elif source == "apec":
+    if source == "apec":
         base_url = driver.current_url
         html_source = driver.page_source
         link = get_first_apec_job_link(html_source)     
@@ -286,19 +210,32 @@ def concat_data(sites,folder_path='src/data/'):
         if os.path.exists(file_path):
             df = pd.read_csv(file_path)
             dfs.append(df)   
-    # enlever les read csv etc... il faut faire ça dynamiquement
-            
+    # !!! Enlever les read csv etc... il faut ajouter à la base dynamiquement sans passez par les csv !!!!
+
     concatenated_df = pd.concat(dfs, ignore_index=True)
     concatenated_df = last_preprocessing(concatenated_df)
-    
-    conn = sqlite3.connect('base_brute.db')
-    concatenated_df.to_sql('data', conn, if_exists='replace', index=False)
 
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
-    chemin_sql = os.path.join(chemin_actuel, '..', 'sql')
-    sys.path.append(chemin_sql)
-    import execute 
-    execute.exec()
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    # Connexion à la base de données SQLite
+    conn = sqlite3.connect(chemin_sql+'/base_brute.db')
+    concatenated_df.to_sql('data', conn, if_exists='replace', index=False)
+
+    # Importer et exécuter la fonction exec() du fichier execute.py
+    chemin_execute_py = os.path.join(chemin_sql, 'execute.py')
+
+    import importlib.util
+    # Charger le module execute.py
+    spec = importlib.util.spec_from_file_location("execute", chemin_execute_py)
+    execute_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(execute_module)
+
+    # Appeler la fonction 'exec' de execute.py
+    execute_module.exec()
+
+
+    
     conn.close()
 
 
@@ -335,3 +272,9 @@ def main_web_scraping(job_name,n_posts_max,sites):
 # - filtres carte ou autres (date, type de contrat, salaire, etc...)
 # - moteur de recherche sur les comptétences ou tokens sinon : et ressortir les offres qui correspondent le mieux
 # - améliorer le wordcloud
+
+
+# enlever Indeed
+# faire des excepion si le Nominatim ne marche pas !!!
+# Uniformiser les champs
+# enlever accent etc...

@@ -41,6 +41,23 @@ def afficher_accueil():
 
 def afficher_carte_par_defaut():
 
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+
+    req = """SELECT ville, longitude, latitude, titre, entreprise FROM D_location, D_titre, D_entreprise, F_description WHERE D_location.id_location = F_description.id_location AND D_titre.id_titre = F_description.id_titre AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
+
+    cursor.execute(req)
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+
+
     # Affichage de la carte
     m = folium.Map(location=[48.8566, 2.3522], zoom_start=5)
     marker_cluster = MarkerCluster().add_to(m)
@@ -285,10 +302,10 @@ def scrapping():
     sys.path.append(chemin_python)
     from web_scraping import main_web_scraping
 
-    st.header("Scrapper les emplois de votre choix sur Indeed, Pole Emploi et Apec etc...")
+    st.header("Scrapper les emplois de votre choix sur Pole Emploi / Apec / Welcome_to_the_jungle")
     st.markdown(''':rainbow[ATTENTION une offre scrappée = 2 secondes, prenez un café].''')
 
-    liste_sites = ["Apec","Indeed","Pole_Emploi", "Welcome_to_the_jungle"]
+    liste_sites = ["Apec","Pole_Emploi", "Welcome_to_the_jungle"]
     
     sites_selectionnes = st.multiselect("Sélectionnez les sites à scrapper :", liste_sites, default=["Apec"])
     
@@ -327,27 +344,26 @@ def recherche():
 
 
 def test_sql():
+
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
-    chemin_sql = os.path.join(chemin_actuel, '..', 'sql')
-    sys.path.append(chemin_sql)
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
 
-    st.title('Affichage des 5 premières lignes de la base de données')
-    # Établir une connexion à la base de données SQLite
-    conn = sqlite3.connect('base_brute.db')
+    st.title('Affichage de la base de données')
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
 
-    # Écrire une requête SQL pour récupérer les trois premières lignes de la table 'data'
-    query = "SELECT * FROM data LIMIT 5"
+    req = """SELECT ville, source ,longitude, latitude, titre, entreprise FROM D_location, D_titre,D_source, D_entreprise, F_description WHERE D_location.id_location = F_description.id_location AND D_titre.id_titre = F_description.id_titre AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
 
-    # Utiliser pandas pour lire les données directement depuis la requête SQL
-    df = pd.read_sql_query(query, conn)
+    cursor.execute(req)
+    rows = cursor.fetchall()
 
-    # Fermer la connexion à la base de données SQLite
     conn.close()
+
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
 
     # Afficher les données dans Streamlit
     st.write("Nombre de lignes : ")
     st.write(len(df))
-    st.write("Voici les 3 premières lignes de la table 'data' :")
     st.table(df)
 
 
