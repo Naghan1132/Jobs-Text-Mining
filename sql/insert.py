@@ -56,8 +56,8 @@ def create_dw(df, df2):
     ###########
 
     ### insert into H_departement   
-    for i in list(df['departement'].unique()):
-        item = (i,)
+    for row in df[['departement', 'region']].drop_duplicates().itertuples(index=False):
+        item = row[:2]
         bd.insert_departement(item)
 
     ### insert into D_location 
