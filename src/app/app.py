@@ -307,7 +307,7 @@ def scrapping():
         with st.spinner("Scrapping en cours..."):
             
             # Appeler votre fonction de scraping
-            result = main_web_scraping(job_name,n_jobs,sites_selectionnes)
+            main_web_scraping(job_name,n_jobs,sites_selectionnes)
             
             # Une fois le scraping terminé, mettre à jour le message
             st.success("Scrapping terminé avec succès!")
@@ -345,6 +345,8 @@ def test_sql():
     conn.close()
 
     # Afficher les données dans Streamlit
+    st.write("Nombre de lignes : ")
+    st.write(len(df))
     st.write("Voici les 3 premières lignes de la table 'data' :")
     st.table(df)
 

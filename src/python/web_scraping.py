@@ -13,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 import sqlite3
+import sys
 
 
 #### RÉSUMÉ ####
@@ -285,18 +286,22 @@ def concat_data(sites,folder_path='src/data/'):
         if os.path.exists(file_path):
             df = pd.read_csv(file_path)
             dfs.append(df)   
-    
+    # enlever les read csv etc... il faut faire ça dynamiquement
+            
     concatenated_df = pd.concat(dfs, ignore_index=True)
-    # NaN's
     concatenated_df = last_preprocessing(concatenated_df)
-
-    
-    #output_file_path = os.path.join(folder_path, 'all_data.csv')
-    #concatenated_df.to_csv(output_file_path, index=False)
     
     conn = sqlite3.connect('base_brute.db')
-    concatenated_df.to_sql('data', conn, if_exists='append', index=False)
+    concatenated_df.to_sql('data', conn, if_exists='replace', index=False)
+
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.join(chemin_actuel, '..', 'sql')
+    sys.path.append(chemin_sql)
+    import execute 
+    execute.exec()
     conn.close()
+
+
     
 
 
@@ -309,8 +314,8 @@ def main_web_scraping(job_name,n_posts_max,sites):
     concat_data(sites)
 
 
-#liste_sites = ["Apec","Indeed","Pole_Emploi", "Welcome_to_the_jungle"]
-#liste_sites = ["Welcome_to_the_jungle","Apec","Pole_Emploi"]
+#liste_sites = ["Apec","Pole_Emploi", "Welcome_to_the_jungle"]
+#liste_sites = ["Apec"]
 #job_name = "Data"
 #main_web_scraping(job_name,2,liste_sites)
 
