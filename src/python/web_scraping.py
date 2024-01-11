@@ -43,7 +43,7 @@ def build_url_job_research(job_name,sites):
         elif s == "Pole_Emploi":
             urls.append(base_urls[1])
         elif s == "Welcome_to_the_jungle":
-            urls.append(base_urls[3])
+            urls.append(base_urls[2])
 
     modified_urls = []
     for url in urls:
@@ -198,30 +198,16 @@ def web_scrap(df,url,n_posts_max):
         return df
 
 
-
-
-def concat_data(sites,folder_path='src/data/'):
-    if not os.path.exists(folder_path):
-        raise FileNotFoundError(f"Le dossier {folder_path} n'existe pas.")
-    dfs = []
-    list_csv = [site + ".csv" for site in sites]  # Add ".csv" to each element in the list
-    for filename in list_csv:
-        file_path = os.path.join(folder_path, filename)
-        if os.path.exists(file_path):
-            df = pd.read_csv(file_path)
-            dfs.append(df)   
-    # !!! Enlever les read csv etc... il faut ajouter à la base dynamiquement sans passez par les csv !!!!
-
-    concatenated_df = pd.concat(dfs, ignore_index=True)
-    concatenated_df = last_preprocessing(concatenated_df)
-
+def update_db(concatenated_df):
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
     chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
-
+    concatenated_df['skills'] = concatenated_df['skills'].apply(lambda x: ','.join(map(str, x)) if isinstance(x, list) else x)
+    concatenated_df['tokens'] = concatenated_df['tokens'].apply(lambda x: ','.join(map(str, x)) if isinstance(x, list) else x)
     # Connexion à la base de données SQLite
     conn = sqlite3.connect(chemin_sql+'/base_brute.db')
     concatenated_df.to_sql('data', conn, if_exists='replace', index=False)
 
+    conn.close()
     # Importer et exécuter la fonction exec() du fichier execute.py
     chemin_execute_py = os.path.join(chemin_sql, 'execute.py')
 
@@ -232,37 +218,31 @@ def concat_data(sites,folder_path='src/data/'):
     spec.loader.exec_module(execute_module)
 
     # Appeler la fonction 'exec' de execute.py
-    execute_module.exec()
-
-
-    
-    conn.close()
-
-
-    
-
+    execute_module.exec() 
 
 def main_web_scraping(job_name,n_posts_max,sites):
+    dfs = []
     urls = build_url_job_research(job_name,sites)
     for url in urls:
         df = create_df()
         df = web_scrap(df,url,n_posts_max=n_posts_max)
-        save_df(df,df['source'][0])
-    concat_data(sites)
+        dfs.append(df)
+        if len(dfs) > 1:
+            concatenated_df = pd.concat(dfs, ignore_index=True)
+            concatenated_df = last_preprocessing(concatenated_df)
+        else :
+            concatenated_df = df
+            concatenated_df = last_preprocessing(concatenated_df)
+    update_db(concatenated_df)
 
 
 #liste_sites = ["Apec","Pole_Emploi", "Welcome_to_the_jungle"]
-#liste_sites = ["Apec"]
-#job_name = "Data"
-#main_web_scraping(job_name,2,liste_sites)
+# liste_sites = ["Apec"]
+# job_name = "Data"
+# main_web_scraping(job_name,2,liste_sites)
 
-
-# Indeed à rajouter une sécurité pour le scrapping.... plus possible maintenant
 
 # TODO =>
-# re-scrapper Indeed pour les compétences
-# mettre en dataframe plutot qu'en csv (faire les 2 en réalité, c'est pas dur)
-
 # Homogénisation format de type_job (CDI, CDD etc...), expérience, date (jour/mois/annee), etc... !!!
 # réduire au MAXIMUM les time.sleep() => pour diminuer le temps de scrapping
 
@@ -275,5 +255,10 @@ def main_web_scraping(job_name,n_posts_max,sites):
 
 
 # faire des excepion si le Nominatim ne marche pas !!!
-# Uniformiser les champs
-# enlever accent etc...
+# Uniformiser les champs CDI etc...
+# enlever accent => preprocessing des données
+# la virgule est prise comme le token le plus courant
+# mettre "Non Précisé" quand ya pas d'entreprise
+# régler le pb quand il n'y a aucun salaire !!
+# clean toutes les fonction plus utilisés 
+# rajouter le streamlit

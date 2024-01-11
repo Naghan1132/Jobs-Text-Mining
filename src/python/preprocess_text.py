@@ -11,9 +11,9 @@ from langdetect import detect
 import numpy as np
 
 # Téléchargez les ressources nécessaires
-#nltk.download('punkt')
-#nltk.download('stopwords')
-#nltk.download('wordnet')
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
 
 # Utilisez une image Python officielle comme image de base
 # FROM python:3.8-slim

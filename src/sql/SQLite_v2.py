@@ -22,6 +22,12 @@ class data_base:
     # Create the table H_type_job
     def create_type_job(self):
         # self.cur.execute("""DROP TABLE H_type_job""")
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='H_type_job'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE H_type_job")
         self.cur.execute("""CREATE TABLE IF NOT EXISTS H_type_job(
                          id_type_job INTEGER PRIMARY KEY AUTOINCREMENT,
                          type TEXT                                    
@@ -34,6 +40,13 @@ class data_base:
     ### H_salaire
     #Create table H_salaire
     def create_salaire(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='H_salaire'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE H_salaire")
+
         self.cur.execute("""CREATE TABLE IF NOT EXISTS H_salaire(
                          id_salaire INTEGER PRIMARY KEY AUTOINCREMENT,
                          salaire TEXT
@@ -43,9 +56,16 @@ class data_base:
     def insert_salaire(self,item):
         self.cur.execute("""INSERT OR IGNORE INTO H_salaire (salaire) VALUES(?)""", item)
 
-    ### H_competanceCr eate table H_copetance
+    ### H_competanceCr eate table H_competence
     #Create table H_copetence
     def create_competence(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='H_competence'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE H_competence")
+        
         self.cur.execute("""CREATE TABLE IF NOT EXISTS H_competence(
                          id_competence INTEGER PRIMARY KEY AUTOINCREMENT,
                          competence TEXT
@@ -58,6 +78,13 @@ class data_base:
     ### H_experience
     # Create table H_experience
     def create_experience(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='H_experience'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE H_experience")
+
         self.con.execute("""CREATE TABLE IF NOT EXISTS H_experience(
                          id_experience INTEGER PRIMARY KEY AUTOINCREMENT,
                          experience TEXT
@@ -70,6 +97,13 @@ class data_base:
     ### H_departement
     #C reate table H_departement
     def create_depatement(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='H_departement'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE H_departement")
+
         self.con.execute("""CREATE TABLE IF NOT EXISTS H_departement(
                          id_departement INTEGER PRIMARY KEY AUTOINCREMENT,
                          departement TEXT,
@@ -84,6 +118,13 @@ class data_base:
     ### D_entreprise
     # Create table D_entreprise
     def create_entreprise(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='D_entreprise'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE D_entreprise")
+
         self.con.execute("""CREATE TABLE IF NOT EXISTS D_entreprise(
                          id_entreprise INTEGER PRIMARY KEY AUTOINCREMENT,
                          id_type_job INTEGER ,
@@ -101,6 +142,13 @@ class data_base:
     ### D_date 
     # Create table D_date
     def create_date(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='D_date'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE D_date")
+
         self.con.execute("""CREATE TABLE IF NOT EXISTS D_date(
                          id_date INTEGER PRIMARY KEY AUTOINCREMENT,
                          date TEXT
@@ -112,6 +160,14 @@ class data_base:
 
     ### D_titre
     def create_titre(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='D_titre'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE D_titre")
+
+
         self.con.execute("""CREATE TABLE IF NOT EXISTS D_titre(
                          id_titre INTEGER PRIMARY KEY AUTOINCREMENT,
                          id_competence INTEGER,
@@ -126,6 +182,13 @@ class data_base:
 
     ### D_source
     def create_source(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='D_source'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE D_source")
+
         self.con.execute("""CREATE TABLE IF NOT EXISTS D_source(
                          id_source INTEGER PRIMARY KEY AUTOINCREMENT,
                          source TEXT
@@ -136,6 +199,13 @@ class data_base:
 
     ### D_location
     def create_location(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='D_location'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE D_location")
+
         self.con.execute("""CREATE TABLE IF NOT EXISTS D_location(
                          id_location INTEGER PRIMARY KEY AUTOINCREMENT,
                          id_departement INTEGER,
@@ -151,6 +221,13 @@ class data_base:
     ### D_token
     
     def create_token(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='D_token'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE D_token")
+
         self.con.execute("""CREATE TABLE IF NOT EXISTS D_token(
                          id_token INTEGER PRIMARY KEY AUTOINCREMENT,
                          token TEXT
@@ -162,6 +239,13 @@ class data_base:
 
     # F_description
     def create_description(self):
+        self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='F_description'")
+        table_exists = self.cur.fetchone()
+
+        # Si la table existe, la supprimer
+        if table_exists:
+            self.cur.execute("DROP TABLE F_description")
+
         self.cur.execute("""CREATE TABLE IF NOT EXISTS F_description(
                          id_description INTEGER PRIMARY KEY AUTOINCREMENT,
                          id_entreprise INTEGER,

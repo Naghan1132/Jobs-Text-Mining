@@ -15,3 +15,5 @@ def exec():
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
     df, df2 = load_data(path=chemin_actuel+'/base_brute.db')
     create_dw(df, df2,chemin_actuel)
+
+#exec()

@@ -63,8 +63,8 @@ def afficher_carte_par_defaut():
     marker_cluster = MarkerCluster().add_to(m)
 
     for index, row in df.iterrows():
-        if pd.notnull(row['location']) and pd.notnull(row['latitude']) and pd.notnull(row['longitude']):
-            folium.Marker([row['latitude'], row['longitude']], popup=f"<b>{row['title']}</b> <br> <i>{row['compagny']}</i>",tooltip=row['title']).add_to(marker_cluster)
+        if pd.notnull(row['ville']) and pd.notnull(row['latitude']) and pd.notnull(row['longitude']):
+            folium.Marker([row['latitude'], row['longitude']], popup=f"<b>{row['titre']}</b> <br> <i>{row['entreprise']}</i>",tooltip=row['titre']).add_to(marker_cluster)
     
     folium_static(m)
 
@@ -95,15 +95,29 @@ def afficher_carte_par_defaut():
 
 def afficher_carte_departement():
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+    req = """SELECT departement, salaire FROM H_departement, H_salaire, D_location, D_entreprise, F_description WHERE H_departement.id_departement = D_location.id_departement AND D_location.id_location = F_description.id_location AND H_salaire.id_salaire = D_entreprise.id_salaire AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
+
+    cursor.execute(req)
+    rows = cursor.fetchall()
+    conn.close()
+
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+    df['departement'] = df['departement'].astype(str)
+    df['salaire'] = df['salaire'].astype(float)
     
     # Calculez la moyenne des salaires par département
-    moyennes_par_departement = df.groupby('departement')['salary'].mean().reset_index()
-    min_moyennes = moyennes_par_departement['salary'].min(skipna=True)
-    max_moyennes = moyennes_par_departement['salary'].max(skipna=True)
+    moyennes_par_departement = df.groupby('departement')['salaire'].mean().reset_index()
+    min_moyennes = moyennes_par_departement['salaire'].min(skipna=True)
+    max_moyennes = moyennes_par_departement['salaire'].max(skipna=True)
 
     #median_salary = moyennes_par_departement['salary'].median()
     #moyennes_par_departement['salary'].fillna(median_salary, inplace=True)
-    print(moyennes_par_departement)
+    # print(moyennes_par_departement)
 
     # Créez une carte Folium centrée sur la France
     m = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
@@ -149,7 +163,7 @@ def afficher_carte_departement():
     folium.GeoJson(
         geojson_data,
         style_function=lambda feature: {
-            'fillColor': get_color(moyennes_par_departement[moyennes_par_departement['departement'] == feature['properties']['nom']]['salary'].values),
+            'fillColor': get_color(moyennes_par_departement[moyennes_par_departement['departement'] == feature['properties']['nom']]['salaire'].values),
             'color': 'black',
             'weight': 2,
             'dashArray': '5, 5',
@@ -163,15 +177,29 @@ def afficher_carte_departement():
 
 def afficher_carte_region():
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
-    
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+    req = """SELECT region, salaire FROM H_departement, H_salaire, D_location, D_entreprise, F_description WHERE H_departement.id_departement = D_location.id_departement AND D_location.id_location = F_description.id_location AND H_salaire.id_salaire = D_entreprise.id_salaire AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
+
+    cursor.execute(req)
+    rows = cursor.fetchall()
+    conn.close()
+
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+    df['region'] = df['region'].astype(str)
+    df['salaire'] = df['salaire'].astype(float)
+
     # Calculez la moyenne des salaires par département
-    moyennes_par_region = df.groupby('region')['salary'].mean().reset_index()
-    min_moyennes = moyennes_par_region['salary'].min(skipna=True)
-    max_moyennes = moyennes_par_region['salary'].max(skipna=True)
+    moyennes_par_region = df.groupby('region')['salaire'].mean().reset_index()
+    min_moyennes = moyennes_par_region['salaire'].min(skipna=True)
+    max_moyennes = moyennes_par_region['salaire'].max(skipna=True)
 
     #median_salary = moyennes_par_region['salary'].median()
     #moyennes_par_region['salary'].fillna(median_salary, inplace=True)
-    print(moyennes_par_region)
+    # print(moyennes_par_region)
 
     # Créez une carte Folium centrée sur la France
     m = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
@@ -221,7 +249,7 @@ def afficher_carte_region():
     folium.GeoJson(
         geojson_data,
         style_function=lambda feature: {
-            'fillColor': get_color(moyennes_par_region[moyennes_par_region['region'] == feature['properties']['nom']]['salary'].values),
+            'fillColor': get_color(moyennes_par_region[moyennes_par_region['region'] == feature['properties']['nom']]['salaire'].values),
             'color': 'black',
             'weight': 2,
             'dashArray': '5, 5',
@@ -249,17 +277,46 @@ def afficher_carte_region():
 
 
 def afficher_donnees():
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    
+    cursor = conn.cursor()
+
+    req = """SELECT ville, source ,longitude, latitude, titre, entreprise FROM D_location, D_titre,D_source, D_entreprise, F_description WHERE D_location.id_location = F_description.id_location AND D_titre.id_titre = F_description.id_titre AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
+    
+    cursor.execute(req)
+    rows = cursor.fetchall()
+    conn.close()
+
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+
     st.write("Affichage des 5 premières lignes du fichier CSV :")
     st.write("Taille du corpus : ",len(df))
     st.write(df.head())
     
 
 def analyse_texte():
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+    req = """SELECT token FROM D_token, F_description WHERE D_token.id_token = F_description.id_token;"""
+
+    cursor.execute(req)
+    rows = cursor.fetchall()
+    conn.close()
+
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+
     # Titre de la section
     st.header("Analyse de Texte Word Cloud")
 
     # Concaténer tous les tokens en une seule chaîne
-    all_tokens = ' '.join(df['tokens'].dropna())
+    all_tokens = ' '.join(df['token'].dropna())
     
     # Générer le wordcloud
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_tokens)
@@ -333,40 +390,48 @@ def scrapping():
 def recherche():
     st.header("retourne les emplois les plus pertinents en fonction de votre recherche")
     st.write("entrer peut-être le type emploi, le nom du job et compétences etc... via description")
-
+    search_query_emploi = ''
+    search_query_contrat = ''
     # Widget de barre de recherche
     search_query_emploi = st.text_input("Titre Emploi : ", "")
     search_query_contrat = st.text_input("Type contrat : ", "")
-
     # Bouton de recherche
     if st.button('Rechercher'):
-        st.write(f"Vous avez recherché: {search_query_emploi} et {search_query_contrat}")
+        chaine_originale  = """SELECT titre, entreprise, type, salaire, experience, competence,date, ville, source, description FROM D_titre, H_experience, H_competence, D_entreprise, H_type_job, H_salaire, D_date, D_location, D_source, F_description WHERE H_type_job.id_type_job = D_entreprise.id_type_job AND H_salaire.id_salaire = D_entreprise.id_salaire AND D_entreprise.id_entreprise = F_description.id_entreprise AND H_experience.id_experience = D_titre.id_experience AND H_competence.id_competence = D_titre.id_competence AND D_titre.id_titre = F_description.id_titre AND D_source.id_source = F_description.id_source AND D_location.id_location = F_description.id_location AND D_date.id_date = F_description.id_date;"""
+        if search_query_emploi == '' and search_query_contrat != '':
+            st.write(f"Vous avez recherché: {search_query_contrat}")
+            elements_a_inserer = f" AND H_type_job.type = '{search_query_contrat}'"
+            index_insertion = len(chaine_originale) - 1
+            req1 = chaine_originale[:index_insertion] + elements_a_inserer + chaine_originale[index_insertion:]
 
+        elif search_query_emploi != '' and search_query_contrat == '':
+            st.write(f"Vous avez recherché: {search_query_emploi}")
+            elements_a_inserer = f" AND D_titre.titre = '{search_query_emploi}'"
+            index_insertion = len(chaine_originale) - 1
+            req1 = chaine_originale[:index_insertion] + elements_a_inserer + chaine_originale[index_insertion:]
 
-def test_sql():
+        elif search_query_emploi != '' and search_query_contrat != '':
+            st.write(f"Vous avez recherché: {search_query_emploi} et {search_query_contrat}")
+            elements_a_inserer = f" AND D_titre.titre = '{search_query_emploi}' AND H_type_job.type = '{search_query_contrat}'"
+            index_insertion = len(chaine_originale) - 1
+            req1 = chaine_originale[:index_insertion] + elements_a_inserer + chaine_originale[index_insertion:]
+        
+        else :
+            st.write("Vous n'avez rien recherché.")
+            req1 = """SELECT titre, entreprise, type, salaire, experience, competence,date, ville, source, description FROM D_titre, H_experience, H_competence, D_entreprise, H_type_job, H_salaire, D_date, D_location, D_source, F_description WHERE H_type_job.id_type_job = D_entreprise.id_type_job AND H_salaire.id_salaire = D_entreprise.id_salaire AND D_entreprise.id_entreprise = F_description.id_entreprise AND H_experience.id_experience = D_titre.id_experience AND H_competence.id_competence = D_titre.id_competence AND D_titre.id_titre = F_description.id_titre AND D_source.id_source = F_description.id_source AND D_location.id_location = F_description.id_location AND D_date.id_date = F_description.id_date;"""
+        
+        chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+        chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
 
-    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
-    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+        conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+        cursor = conn.cursor()
+        cursor.execute(req1)
+        rows = cursor.fetchall()
+        conn.close()
 
-    st.title('Affichage de la base de données')
-    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
-    cursor = conn.cursor()
-
-    req = """SELECT ville, source ,longitude, latitude, titre, entreprise FROM D_location, D_titre,D_source, D_entreprise, F_description WHERE D_location.id_location = F_description.id_location AND D_titre.id_titre = F_description.id_titre AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
-
-    cursor.execute(req)
-    rows = cursor.fetchall()
-
-    conn.close()
-
-    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
-
-    # Afficher les données dans Streamlit
-    st.write("Nombre de lignes : ")
-    st.write(len(df))
-    st.table(df)
-
-
+        df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+        st.write(df)
+        
 
 def main():
 
@@ -391,7 +456,7 @@ def main():
 
 
     # Options de navigation pour les onglets
-    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte", "Scrapper des données", "test sql"]
+    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte", "Scrapper des données"]
     selected_option = st.sidebar.radio("Navigation", options_navigation)
 
     # Contenu de l'application en fonction de l'option sélectionnée
@@ -405,13 +470,11 @@ def main():
         analyse_texte()
     elif selected_option == "Scrapper des données":
         scrapping()
-    elif selected_option == "test sql":
-        test_sql()
     else:
         st.write("Sélectionnez une option de navigation dans la barre latérale.")
 
 
-df = load_data("src/data/all_data.csv")
+# df = load_data("src/data/all_data.csv")
 
 if __name__ == "__main__":
     main()
