@@ -1,0 +1,17 @@
+streamlit
+pandas
+wordcloud
+matplotlib
+folium
+numpy
+seaborn
+selenium
+bs4
+geopy
+scipy
+spacy
+nltk
+langcodes        
+langdetect     
+geographiclib  
+streamlit_folium
