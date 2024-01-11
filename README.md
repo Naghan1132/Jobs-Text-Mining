@@ -15,9 +15,15 @@ Ce projet vise à analyser des données textuelles pour extraire des information
 1. Clonez le dépôt GitHub :
    ```bash
    git clone https://github.com/Naghan1132/Jobs-Text-Mining.git
+2. Aller dans le dossier source :
+   ```bash
+   cd src/ 
+2. Construire l'image du docker :
+   ```bash
+   docker build -t JobsMiningDocker . 
 2. Lancer le docker :
    ```bash
-   docker 
+   docker run -p 8501:8501 JobsMiningDocker 
    
 ## Utilisation
 1. Scraping de données
