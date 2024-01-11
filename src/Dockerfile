@@ -3,6 +3,32 @@ FROM python:3.12-slim
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
+
+# Mettez à jour le système et installez les dépendances nécessaires
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+    
+
+# Installer Chrome et ses dépendances
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    curl \
+    chromium \
+    chromium-driver    
+    
+   
+# Installez Selenium
+RUN pip install selenium
+
+
+
+RUN python -m nltk.downloader punkt
+RUN python -m nltk.downloader stopwords
+RUN python -m nltk.downloader wordnet
+
 # ENV PYTHONUNBUFFERED=0
 
 

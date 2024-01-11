@@ -10,32 +10,6 @@ import string
 from langdetect import detect
 import numpy as np
 
-# Téléchargez les ressources nécessaires
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-
-# Utilisez une image Python officielle comme image de base
-# FROM python:3.8-slim
-
-# # Définissez le répertoire de travail dans le conteneur
-# WORKDIR /app
-
-# # Installez les dépendances de votre application (si nécessaire)
-# # COPY requirements.txt .
-# # RUN pip install --no-cache-dir -r requirements.txt
-
-# # Installez les ressources NLTK
-# RUN pip install nltk
-# RUN python -m nltk.downloader punkt
-# RUN python -m nltk.downloader stopwords
-# RUN python -m nltk.downloader wordnet
-
-# # Copiez votre code source dans le conteneur
-# COPY . .
-
-# # Définissez la commande par défaut pour exécuter votre application
-# CMD [ "python", "votre_script.py" ]
 
 def get_tokens_and_find_language(texte):
     language = detect_language(texte)

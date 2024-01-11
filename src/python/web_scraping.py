@@ -69,6 +69,8 @@ def create_driver():
     chrome_options = Options()
     chrome_options.add_argument('--headless') # pas d'utilisation de l'interface graphique
     chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')      
     chrome_options.add_argument('--window-size=1920x1080')  # Taille de la fenêtre pour éviter la détection de tête sans fenêtre (parfait)
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0")
@@ -237,9 +239,9 @@ def main_web_scraping(job_name,n_posts_max,sites):
 
 
 #liste_sites = ["Apec","Pole_Emploi", "Welcome_to_the_jungle"]
-# liste_sites = ["Apec"]
-# job_name = "Data"
-# main_web_scraping(job_name,2,liste_sites)
+#liste_sites = ["Apec"]
+#job_name = "Data"
+#main_web_scraping(job_name,2,liste_sites)
 
 
 # TODO =>
@@ -260,5 +262,6 @@ def main_web_scraping(job_name,n_posts_max,sites):
 # la virgule est prise comme le token le plus courant
 # mettre "Non Précisé" quand ya pas d'entreprise
 # régler le pb quand il n'y a aucun salaire !!
-# clean toutes les fonction plus utilisés 
+# clean toutes les fonction plus utilisés / imports inutiles
 # rajouter le streamlit
+# faire un vrai moteur de recherche par similarité !!!
