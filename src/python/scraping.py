@@ -57,9 +57,10 @@ def scrap_pole_job(html_source):
     title = soup.find('span', {'itemprop':['title']}) 
     title = title.text if title else ""
     if title != "":
-        # Expression régulière pour trouver "H/F" ou "(H/F)"
-        pattern = r'\bH/F\b|\(H/F\)'  # Utilisation de \b pour s'assurer que nous avons des limites de mots
-        # Remplacer "H/F" et "(H/F)" par une chaîne vide
+        # Expression régulière pour trouver "H/F", "(H/F)", "H/f" et "F/H"
+        pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)'
+
+      
         title = re.sub(pattern, "", title)
 
     compagny = soup.find('h3',{'class':['t4','title']})
@@ -236,7 +237,8 @@ def scrap_apec_job(html_source):
 
         title = title_div.find('span').text # OK
         if title != "":
-            pattern = r'\bH/F\b|\(H/F\)'
+            # Expression régulière pour trouver "H/F", "(H/F)", "H/f" et "F/H"
+            pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)'
             title = re.sub(pattern, "", title)
 
         salary = salary_div.find('span').text # OK
@@ -337,7 +339,8 @@ def scrap_jungle_job(html_source):
     title = soup.find('h2',{'class':['sc-ERObt','fMYXdq','wui-text']})
     title = title.text
     if title != "":
-        pattern = r'\bH/F\b|\(H/F\)'
+        # Expression régulière pour trouver "H/F", "(H/F)", "H/f" et "F/H"
+        pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)'
         title = re.sub(pattern, "", title)
    
     infos_div = soup.find('div',{'class':['sc-bXCLTC ','hdepoj']})
@@ -398,6 +401,8 @@ def scrap_jungle_job(html_source):
                     experience = f"{nombre} {unite}"
                 else:
                     experience = ""
+            else:
+                experience = ""
             print(experience)
 
     i_tag = soup.find('i', {'name': 'contract'})
