@@ -281,20 +281,26 @@ def afficher_donnees():
     chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
 
     conn = sqlite3.connect(chemin_sql+'/warehouse.db')
-    
     cursor = conn.cursor()
-
-    req = """SELECT ville, source ,longitude, latitude, titre, entreprise FROM D_location, D_titre,D_source, D_entreprise, F_description WHERE D_location.id_location = F_description.id_location AND D_titre.id_titre = F_description.id_titre AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
-    
+    req = """SELECT titre,ville, source,experience, entreprise FROM D_location, D_titre,D_source, D_entreprise,H_experience, F_description WHERE D_location.id_location = F_description.id_location AND D_titre.id_titre = F_description.id_titre AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
     cursor.execute(req)
     rows = cursor.fetchall()
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
     conn.close()
 
-    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+    req_global = """SELECT * FROM F_description;"""
+    cursor.execute(req_global)
+    rows_g = cursor.fetchall()
+    conn.close()
+    
 
-    st.write("Affichage des 5 premières lignes du fichier CSV :")
-    st.write("Taille du corpus : ",len(df))
-    st.write(df.head())
+    st.write("Affichage des n premières lignes :")
+    st.write("Taille du corpus : ",len(rows_g))
+    st.write(df.head(15))
+
+    
     
 
 def analyse_texte():

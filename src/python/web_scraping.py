@@ -200,11 +200,26 @@ def web_scrap(df,url,n_posts_max):
         return df
 
 
+
+
 def update_db(concatenated_df):
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
     chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
-    concatenated_df['skills'] = concatenated_df['skills'].apply(lambda x: ','.join(map(str, x)) if isinstance(x, list) else x)
-    concatenated_df['tokens'] = concatenated_df['tokens'].apply(lambda x: ','.join(map(str, x)) if isinstance(x, list) else x)
+
+    print(concatenated_df.columns)
+    print(concatenated_df['departement'])
+
+    # Appliquer la transformation à la colonne 'skills'
+    concatenated_df['skills'] = concatenated_df['skills'].apply(clean_column)
+    concatenated_df['tokens'] = concatenated_df['tokens'].apply(clean_column)
+    concatenated_df['location'] = concatenated_df['location'].apply(clean_column)
+    concatenated_df['departement'] = concatenated_df['departement'].apply(clean_column)
+    concatenated_df['region'] = concatenated_df['region'].apply(clean_column)
+    concatenated_df['title'] = concatenated_df['title'].apply(clean_column)
+
+
+    print(concatenated_df.head())
+
     # Connexion à la base de données SQLite
     conn = sqlite3.connect(chemin_sql+'/base_brute.db')
     concatenated_df.to_sql('data', conn, if_exists='replace', index=False)
@@ -231,21 +246,14 @@ def main_web_scraping(job_name,n_posts_max,sites):
         dfs.append(df)
         if len(dfs) > 1:
             concatenated_df = pd.concat(dfs, ignore_index=True)
-            concatenated_df = last_preprocessing(concatenated_df)
+            concatenated_df = imputing_missing_values(concatenated_df)
         else :
             concatenated_df = df
-            concatenated_df = last_preprocessing(concatenated_df)
+            concatenated_df = imputing_missing_values(concatenated_df)
     update_db(concatenated_df)
 
 
-#liste_sites = ["Apec","Pole_Emploi", "Welcome_to_the_jungle"]
-#liste_sites = ["Apec"]
-#job_name = "Data"
-#main_web_scraping(job_name,2,liste_sites)
-
-
 # TODO =>
-# Homogénisation format de type_job (CDI, CDD etc...), expérience, date (jour/mois/annee), etc... !!!
 # réduire au MAXIMUM les time.sleep() => pour diminuer le temps de scrapping
 
 
@@ -262,6 +270,10 @@ def main_web_scraping(job_name,n_posts_max,sites):
 # la virgule est prise comme le token le plus courant
 # mettre "Non Précisé" quand ya pas d'entreprise
 # régler le pb quand il n'y a aucun salaire !!
+    
 # clean toutes les fonction plus utilisés / imports inutiles
-# rajouter le streamlit
+# rajouter le streamlit => fatou
 # faire un vrai moteur de recherche par similarité !!!
+# proposer une base de données déjà remplie !!!! (pour le streamlit)
+    
+# faire vidéo tuto

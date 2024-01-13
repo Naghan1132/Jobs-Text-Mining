@@ -16,7 +16,7 @@ def get_region_department(lat, lon, only_dep = False):
             return address.get('state', ''), address.get('city_district', '')
         elif address:
             if only_dep == False:
-                return address.get('state', ''), address.get('county', '')
+                return address.get('state', ''),address.get('county', '')
             else:
                 return address.get('county', '')
 
@@ -56,6 +56,11 @@ def scrap_pole_job(html_source):
 
     title = soup.find('span', {'itemprop':['title']}) 
     title = title.text if title else ""
+    if title != "":
+        # Expression régulière pour trouver "H/F" ou "(H/F)"
+        pattern = r'\bH/F\b|\(H/F\)'  # Utilisation de \b pour s'assurer que nous avons des limites de mots
+        # Remplacer "H/F" et "(H/F)" par une chaîne vide
+        title = re.sub(pattern, "", title)
 
     compagny = soup.find('h3',{'class':['t4','title']})
     compagny = compagny.text.strip() if compagny else ""
@@ -149,6 +154,9 @@ def scrap_pole_job(html_source):
     span_with_experience = soup.find('span', itemprop="experienceRequirements")
     if span_with_experience:
         experience = span_with_experience.text
+        if "Débutant accepté" in experience:
+            experience = "Pas d'importance"
+        print(experience)
 
     skills = []
     skills_elements = soup.find_all(attrs={"itemprop": "skills"})
@@ -170,6 +178,8 @@ def scrap_pole_job(html_source):
 
     latitude, longitude = get_coordinates(locality + " - " + postal_code) # OK
     departement = get_region_department(latitude, longitude,only_dep=True) # OK
+    departement = str(departement)
+    departement = departement.replace("(", "").replace(")", "")
 
     tokens = get_text_tokenize_and_find_language(description)
 
@@ -225,6 +235,10 @@ def scrap_apec_job(html_source):
         title_div = outer_div.find_all('div')[3]
 
         title = title_div.find('span').text # OK
+        if title != "":
+            pattern = r'\bH/F\b|\(H/F\)'
+            title = re.sub(pattern, "", title)
+
         salary = salary_div.find('span').text # OK
 
         if "A négocier" in salary:
@@ -246,7 +260,15 @@ def scrap_apec_job(html_source):
             else:
                 salary = ""
     
-        experience = experience_div.find('span').text
+        experience = experience_div.find('span').text  
+        pattern = r'Minimum\s+(.+)'  
+        match = re.search(pattern, experience)
+        if match:
+            experience = match.group(1)
+        else:
+            if "Tous niveaux" in experience:
+                experience = "Pas d'importance"
+        print(experience)
 
     
     body_div = soup.find('div',{'class':['col-lg-8 ', 'border-L']})
@@ -285,6 +307,8 @@ def scrap_apec_job(html_source):
 
     latitude, longitude = get_coordinates(location)
     region, departement = get_region_department(latitude, longitude)
+    departement = str(departement)
+    departement = departement.replace("(", "").replace(")", "")
 
     tokens = get_tokens_and_find_language(description)
 
@@ -312,6 +336,9 @@ def scrap_jungle_job(html_source):
     compagny = compagny.text
     title = soup.find('h2',{'class':['sc-ERObt','fMYXdq','wui-text']})
     title = title.text
+    if title != "":
+        pattern = r'\bH/F\b|\(H/F\)'
+        title = re.sub(pattern, "", title)
    
     infos_div = soup.find('div',{'class':['sc-bXCLTC ','hdepoj']})
     location = infos_div.find('span',{'class':['sc-1eoldvz-0' ,'bZJPQK']})
@@ -357,20 +384,24 @@ def scrap_jungle_job(html_source):
         if div_with_experience:
             experience = div_with_experience.text.strip()
             print(experience)
+            
+            #Expérience : < 6 mois
 
     i_tag = soup.find('i', {'name': 'contract'})
     if i_tag:
         div_with_contract = i_tag.find_parent('div')
         if div_with_contract:
             type_job = div_with_contract.text.strip()
+            if "Stage" in type_job:
+                type_job = "Stage"
             print(type_job)
 
-    i_tag = soup.find('i', {'name': 'education_level'})
-    if i_tag:
-        div_with_education = i_tag.find_parent('div')
-        if div_with_education:
-            education = div_with_education.text.strip()
-            print(education)
+    # i_tag = soup.find('i', {'name': 'education_level'})
+    # if i_tag:
+    #     div_with_education = i_tag.find_parent('div')
+    #     if div_with_education:
+    #         education = div_with_education.text.strip()
+    #         print(education)
 
     skills = []
     competence_div = soup.find('div',class_=['sc-18ygef-1','ezamTS'])
@@ -389,6 +420,9 @@ def scrap_jungle_job(html_source):
 
     latitude, longitude = get_coordinates(location)
     region, departement = get_region_department(latitude, longitude)
+    departement = str(departement)
+    departement = departement.replace("(", "").replace(")", "")
+
 
     description = clean_description(competence_div.text)
     tokens = get_text_tokenize_and_find_language(description)
