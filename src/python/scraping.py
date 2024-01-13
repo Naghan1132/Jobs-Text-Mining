@@ -1,33 +1,38 @@
 from bs4 import BeautifulSoup
 from preprocess_text import *
 from geopy.geocoders import Nominatim
-from datetime import datetime, timedelta
-from geopy.geocoders import Photon
+from datetime import datetime
 
 
 geolocator = Nominatim(user_agent="my_geocoder")
 geolocator_region = Nominatim(user_agent="my_geocoder")
 
 def get_region_department(lat, lon, only_dep = False):
-    location = geolocator_region.reverse((lat, lon), exactly_one=True) 
-    if location:
-        address = location.raw['address']
-        if address.get('city') == 'Paris':
-            return address.get('state', ''), address.get('city_district', '')
-        elif address:
-            if only_dep == False:
-                return address.get('state', ''),address.get('county', '')
-            else:
-                return address.get('county', '')
-
-    return None,None
+    try:
+        location = geolocator_region.reverse((lat, lon), exactly_one=True) 
+        if location:
+            address = location.raw['address']
+            if address.get('city') == 'Paris':
+                return address.get('state', ''), address.get('city_district', '')
+            elif address:
+                if only_dep == False:
+                    return address.get('state', ''),address.get('county', '')
+                else:
+                    return address.get('county', '')
+    except Exception as e:
+            print(f"An error occurred: {e}")
+            return None, None
 
 def get_coordinates(city):
-    location = geolocator.geocode(f"{city}, France")
-    if location:
-        return location.latitude, location.longitude
-    else:
-        return None, None
+    try:
+        location = geolocator.geocode(f"{city}, France")
+        if location:
+            return location.latitude, location.longitude
+        else:
+            return None, None
+    except Exception as e:
+            print(f"An error occurred: {e}")
+            return None, None
 
 
 
@@ -57,14 +62,14 @@ def scrap_pole_job(html_source):
     title = soup.find('span', {'itemprop':['title']}) 
     title = title.text if title else ""
     if title != "":
-        # Expression régulière pour trouver "H/F", "(H/F)", "H/f" et "F/H"
-        pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)'
-
-      
+        # Expression régulière pour trouver "H/F", "(H/F)", "H/f", "F/H", "f/h", "h/f", "(f/h)", et "(h/f)"
+        pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)|\b[Ff]/[Hh]\b|\([Ff]/[Hh]\)|\b[hH]/[fF]\b|\([hH]/[fF]\)|\b[fF]/[hH]\b|\([fF]/[hH]\)'
         title = re.sub(pattern, "", title)
 
     compagny = soup.find('h3',{'class':['t4','title']})
     compagny = compagny.text.strip() if compagny else ""
+    if compagny == "":
+        compagny = "Non spécifié"
 
     postal_code = soup.find('span',{'itemprop':['postalCode']})
     postal_code = postal_code.get('content', '')
@@ -208,7 +213,8 @@ def scrap_apec_job(html_source):
             compagny = li_elements[0].text
             type_job = li_elements[1].text
             location = li_elements[2].text
-
+    if compagny == "":
+        compagny = "Non spécifié"
     if type_job[1].isdigit():
         # Supprimer le premier caractère (le chiffre) et les espaces
         type_job = type_job[4:]
@@ -237,8 +243,8 @@ def scrap_apec_job(html_source):
 
         title = title_div.find('span').text # OK
         if title != "":
-            # Expression régulière pour trouver "H/F", "(H/F)", "H/f" et "F/H"
-            pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)'
+            # Expression régulière pour trouver "H/F", "(H/F)", "H/f", "F/H", "f/h", "h/f", "(f/h)", et "(h/f)"
+            pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)|\b[Ff]/[Hh]\b|\([Ff]/[Hh]\)|\b[hH]/[fF]\b|\([hH]/[fF]\)|\b[fF]/[hH]\b|\([fF]/[hH]\)'
             title = re.sub(pattern, "", title)
 
         salary = salary_div.find('span').text # OK
@@ -336,11 +342,13 @@ def scrap_jungle_job(html_source):
   
     compagny = soup.find('span',{'class':['sc-ERObt', 'kkLHbJ', 'wui-text']})
     compagny = compagny.text
+    if compagny == "":
+        compagny = "Non spécifié"
     title = soup.find('h2',{'class':['sc-ERObt','fMYXdq','wui-text']})
     title = title.text
     if title != "":
-        # Expression régulière pour trouver "H/F", "(H/F)", "H/f" et "F/H"
-        pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)'
+        # Expression régulière pour trouver "H/F", "(H/F)", "H/f", "F/H", "f/h", "h/f", "(f/h)", et "(h/f)"
+        pattern = r'\b[Hh]/[Ff]\b|\([Hh]/[Ff]\)|\b[Ff]/[Hh]\b|\([Ff]/[Hh]\)|\b[hH]/[fF]\b|\([hH]/[fF]\)|\b[fF]/[hH]\b|\([fF]/[hH]\)'
         title = re.sub(pattern, "", title)
    
     infos_div = soup.find('div',{'class':['sc-bXCLTC ','hdepoj']})
@@ -413,13 +421,6 @@ def scrap_jungle_job(html_source):
             if "Stage" in type_job:
                 type_job = "Stage"
             print(type_job)
-
-    # i_tag = soup.find('i', {'name': 'education_level'})
-    # if i_tag:
-    #     div_with_education = i_tag.find_parent('div')
-    #     if div_with_education:
-    #         education = div_with_education.text.strip()
-    #         print(education)
 
     skills = []
     competence_div = soup.find('div',class_=['sc-18ygef-1','ezamTS'])

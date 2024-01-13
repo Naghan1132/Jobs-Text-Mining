@@ -1,12 +1,9 @@
 import re
-import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from collections import Counter
-import spacy
 from spacy.lang.fr.stop_words import STOP_WORDS
-import string
 from langdetect import detect
 import numpy as np
 
@@ -112,9 +109,11 @@ def clean_description(description):
 def clean_column(column):
     if isinstance(column, str):
         cleaned_column = column.replace("(", "").replace(")", "")
+        cleaned_column = cleaned_column.lower()
         return cleaned_column
     elif isinstance(column, list):
         cleaned_column = ','.join(map(str, column))
+        cleaned_column = cleaned_column.lower()
         return cleaned_column
     else:
         return column

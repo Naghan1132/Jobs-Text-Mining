@@ -262,7 +262,7 @@ def main_web_scraping(job_name,n_posts_max,sites):
 # - filtres carte ou autres (date, type de contrat, salaire, etc...)
 # - moteur de recherche sur les comptétences ou tokens sinon : et ressortir les offres qui correspondent le mieux
 # - améliorer le wordcloud
-
+# - faire salaire en fonction de l'expérience
 
 # faire des excepion si le Nominatim ne marche pas !!!
 # Uniformiser les champs CDI etc...
