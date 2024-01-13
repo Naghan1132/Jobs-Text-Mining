@@ -383,9 +383,22 @@ def scrap_jungle_job(html_source):
         div_with_experience = i_tag.find_parent('div')
         if div_with_experience:
             experience = div_with_experience.text.strip()
+            match = re.search(r'([<>]) (\d+) (\w+)', experience)
+
+            # Si une correspondance est trouvée, récupérez le signe, le nombre et l'unité
+            if match:
+                signe = match.group(1)    # Récupère le signe (< ou >)
+                nombre = match.group(2)   # Récupère le nombre (dans ce cas, '6')
+                unite = match.group(3)    # Récupère l'unité (dans ce cas, 'mois')
+                
+                # Construisez le résultat en fonction du signe
+                if signe == "<":
+                    experience = f"Moins de {nombre} {unite}"
+                elif signe == ">":
+                    experience = f"{nombre} {unite}"
+                else:
+                    experience = ""
             print(experience)
-            
-            #Expérience : < 6 mois
 
     i_tag = soup.find('i', {'name': 'contract'})
     if i_tag:
