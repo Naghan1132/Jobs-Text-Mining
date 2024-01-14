@@ -128,4 +128,30 @@ def imputing_missing_values(df):
         df[col].fillna(df[col].median(), inplace=True)
 
     return df
+
+
+def clean_skills(texts):
+    result_tokens = []
     
+    for text in texts:
+        text = text.lower()
+        text = ''.join(e for e in text if e.isalnum() or e.isspace())  # Supprimez la ponctuation sauf les espaces
+        text = ' '.join(word for word in text.split() if word.isalpha())  # Supprimez les mots avec des chiffres
+        text = ' '.join(word.lower() for word in text.split())  # Convertissez en minuscules
+
+        language = detect_language(text)
+        # détecter automatiquement la langue du post 
+        if language == "fr":
+            language = "french"
+        elif language == "en":
+            language = "english"
+        else:
+            language = "english"
+
+        text = ' '.join(word for word in text.split() if word not in stopwords.words(language))  # Supprimez les mots vides
+        lemmatizer = WordNetLemmatizer()
+        text = ' '.join(lemmatizer.lemmatize(word) for word in text.split())  # Lemmatization
+
+        result_tokens.append(text)
+    
+    return result_tokens   

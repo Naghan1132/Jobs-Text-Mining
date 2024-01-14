@@ -163,6 +163,9 @@ def scrap_pole_job(html_source):
     for skills_element in skills_elements:
         if skills_element:
             skills.append(skills_element.text)
+
+    skills = clean_skills(skills)
+    #skills = get_tokens_and_find_language(skills)
     
     
     global_location = locality + " " + postal_code + " " + region
@@ -211,11 +214,11 @@ def scrap_apec_job(html_source):
     if type_job[1].isdigit():
         # Supprimer le premier caractère (le chiffre) et les espaces
         type_job = type_job[4:]
-        if "CDD" in type_job:
+        if "CDD" or "cdd" in type_job:
             type_job = "CDD"
-        elif "CDI" in type_job:
+        elif "CDI" or "cdi"  in type_job:
             type_job = "CDI"
-        elif "Stage" in type_job:
+        elif "Stage" or "stage" in type_job:
             type_job = "Stage"
     print(type_job)
 
@@ -311,6 +314,9 @@ def scrap_apec_job(html_source):
         # tokenizer les skills aussi ??
         skills = [skill.lower() for skill in skills]
 
+    skills = clean_skills(skills)
+    #skills = get_tokens_and_find_language(skills)
+
     latitude, longitude = get_coordinates(location)
     region, departement = get_region_department(latitude, longitude)
     departement = str(departement)
@@ -390,7 +396,6 @@ def scrap_jungle_job(html_source):
         if div_with_experience:
             experience = div_with_experience.text.strip()
             print(experience)
-            
             #Expérience : < 6 mois
 
     i_tag = soup.find('i', {'name': 'contract'})
@@ -398,20 +403,13 @@ def scrap_jungle_job(html_source):
         div_with_contract = i_tag.find_parent('div')
         if div_with_contract:
             type_job = div_with_contract.text.strip()
-            if "CDD" in type_job:
+            if "CDD" or "cdd" in type_job:
                 type_job = "CDD"
-            elif "CDI" in type_job:
+            elif "CDI" or "cdi"  in type_job:
                 type_job = "CDI"
-            elif "Stage" in type_job:
+            elif "Stage" or "stage" in type_job:
                 type_job = "Stage"
             print(type_job)
-
-    # i_tag = soup.find('i', {'name': 'education_level'})
-    # if i_tag:
-    #     div_with_education = i_tag.find_parent('div')
-    #     if div_with_education:
-    #         education = div_with_education.text.strip()
-    #         print(education)
 
     skills = []
     competence_div = soup.find('div',class_=['sc-18ygef-1','ezamTS'])
@@ -419,10 +417,12 @@ def scrap_jungle_job(html_source):
     if competence_div:
         competence_text = competence_div.text
         clean_competence = clean_description(competence_text)
-        skills = get_tokens_and_find_language(clean_competence)
-        skills = [skill.lower() for skill in skills]
+        skills = clean_skills(clean_competence)
+        #skills = get_tokens_and_find_language(clean_competence)
+        #skills = [skill.lower() for skill in skills]
 
-    
+        
+
     date = soup.find('time')['datetime']
     date = date.split('T')[0]
     date = datetime.strptime(date, '%Y-%m-%d')
