@@ -253,27 +253,3 @@ def main_web_scraping(job_name,n_posts_max,sites):
     update_db(concatenated_df)
 
 
-# TODO =>
-# réduire au MAXIMUM les time.sleep() => pour diminuer le temps de scrapping
-
-
-# Axes d'analyse :
-# - barplot des type de contrats ?
-# - filtres carte ou autres (date, type de contrat, salaire, etc...)
-# - moteur de recherche sur les comptétences ou tokens sinon : et ressortir les offres qui correspondent le mieux
-# - améliorer le wordcloud
-
-
-# faire des excepion si le Nominatim ne marche pas !!!
-# Uniformiser les champs CDI etc...
-# enlever accent => preprocessing des données
-# la virgule est prise comme le token le plus courant
-# mettre "Non Précisé" quand ya pas d'entreprise
-# régler le pb quand il n'y a aucun salaire !!
-    
-# clean toutes les fonction plus utilisés / imports inutiles
-# rajouter le streamlit => fatou
-# faire un vrai moteur de recherche par similarité !!!
-# proposer une base de données déjà remplie !!!! (pour le streamlit)
-    
-# faire vidéo tuto
