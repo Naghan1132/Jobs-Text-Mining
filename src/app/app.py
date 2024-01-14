@@ -755,7 +755,7 @@ def experience_salaire():
 
     # Visualisation avec Matplotlib
     plt.figure(figsize=(10, 6))
-    plt.plot(df['experience'], df['moyenne_salaire'], marker='o')
+    plt.plot(df['experience'], df['moyenne_salaire'], marker='o', color='red')
     plt.xlabel('Expérience')
     plt.ylabel('Salaire moyen')
     plt.title('Salaire moyen en fonction de l\'expérience')
