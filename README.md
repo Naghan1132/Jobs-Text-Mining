@@ -20,10 +20,10 @@ Ce projet vise à analyser des données textuelles pour extraire des information
    cd src/ 
 2. Construire l'image du docker :
    ```bash
-   docker build -t JobsMiningDocker . 
+   docker build -t jobsminingdocker . 
 2. Lancer le docker :
    ```bash
-   docker run -p 8501:8501 JobsMiningDocker 
+   docker run -p 8501:8501 jobsminingdocker 
    
 ## Utilisation
 1. Scraping de données
