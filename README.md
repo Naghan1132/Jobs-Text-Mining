@@ -38,23 +38,25 @@ Ce projet vise à analyser des données textuelles pour extraire des information
 ![Screenshot from 2024-01-14 18-30-10](https://github.com/Naghan1132/Jobs-Text-Mining/assets/66120091/fba22c91-1b82-4929-a919-df30743799b1)
 
 ## Structure du projet
-
-- **`python/`:**
-  - **`web_scraping.py` :** Contient les scripts
-  - **`build_data.py` :** Contient les scripts
-  - **`scraping.py` :** Contient les scripts
-  - **`preprocess_text.py` :** Contient les scripts
-- **`sql/`:**
-  - **`execute.py` :** Créer un nouveau warehouse 
-  - **`insert.py` :** Insérer des données
-  - **`SQLite_v2.py` :** Classe de la base SQL
-  - **`warehouse.db` :** Base SQL
-- **`app/`:**
-  - **`app.py` :** Main streamlit
-- **`data/`:**
-  - **`regions.geojson` :** Coordonnées de toutes les régions françaises
-  - **`departements.geojson` :** Coordonnées de tous les départements français
-- **`requirements.txt` :** Ce fichier contient la liste des dépendances requises pour le projet.
+- **`src/`:**
+ - **`python/`:**
+   - **`web_scraping.py` :** Contient les scripts
+   - **`build_data.py` :** Contient les scripts
+   - **`scraping.py` :** Contient les scripts
+   - **`preprocess_text.py` :** Contient les scripts
+ - **`sql/`:**
+   - **`execute.py` :** Créer un nouveau warehouse 
+   - **`insert.py` :** Insérer des données
+   - **`SQLite_v2.py` :** Classe de la base SQL
+   - **`warehouse.db` :** Base SQL
+ - **`app/`:**
+   - **`app.py` :** Main streamlit
+ - **`data/`:**
+   - **`regions.geojson` :** Coordonnées de toutes les régions françaises
+   - **`departements.geojson` :** Coordonnées de tous les départements français
+ - **`requirements.txt` :** Ce fichier contient la liste des dépendances requises pour le projet.
+ - **`Dockerfile` :** Fichier docker
+ 
 ## Auteurs
 
 - Nathan GRIMAULT   
