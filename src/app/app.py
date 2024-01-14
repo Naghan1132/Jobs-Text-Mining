@@ -72,11 +72,11 @@ def afficher_carte_par_defaut():
     folium_static(m)
 
     # Utilisez une balise HTML pour séparer la carte des informations
-    st.markdown("---")
+    #st.markdown("---")
     
     # Affichage des informations
-    st.write("<h2>Informations du marqueur sélectionné</h2>", unsafe_allow_html=True)
-    marker_info = st.empty()  # Élément pour afficher les informations du marqueur
+    #st.write("<h2>Informations du marqueur sélectionné</h2>", unsafe_allow_html=True)
+    #marker_info = st.empty()  # Élément pour afficher les informations du marqueur
 
     # Code JavaScript pour mettre à jour les informations lorsque vous cliquez sur un marqueur
     js_code = """

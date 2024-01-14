@@ -211,6 +211,12 @@ def scrap_apec_job(html_source):
     if type_job[1].isdigit():
         # Supprimer le premier caractère (le chiffre) et les espaces
         type_job = type_job[4:]
+        if "CDD" in type_job:
+            type_job = "CDD"
+        elif "CDI" in type_job:
+            type_job = "CDI"
+        elif "Stage" in type_job:
+            type_job = "Stage"
     print(type_job)
 
     title = ""
@@ -392,7 +398,11 @@ def scrap_jungle_job(html_source):
         div_with_contract = i_tag.find_parent('div')
         if div_with_contract:
             type_job = div_with_contract.text.strip()
-            if "Stage" in type_job:
+            if "CDD" in type_job:
+                type_job = "CDD"
+            elif "CDI" in type_job:
+                type_job = "CDI"
+            elif "Stage" in type_job:
                 type_job = "Stage"
             print(type_job)
 
