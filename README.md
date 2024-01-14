@@ -60,6 +60,6 @@ Ce projet vise à analyser des données textuelles pour extraire des information
 ## Auteurs
 
 - Nathan GRIMAULT   
-- Hugo
-- Joe
-- Fatou
+- Hugo ANDRE--ANTICHAN
+- Joseph PELHAM
+- Ndeye-Fatou DIENG
