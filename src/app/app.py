@@ -480,8 +480,6 @@ def main():
         st.write("Sélectionnez une option de navigation dans la barre latérale.")
 
 
-# df = load_data("src/data/all_data.csv")
-
 if __name__ == "__main__":
     main()
 
