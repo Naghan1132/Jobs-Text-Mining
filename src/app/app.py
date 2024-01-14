@@ -674,6 +674,97 @@ def entreprise_salaire():
     # Affichage du graphique dans Streamlit
     st.pyplot(plt)
 
+def experience_salaire():
+
+    # Connexion à la base de données
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+    # Case à cocher pour tout visualiser sans filtre
+    tout_visualiser = st.checkbox("Tout visualiser sans filtre")
+
+    if tout_visualiser:
+        selected_contrat = "Tous"
+    else:
+        # Requête SQL pour obtenir la liste des types de contrats
+        types_contrats_query = "SELECT DISTINCT type FROM H_type_job;"
+        types_contrats = [row[0] for row in conn.execute(types_contrats_query).fetchall()]
+
+        # Ajouter une option "Tous" pour le type de contrat
+        selected_contrat = st.selectbox("Sélectionner le type de contrat :", types_contrats + ["Tous"])
+
+    # Requête SQL pour obtenir le salaire moyen par expérience avec filtre sur le type de contrat
+    if selected_contrat != "Tous":
+        query = f"""
+            SELECT
+                H_experience.experience,
+                AVG(H_salaire.salaire) as moyenne_salaire
+            FROM
+                H_experience
+            JOIN
+                D_titre ON H_experience.id_experience = D_titre.id_experience
+            JOIN
+                F_description ON D_titre.id_titre = F_description.id_titre
+            JOIN
+                D_entreprise ON F_description.id_entreprise = D_entreprise.id_entreprise
+            JOIN
+                H_salaire ON D_entreprise.id_salaire = H_salaire.id_salaire
+            JOIN
+                H_type_job ON D_entreprise.id_type_job = H_type_job.id_type_job
+            WHERE
+                H_type_job.type = '{selected_contrat}'
+            GROUP BY
+                H_experience.experience
+            ORDER BY
+                H_experience.experience;
+        """
+    else:
+        # Aucun filtre sur le type de contrat
+        query = """
+            SELECT
+                H_experience.experience,
+                AVG(H_salaire.salaire) as moyenne_salaire
+            FROM
+                H_experience
+            JOIN
+                D_titre ON H_experience.id_experience = D_titre.id_experience
+            JOIN
+                F_description ON D_titre.id_titre = F_description.id_titre
+            JOIN
+                D_entreprise ON F_description.id_entreprise = D_entreprise.id_entreprise
+            JOIN
+                H_salaire ON D_entreprise.id_salaire = H_salaire.id_salaire
+            GROUP BY
+                H_experience.experience
+            ORDER BY
+                H_experience.experience;
+        """
+
+    # Exécution de la requête
+    result = conn.execute(query).fetchall()
+
+    # Fermeture de la connexion
+    conn.close()
+
+    # Création d'un DataFrame avec les résultats
+    columns = ['experience', 'moyenne_salaire']
+    df = pd.DataFrame(result, columns=columns)
+
+    # Visualisation avec Matplotlib
+    plt.figure(figsize=(10, 6))
+    plt.plot(df['experience'], df['moyenne_salaire'], marker='o')
+    plt.xlabel('Expérience')
+    plt.ylabel('Salaire moyen')
+    plt.title('Salaire moyen en fonction de l\'expérience')
+    plt.grid(True)
+    plt.show()
+
+    # Afficher le barplot dans Streamlit
+    st.pyplot(plt)
+
 
 def top_skills_par_job():
     
@@ -757,7 +848,7 @@ def main():
 
 
     # Options de navigation pour les onglets
-    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte","Compétences","Type de contrat","Top 10 job","Distribution salaires","Entreprise/Salaire","Scrapper des données"]
+    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte","Compétences","Type de contrat","Top 10 job","Distribution salaires","Entreprise/Salaire","Expérience/Salaire","Scrapper des données"]
     selected_option = st.sidebar.radio("Navigation", options_navigation)
 
     # Contenu de l'application en fonction de l'option sélectionnée
@@ -780,6 +871,8 @@ def main():
         analyse_distribution_salaires()
     elif selected_option == "Entreprise/Salaire":
         entreprise_salaire()
+    elif selected_option == "Expérience/Salaire":
+         experience_salaire()
     elif selected_option == "Scrapper des données":
         scrapping()
     else:
