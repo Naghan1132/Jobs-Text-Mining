@@ -462,6 +462,10 @@ def analyse_distribution_salaires():
     conn.close()
 
     df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+    
+    df['salaire'] = pd.to_numeric(df['salaire'], errors='coerce')
+
+    df = df.sort_values(by='salaire')
 
     st.header("Analyse de la Distribution des Salaires")
 
