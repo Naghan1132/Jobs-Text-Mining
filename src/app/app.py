@@ -12,11 +12,14 @@ from collections import Counter
 import seaborn as sns
 import os
 import sys
+import time
+from collections import Counter
+import streamlit.components.v1 as components
 import sqlite3
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.cluster import KMeans
 
-def load_data(file_path):
-    data = pd.read_csv(file_path)
-    return data
 
 def afficher_accueil():
     job_name = "Data"
@@ -282,14 +285,19 @@ def afficher_donnees():
 
     conn = sqlite3.connect(chemin_sql+'/warehouse.db')
     cursor = conn.cursor()
+
     req = """SELECT titre,ville, source,experience, entreprise FROM D_location, D_titre,D_source, D_entreprise,H_experience, F_description WHERE D_location.id_location = F_description.id_location AND D_titre.id_titre = F_description.id_titre AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
     cursor.execute(req)
     rows = cursor.fetchall()
     df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
     conn.close()
 
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
     conn = sqlite3.connect(chemin_sql+'/warehouse.db')
     cursor = conn.cursor()
+
     req_global = """SELECT * FROM F_description;"""
     cursor.execute(req_global)
     rows_g = cursor.fetchall()
@@ -310,7 +318,7 @@ def analyse_texte():
     conn = sqlite3.connect(chemin_sql+'/warehouse.db')
     cursor = conn.cursor()
 
-    req = """SELECT token FROM D_token, F_description WHERE D_token.id_token = F_description.id_token;"""
+    req = """SELECT titre, token FROM D_titre, D_token, F_description WHERE D_titre.id_titre = F_description.id_titre AND D_token.id_token = F_description.id_token;"""
 
     cursor.execute(req)
     rows = cursor.fetchall()
@@ -357,6 +365,8 @@ def analyse_texte():
 
 
 
+
+
 def scrapping():
     # Chemin absolu actuel de main_streamlit.py
     chemin_actuel = os.path.dirname(os.path.abspath(__file__))
@@ -392,8 +402,8 @@ def scrapping():
             # Une fois le scraping terminé, mettre à jour le message
             st.success("Scrapping terminé avec succès!")
 
-        
 def recherche():
+
     st.header("retourne les emplois les plus pertinents en fonction de votre recherche")
     st.write("entrer peut-être le type emploi, le nom du job et compétences etc... via description")
     search_query_emploi = ''
@@ -431,13 +441,268 @@ def recherche():
 
         conn = sqlite3.connect(chemin_sql+'/warehouse.db')
         cursor = conn.cursor()
+
         cursor.execute(req1)
         rows = cursor.fetchall()
         conn.close()
 
         df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
         st.write(df)
-        
+
+#####Analyse
+
+def analyse_distribution_salaires():
+
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+    req = """SELECT salaire FROM H_salaire, D_entreprise, F_description 
+             WHERE H_salaire.id_salaire = D_entreprise.id_salaire 
+             AND D_entreprise.id_entreprise = F_description.id_entreprise;"""
+
+    cursor.execute(req)
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
+
+    st.header("Analyse de la Distribution des Salaires")
+
+    # Affichez un histogramme ou un boxplot pour la distribution des salaires
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.histplot(df['salaire'].dropna(), bins=30, kde=True, ax=ax)
+
+    # Personnalisez le graphique
+    ax.set_title('Distribution des Salaires')
+    ax.set_xlabel('Salaire')
+    ax.set_ylabel('Nombre d\'Offres d\'Emploi')
+
+    # Afficher le graphique dans Streamlit
+    st.pyplot(fig)
+
+
+
+
+def barplot_types_job():
+    
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+     # Requête SQL pour récupérer les types de job
+    req = """
+    SELECT H_type_job.type
+    FROM D_entreprise
+    INNER JOIN H_type_job ON D_entreprise.id_type_job = H_type_job.id_type_job
+    """
+
+    cursor.execute(req)
+    rows = cursor.fetchall()
+    conn.close()
+
+    # Création du DataFrame
+    df = pd.DataFrame(rows, columns=['type_job'])
+
+    # Interface Streamlit
+    st.header("Barplot des Types de Job")
+
+    # Créer un graphique à barres pour les types de job
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.countplot(x='type_job', data=df, ax=ax, order=df['type_job'].value_counts().index, palette="Reds")
+
+    # Personnaliser le graphique
+    ax.set_title('Répartition des Types de Job')
+    ax.set_xlabel('Type de Job')
+    ax.set_ylabel('Nombre d\'Occurrences')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, horizontalalignment='right')  # Rotation des étiquettes pour une meilleure lisibilité
+
+    # Afficher le graphique dans Streamlit
+    st.pyplot(fig)
+
+
+def wordcloud_competences_demandees():
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+    
+    query = "SELECT titre, competence FROM D_titre INNER JOIN H_competence ON D_titre.id_competence = H_competence.id_competence"
+    result = cursor.execute(query).fetchall()
+
+    conn.close()
+
+    columns = ['title', 'skills']
+    df = pd.DataFrame(result, columns=columns).dropna()
+
+    # Sélection du titre d'emploi
+    selected_job_title = st.selectbox("Sélectionner le Titre d'Emploi :", df['title'].unique())
+
+    st.header(f"Analyse des Compétences pour le Titre d'Emploi : {selected_job_title}")
+
+    # Filtrer les données en fonction du titre d'emploi sélectionné
+    filtered_data = df[df['title'] == selected_job_title]
+
+    # Concaténer toutes les compétences en une seule chaîne
+    all_skills = ' '.join(df['skills'].dropna())
+
+    # Générer le nuage de mots
+    wordcloud = WordCloud(width=800, height=400, background_color='white',colormap='Reds').generate(all_skills)
+
+    # Afficher le wordcloud à l'aide de matplotlib
+    st.image(wordcloud.to_image(), use_column_width=True)
+
+    # Créer un graphique des 10 compétences les plus demandées
+    skills = all_skills.split(',')
+    compteur = Counter(skills)
+    competences_communes = compteur.most_common(10)
+    df_competences = pd.DataFrame(competences_communes, columns=['Compétence', 'Occurrence'])
+
+    # Afficher le graphique à barres des compétences les plus demandées avec une palette de couleurs rouge
+    plt.figure(figsize=(10, 8))
+    custom_palette = sns.color_palette("Reds", n_colors=10)
+    sns.barplot(x='Occurrence', y='Compétence', data=df_competences, palette=custom_palette)
+    plt.title('Top 10 des Compétences les plus demandées')
+    plt.xlabel('Occurrence')
+    plt.ylabel('Compétence')
+    st.pyplot(plt)
+
+
+
+
+def entreprise_salaire():
+ 
+    # Connexion à la base de données
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+      
+    # Requête SQL pour obtenir la liste des types de contrat
+    query_contrats = "SELECT DISTINCT type FROM H_type_job;"
+
+    # Exécution de la requête
+    result_contrats = conn.execute(query_contrats).fetchall()
+
+    # Fermeture de la connexion
+    conn.close()
+
+    # Interface utilisateur avec Streamlit
+    st.title("Analyse des Entreprises Payant le Mieux")
+
+    # Sélection du type de contrat avec une liste déroulante
+    type_contrat_filtre = st.selectbox("Sélectionnez le Type de Contrat :", [row[0] for row in result_contrats])
+
+    # Connexion à la base de données
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+    # Requête SQL pour calculer la moyenne des salaires par entreprise, en filtrant par type de contrat
+    query = f"""
+        SELECT D_entreprise.entreprise, AVG(H_salaire.salaire) as moyenne_salaire
+        FROM D_entreprise
+        JOIN H_salaire ON D_entreprise.id_salaire = H_salaire.id_salaire
+        JOIN H_type_job ON D_entreprise.id_type_job = H_type_job.id_type_job
+        WHERE H_type_job.type = '{type_contrat_filtre}'
+        GROUP BY D_entreprise.entreprise
+        ORDER BY moyenne_salaire DESC;
+    """
+
+    # Exécution de la requête
+    result = conn.execute(query).fetchall()
+
+    # Fermeture de la connexion
+    conn.close()
+
+    # Création d'un DataFrame avec les résultats
+    columns = ['entreprise', 'moyenne_salaire']
+    df = pd.DataFrame(result, columns=columns)
+
+    # Affichage du top des entreprises payant le mieux pour un type de contrat spécifique
+    top_entreprises = df.head(10)  # Vous pouvez ajuster le nombre d'entreprises à afficher
+    st.table(top_entreprises)
+
+    # Création d'un graphique barplot
+    plt.figure(figsize=(10, 6))
+    plt.bar(top_entreprises['entreprise'], top_entreprises['moyenne_salaire'],  color='red')
+    plt.xlabel('Entreprise')
+    plt.ylabel('Moyenne des Salaires')
+    plt.title(f'Top des Entreprises Payant le Mieux pour le Type de Contrat "{type_contrat_filtre}"')
+    plt.xticks(rotation=45, ha='right')  # Rotation des étiquettes pour une meilleure lisibilité
+
+
+    # Affichage du graphique dans Streamlit
+    st.pyplot(plt)
+
+
+def top_skills_par_job():
+    
+    chemin_actuel = os.path.dirname(os.path.abspath(__file__))
+    chemin_sql = os.path.abspath(os.path.join(chemin_actuel, '..', 'sql'))
+
+    conn = sqlite3.connect(chemin_sql+'/warehouse.db')
+    cursor = conn.cursor()
+
+    query = "SELECT D_titre.titre, H_competence.competence FROM D_titre INNER JOIN H_competence ON D_titre.id_competence = H_competence.id_competence"
+
+    result = cursor.execute(query).fetchall()
+
+    conn.close()
+
+    # Création du DataFrame
+    columns = ['titre_job', 'competence']
+    df = pd.DataFrame(result, columns=columns).dropna()
+
+
+
+    # Liste des titres de job uniques dans le DataFrame
+    liste_titres = df['titre_job'].unique()
+
+    # Widget de sélection pour le titre de job
+    titre_interesse = st.selectbox("Sélectionner le Titre de Job d'Intérêt :", liste_titres)
+
+    st.header(f"Top 10 des Compétences pour le Titre de Job '{titre_interesse}'")
+
+    # Filtrer le DataFrame pour le titre de job spécifié
+    df_filtered = df[df['titre_job'] == titre_interesse]
+
+    # Concaténer toutes les compétences en une seule chaîne
+    all_skills = ' '.join(df_filtered['competence'].dropna())
+
+    # Diviser les compétences en mots
+    skills_list = all_skills.split()
+
+    # Compter la fréquence des compétences
+    skills_counts = Counter(skills_list)
+
+    # Sélectionner les 10 compétences les plus fréquentes
+    top_skills = skills_counts.most_common(10)
+
+    # Créer un DataFrame pour les 10 compétences les plus fréquentes
+    df_top_skills = pd.DataFrame(top_skills, columns=['Compétence', 'Nombre'])
+
+    # Afficher un barplot pour les 10 compétences les plus fréquentes
+    plt.figure(figsize=(10, 6))
+    plt.barh(df_top_skills['Compétence'], df_top_skills['Nombre'], color='red')
+    plt.xlabel('Nombre d\'Occurrences')
+    plt.title(f'Top 10 des Compétences pour le Titre de Job "{titre_interesse}"')
+    plt.gca().invert_yaxis()  # Inverser l'axe y pour avoir la compétence la plus demandée en haut
+
+    # Afficher le barplot dans Streamlit
+    st.pyplot(plt)
+
+  
+
 
 def main():
 
@@ -462,10 +727,11 @@ def main():
 
 
     # Options de navigation pour les onglets
-    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte", "Scrapper des données"]
+    options_navigation = ["Accueil","Recherche","Afficher les données", "Analyse de Texte","Compétences","Type de contrat","Top 10 job","Distribution salaires","Entreprise/Salaire","Scrapper des données"]
     selected_option = st.sidebar.radio("Navigation", options_navigation)
 
     # Contenu de l'application en fonction de l'option sélectionnée
+
     if selected_option == "Accueil":
         afficher_accueil()
     elif selected_option == "Recherche":
@@ -474,14 +740,22 @@ def main():
         afficher_donnees()
     elif selected_option == "Analyse de Texte":
         analyse_texte()
+    elif selected_option == "Compétences":
+        wordcloud_competences_demandees()
+    elif selected_option == "Type de contrat":
+        barplot_types_job()
+    elif selected_option == "Top 10 job":
+        top_skills_par_job()
+    elif selected_option == "Distribution salaires":
+        analyse_distribution_salaires()
+    elif selected_option == "Entreprise/Salaire":
+        entreprise_salaire()
     elif selected_option == "Scrapper des données":
         scrapping()
     else:
         st.write("Sélectionnez une option de navigation dans la barre latérale.")
 
-
 # df = load_data("src/data/all_data.csv")
 
 if __name__ == "__main__":
     main()
-
