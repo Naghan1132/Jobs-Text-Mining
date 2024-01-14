@@ -45,10 +45,10 @@ Ce projet vise à analyser des données textuelles pour extraire des information
   - **`scraping.py` :** Contient les scripts
   - **`preprocess_text.py` :** Contient les scripts
 - **`sql/`:**
-  - **`execute.py   ` :** Créer un nouveau warehouse 
-  - **`insert.py   ` :** Insérer des données
-  - **`SQLite_v2.py   ` :** Classe de la base SQL
-  - **`warehouse.db   ` :** Base SQL
+  - **`execute.py` :** Créer un nouveau warehouse 
+  - **`insert.py` :** Insérer des données
+  - **`SQLite_v2.py` :** Classe de la base SQL
+  - **`warehouse.db` :** Base SQL
 - **`app/`:**
   - **`app.py` :** Main streamlit
 - **`data/`:**
