@@ -14,4 +14,5 @@ langcodes
 langdetect     
 geographiclib  
 streamlit_folium
+scikit-learn
 
