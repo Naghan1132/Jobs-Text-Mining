@@ -363,28 +363,6 @@ def analyse_texte():
     plt.ylabel('Mot')
     st.pyplot(plt)  # Afficher le plot dans Streamlit
 
-    #
-    st.header("Les mots par titre d'emploi")
-
-    selected_job_title = st.selectbox("Choisir un titre d'emploi:", df['titre'].unique())
-
-    # Filtrer les données
-    tokens_by_job = df[df['titre'] == selected_job_title]['token']
-
-    all_job_tokens = ' '.join(tokens_by_job.dropna())
-
-    job_word_list = all_job_tokens.split()
-
-    compteur_job = Counter(job_word_list)
-
-    mots_communs_job = compteur_job.most_common(10)
-
-    # Créer un DataFrame pour les 20 mots les plus courants
-    df_mots_job = pd.DataFrame(mots_communs_job, columns=['Mot', 'Occurence'])
-
-    st.write(f"Top 10 mots for Job Title '{selected_job_title}':")
-    st.write(mots_communs_job)
-
 
 
 
