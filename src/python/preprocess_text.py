@@ -131,15 +131,27 @@ def imputing_missing_values(df):
 
 
 def clean_skills(texts):
+ 
+    liste_resultat = []
+
+    # Diviser chaque élément par la virgule et étendre la liste résultante
+    for element in texts:
+        liste_resultat.extend(element.split(','))
+
     result_tokens = []
-    
-    for text in texts:
+    # Joindre les chaînes avec un espace entre chaque élément
+    print(liste_resultat)
+    chaine_resultat = ' '.join(liste_resultat)
+
+    for text in liste_resultat:
+        print(text)
         text = text.lower()
         text = ''.join(e for e in text if e.isalnum() or e.isspace())  # Supprimez la ponctuation sauf les espaces
         text = ' '.join(word for word in text.split() if word.isalpha())  # Supprimez les mots avec des chiffres
         text = ' '.join(word.lower() for word in text.split())  # Convertissez en minuscules
 
-        language = detect_language(text)
+
+        language = detect_language(chaine_resultat)
         # détecter automatiquement la langue du post 
         if language == "fr":
             language = "french"

@@ -416,12 +416,10 @@ def scrap_jungle_job(html_source):
     
     if competence_div:
         competence_text = competence_div.text
-        clean_competence = clean_description(competence_text)
-        skills = clean_skills(clean_competence)
-        #skills = get_tokens_and_find_language(clean_competence)
-        #skills = [skill.lower() for skill in skills]
+        clean_competence = clean_description(competence_text)   
+        clean_competence = clean_competence.split('.')
 
-        
+    skills = clean_skills(clean_competence)
 
     date = soup.find('time')['datetime']
     date = date.split('T')[0]
