@@ -110,17 +110,13 @@ def afficher_carte_departement():
     conn.close()
 
     df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
-    df['departement'] = df['departement'].astype(str)
-    df['salaire'] = df['salaire'].astype(float)
+    df['salaire'] = pd.to_numeric(df['salaire'], errors='coerce')
     
     # Calculez la moyenne des salaires par département
     moyennes_par_departement = df.groupby('departement')['salaire'].mean().reset_index()
+    print(moyennes_par_departement)
     min_moyennes = moyennes_par_departement['salaire'].min(skipna=True)
     max_moyennes = moyennes_par_departement['salaire'].max(skipna=True)
-
-    #median_salary = moyennes_par_departement['salary'].median()
-    #moyennes_par_departement['salary'].fillna(median_salary, inplace=True)
-    # print(moyennes_par_departement)
 
     # Créez une carte Folium centrée sur la France
     m = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
@@ -192,17 +188,14 @@ def afficher_carte_region():
     conn.close()
 
     df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
-    df['region'] = df['region'].astype(str)
-    df['salaire'] = df['salaire'].astype(float)
-
+    df['salaire'] = pd.to_numeric(df['salaire'], errors='coerce')
+    
     # Calculez la moyenne des salaires par département
     moyennes_par_region = df.groupby('region')['salaire'].mean().reset_index()
+    print(moyennes_par_region)
     min_moyennes = moyennes_par_region['salaire'].min(skipna=True)
     max_moyennes = moyennes_par_region['salaire'].max(skipna=True)
 
-    #median_salary = moyennes_par_region['salary'].median()
-    #moyennes_par_region['salary'].fillna(median_salary, inplace=True)
-    # print(moyennes_par_region)
 
     # Créez une carte Folium centrée sur la France
     m = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
