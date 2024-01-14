@@ -17,8 +17,8 @@ from collections import Counter
 import streamlit.components.v1 as components
 import sqlite3
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.cluster import KMeans
+from sklearn.decomposition import LatentDirichletAllocation
+
 
 
 def afficher_accueil():
@@ -570,6 +570,29 @@ def wordcloud_competences_demandees():
     plt.ylabel('Compétence')
     st.pyplot(plt)
 
+    # Clustering 
+    st.subheader("Clustering de documents par compétence")
+
+    num_clusters = st.slider("Sélectionner le nombre de clusters", min_value=2, max_value=10, value=3)
+
+    tokens = df['skills'].dropna()
+
+    # Vectorizer le data avec TF-IDF
+    tfidf_vectorizer = TfidfVectorizer()
+    X_tfidf = tfidf_vectorizer.fit_transform(tokens)
+
+    # Latent Dirichlet Allocation (LDA)
+    lda = LatentDirichletAllocation(n_components=num_clusters, random_state=42)
+    document_topics = lda.fit_transform(X_tfidf)
+
+    # nouvelle colonne avec les clusters 
+    df['Cluster'] = document_topics.argmax(axis=1)
+
+    # montrer les mots particuliers à chaque cluster 
+    for cluster_id in range(lda.n_components):
+        cluster_words_indices = lda.components_[cluster_id].argsort()[:-6:-1]  # Indices of the top 5 words
+        cluster_words = [word for word in tfidf_vectorizer.get_feature_names_out() if tfidf_vectorizer.vocabulary_[word] in cluster_words_indices]
+        st.write(f"Les mots des documents de cluster {cluster_id + 1} : {', '.join(cluster_words)}")
 
 
 
