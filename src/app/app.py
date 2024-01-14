@@ -588,11 +588,21 @@ def wordcloud_competences_demandees():
     # nouvelle colonne avec les clusters 
     df['Cluster'] = document_topics.argmax(axis=1)
 
-    # montrer les mots particuliers à chaque cluster 
+    # Montrer les mots particuliers à chaque cluster et le titre le plus populaire
     for cluster_id in range(lda.n_components):
         cluster_words_indices = lda.components_[cluster_id].argsort()[:-6:-1]  # Indices of the top 5 words
-        cluster_words = [word for word in tfidf_vectorizer.get_feature_names_out() if tfidf_vectorizer.vocabulary_[word] in cluster_words_indices]
-        st.write(f"Les mots des documents de cluster {cluster_id + 1} : {', '.join(cluster_words)}")
+        cluster_words = [word for word in tfidf_vectorizer.get_feature_names_out() if
+                        tfidf_vectorizer.vocabulary_[word] in cluster_words_indices]
+
+        st.markdown(f"**Mots-clés du Cluster {cluster_id + 1}:** {' | '.join(cluster_words)}")
+
+        # Trouver le titre le plus populaire pour chaque cluster
+        most_popular_title = df[df['Cluster'] == cluster_id]['title'].mode().values[0]
+        st.markdown(f"**Titre d'emploi le plus populaire:** {most_popular_title}")
+    
+        # Add a separator between clusters for better readability
+        st.markdown("---")
+
 
 
 
